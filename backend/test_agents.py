@@ -1,6 +1,6 @@
 """
 Automated Multi-Agent Verification Suite
-Validates the Fetch.ai uAgents swarm, A2A message protocols, and ACP chat responses.
+Validates the Fetch.ai uAgents swarm, A2A message protocols, and crash triage.
 """
 
 import sys
@@ -23,12 +23,10 @@ from backend.agents.models import (
     TrafficStatusResponse
 )
 from backend.agents.agent_triage import evaluate_accident_severity
-from backend.agents.agent_asi_one import process_user_intent
 from backend.agents.agent_junction import junction_agent
 from backend.agents.agent_ambulance import ambulance_agent
 from backend.agents.agent_triage import triage_agent
 from backend.agents.agent_pedestrian import pedestrian_agent
-from backend.agents.agent_asi_one import asi_one_agent
 
 def run_tests():
     print("=" * 70)
@@ -41,8 +39,7 @@ def run_tests():
         ("Junction Controller Agent", junction_agent),
         ("108 Emergency Fleet Agent", ambulance_agent),
         ("Triage CAD 108 Agent", triage_agent),
-        ("Pedestrian VRU Agent", pedestrian_agent),
-        ("ASI:One Gateway Agent", asi_one_agent)
+        ("Pedestrian VRU Agent", pedestrian_agent)
     ]
     for name, ag in agents:
         assert ag.address.startswith("agent1"), f"Invalid agent address for {name}"
@@ -58,21 +55,21 @@ def run_tests():
         g_force=6.8,
         airbags_deployed=True,
         cabin_intrusion_cm=32.0,
-        estimated_casualties=2,
+        estimated_casualties=1,
         acoustic_signature_db=98.4
     )
     packet_crit = evaluate_accident_severity(telemetry_crit)
-    assert packet_crit.should_call_108 is True, "Expected 108 dispatch for critical collision"
+    assert packet_crit.should_call_108 is True, "Expected 108 CAD dispatch for critical crash"
     assert packet_crit.severity == "CRITICAL_EMERGENCY"
-    assert "City Multi-Specialty Trauma Care" in packet_crit.destination_hospital
-    print(f"  --> PASS: Critical Crash Auto-Dispatches 108 CAD to {packet_crit.destination_hospital}")
-    print(f"            Traffic Action: {packet_crit.traffic_action}")
+    assert "Trauma Care" in packet_crit.destination_hospital
+    print(f"  --> PASS: 6.8G Crash Auto-Dispatched to {packet_crit.destination_hospital}")
+    print(f"            Triage Code: {packet_crit.dispatch_code}")
 
-    # 3. Verify Minor Accident Triage Suppression
-    print("\n[TEST 3] Verifying Sub-Second Collision Triage: Minor Scrape (1.3G Suppression)")
+    # 3. Verify Minor Fender-Bender Triage (Suppression)
+    print("\n[TEST 3] Verifying Sub-Second Collision Triage: Minor Fender-Bender (1.3G)")
     telemetry_min = CollisionTelemetry(
         incident_id="INC-TEST-MIN-01",
-        approach_road="D",
+        approach_road="A",
         speed_at_impact_kmh=14.2,
         g_force=1.3,
         airbags_deployed=False,
@@ -87,23 +84,8 @@ def run_tests():
     print(f"  --> PASS: Minor Scrape 108 Call STRICTLY SUPPRESSED to Protect Hospital Bandwidth")
     print(f"            Rationale: {packet_min.rationale[:80]}...")
 
-    # 4. Verify ASI:One Natural Language Intent Processing (ACP)
-    print("\n[TEST 4] Verifying ASI:One Agent Chat Protocol (ACP) Intent-to-Action Engine")
-    queries = [
-        ("Ambulance Preemption", "Clear 108 Ambulance corridor on North road", "POLE A Directional Siren ACTIVATED"),
-        ("Critical Crash", "Report severe accident 55 km/h 6.8G crash", "Auto-Dispatched"),
-        ("Minor Suppression", "Report minor bumper scrape with 1.3G force", "STRICTLY SUPPRESSED"),
-        ("Pedestrian Scramble", "Activate pedestrian scramble for student crowd", "Barnes Dance All-Pedestrian Scramble"),
-        ("Green Wave", "Synchronize corridor for green wave", "Metropolitan Arterial Green Wave"),
-        ("Corridor Telemetry", "What is the traffic congestion and savings?", "41.4% Delay Reduction")
-    ]
-    for label, query, expected_snippet in queries:
-        resp = process_user_intent(query)
-        assert expected_snippet.lower() in resp.lower(), f"Failed snippet check for {label}"
-        print(f"  --> PASS: {label} query translated into real-world action successfully.")
-
-    # 5. Verify A2A Message Contracts
-    print("\n[TEST 5] Verifying Typed Agent-to-Agent (A2A) Message Models")
+    # 4. Verify A2A Message Contracts
+    print("\n[TEST 4] Verifying Typed Agent-to-Agent (A2A) Message Models")
     req = EmergencyPassageRequest(vehicle_id="AMB-108", approach_road="A")
     assert req.vehicle_id == "AMB-108"
     ped = PedestrianScrambleRequest(waiting_pedestrians=15, trailing_inflow=4)

@@ -5,6 +5,8 @@
  */
 
 import { SIM_CONFIG } from '../config.js';
+import { Renderer3D } from './Renderer3D.js';
+import { ThreeScene } from './ThreeScene.js';
 
 export class Renderer {
   constructor(canvas) {
@@ -14,6 +16,21 @@ export class Renderer {
     this.scale = 1.0;
     this.panX = 0;
     this.panY = 0;
+
+    // 3D Perspective & Isometric Engine
+    this.renderer3D = new Renderer3D(this);
+    this.camera = this.renderer3D.camera;
+
+    // High-End Photorealistic 3D Three.js WebGL Engine
+    this.threeScene = null;
+    const threeContainer = document.getElementById('three-container');
+    if (threeContainer && window.THREE) {
+      try {
+        this.threeScene = new ThreeScene(threeContainer, this);
+      } catch (err) {
+        console.error('Failed to initialize ThreeScene:', err);
+      }
+    }
 
     // Perception & Digital Twin Modes
     this.visionMode = 'REALISTIC'; // 'REALISTIC', 'AI_VISION', 'THERMAL_ESG'
@@ -67,6 +84,9 @@ export class Renderer {
     this.scale = Math.max(0.75, Math.min(1.4, minDim / 620));
     this.panX = rect.width / 2;
     this.panY = rect.height / 2;
+    if (this.threeScene) {
+      this.threeScene.onWindowResize();
+    }
   }
 
   bindEvents() {
@@ -129,6 +149,28 @@ export class Renderer {
     this.situationMode = mode;
   }
 
+  setCameraMode(mode) {
+    if (this.camera) this.camera.mode = mode;
+    if (this.threeScene) this.threeScene.setCameraMode(mode);
+    if (this.renderer3D) this.renderer3D.setCameraMode(mode);
+
+    const container = document.getElementById('three-container');
+    if (container) {
+      if (mode === '2D_PLAN') {
+        container.style.display = 'none';
+        this.canvas.style.pointerEvents = 'auto';
+      } else {
+        container.style.display = 'block';
+        this.canvas.style.pointerEvents = 'none';
+      }
+    }
+  }
+
+  toggleOrbit() {
+    if (this.threeScene) return this.threeScene.toggleOrbit();
+    if (this.renderer3D) return this.renderer3D.toggleOrbit();
+  }
+
   toggleSchoolMap(forceState = null) {
     if (forceState !== null) {
       this.forceSchoolMap = forceState;
@@ -157,6 +199,17 @@ export class Renderer {
     this.schoolBeaconTimer = (this.schoolBeaconTimer + 0.06) % (Math.PI * 2);
 
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+    // 3D Perspective Mode: Hardware-Accelerated Three.js WebGL Engine
+    if (this.camera && this.camera.mode !== '2D_PLAN') {
+      if (this.threeScene) {
+        ctx.clearRect(0, 0, width, height);
+        this.threeScene.update(sim);
+        return;
+      }
+      this.renderer3D.render(ctx, sim, this.isSchoolMode(sim), width, height);
+      return;
+    }
 
     // Dynamic Atmosphere Backdrop
     ctx.fillStyle = this.weatherMode === 'RAIN' ? '#04070d' : '#080c14';

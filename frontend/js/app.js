@@ -89,12 +89,18 @@ class App {
       const vehicles = heroSim ? heroSim.vehicles : [];
 
       let hovered = null;
-      for (const v of vehicles) {
-        const dx = v.x - wx;
-        const dy = v.y - wy;
-        if (Math.sqrt(dx * dx + dy * dy) <= 24) {
-          hovered = v;
-          break;
+      if (this.renderer.camera && this.renderer.camera.mode !== '2D_PLAN' && this.renderer.renderer3D) {
+        if (!this.renderer.renderer3D.camera.isDragging) {
+          hovered = this.renderer.renderer3D.findVehicleAtScreen(e.clientX, e.clientY, vehicles);
+        }
+      } else {
+        for (const v of vehicles) {
+          const dx = v.x - wx;
+          const dy = v.y - wy;
+          if (Math.sqrt(dx * dx + dy * dy) <= 24) {
+            hovered = v;
+            break;
+          }
         }
       }
 

@@ -1,12 +1,11 @@
 # TrafficFlow-AI: Smart City Adaptive Traffic Signal Digital Twin & Multi-Agent Swarm
 ![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
 ![Framework: Fetch.ai uAgents](https://img.shields.io/badge/Framework-Fetch.ai_uAgents-00D26A?logo=fetch.ai)
-![Protocol: Agent Chat Protocol (ACP)](https://img.shields.io/badge/Protocol-Agent_Chat_Protocol_(ACP)-7952DE)
-![Platform: ASI:One & Agentverse](https://img.shields.io/badge/Platform-ASI%3AOne_%26_Agentverse-FF6B6B)
+![Protocol: Fetch.ai A2A Typed Messages](https://img.shields.io/badge/Protocol-Fetch.ai_A2A_Typed_Messages-7952DE)
 ![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)
 
-> 🏆 **Built for FETCH-A-THON 3.0 & ASI:ONE AGENT CHALLENGE** | Presidency University, Bengaluru  
-> *Organized by Fetch.ai, Innovation Lab by Fetch.ai, ASI:ONE (Artificial Superintelligence Alliance), and Masters' Union*  
+> 🏆 **Built for FETCH-A-THON 3.0** | Presidency University, Bengaluru  
+> *Organized by Fetch.ai, Innovation Lab by Fetch.ai, and Masters' Union*  
 > **Team ID:** `FETCHATHON3.0-8799` | **Team Lead:** BANDILA MADHAV | **Members:** LAKSHMI REDDY M S, KEERTHIPATI SATHYASREE, KHAMITHKAR SUPRITHA
 ### Problem Statement 1: AI Traffic Management, 108 CAD Emergency Response, Directional Pole Sirens, VRU Crosswalk Scramble, & Arterial Green Wave Corridor
 
@@ -45,21 +44,13 @@ The project directly solves critical urban challenges:
 
 ## 🤖 Fetch.ai Decentralized Multi-Agent Swarm (MAS) Architecture
 
-Rather than a static script, **TrafficFlow-AI** is powered by a decentralized swarm of **5 autonomous AI agents** engineered with Fetch.ai's `uagents` framework. Each agent possesses an independent cryptographic identity, event loops, and typed Agent-to-Agent (A2A) protocol interfaces:
+Rather than a static script, **TrafficFlow-AI** is powered by a decentralized swarm of **4 autonomous cyber-physical AI agents** engineered with Fetch.ai's `uagents` framework. Each agent possesses an independent cryptographic identity, event loops, and typed Agent-to-Agent (A2A) protocol interfaces:
 
 ```
-                                ┌────────────────────────────────────────────────────────┐
-                                │                 ASI:One / DeltaV Chat                  │
-                                │  "What's traffic at Central Junction? Clear route 108" │
-                                └───────────────────────────┬────────────────────────────┘
-                                                            │ (Agent Chat Protocol - ACP)
-                                                            ▼
-                                                ┌───────────────────────┐
-                                                │   ASI:One Gateway     │
-                                                │        Agent          │
-                                                │  (Agentverse Mailbox) │
-                                                └───────────┬───────────┘
-                                                            │
+         ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+         │                    Fetch.ai Decentralized Multi-Agent Swarm (Local Bureau Port 8000)                │
+         └──────────────────────────────────────────────────┬──────────────────────────────────────────────────┘
+                                                            │ (A2A Cryptographic Typed Pydantic Mesh)
          ┌──────────────────────────────────────────────────┼──────────────────────────────────────────────────┐
          ▼                                                  ▼                                                  ▼
  ┌───────────────────────────┐                    ┌───────────────────────────┐                    ┌───────────────────────────┐
@@ -78,7 +69,7 @@ Rather than a static script, **TrafficFlow-AI** is powered by a decentralized sw
                                                   └───────────────────────────┘
 ```
 
-### The 5 Autonomous Swarm Agents:
+### The 4 Autonomous Swarm Agents:
 
 | Agent Name | Module | Role & Autonomous Action | Cryptographic Address |
 | :--- | :--- | :--- | :--- |
@@ -90,24 +81,14 @@ Rather than a static script, **TrafficFlow-AI** is powered by a decentralized sw
 
 ---
 
-## 💬 ASI:One Agent Challenge — From Intent to Action (ACP Integration)
+## ⚡ Autonomous Agent Swarm Workflows (A2A Integration)
 
-The project directly fulfills all mandatory requirements of the **ASI:One Agent Challenge**:
+The project leverages Fetch.ai's decentralized agent framework to coordinate mission-critical urban traffic scenarios in real time:
 
-* ✅ **Agentverse Registered:** Pre-configured with a hosted script (`backend/agents/agentverse_hosted_agent.py`) deployable in 60 seconds on [Agentverse](https://agentverse.ai).
-* ✅ **Agent Chat Protocol (ACP):** Implements `uagents_core.contrib.protocols.chat` with `ChatMessage`, `ChatAcknowledgement`, and `TextContent`.
-* ✅ **Discoverable via ASI:One:** Queryable through natural language on [asi1.ai](https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2) from any desktop or mobile browser.
-* 🌐 **Official Live ASI:One Chat Space:** [https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2](https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2)
-* 📍 **Pinpoint Bottleneck Localization:**
-  * *"Is there traffic at Silk Board?"* → Pinpoints exact 650m bottleneck epicenter at Central Silk Board Bus Terminus & Flyover On-Ramp.
-  * *"What is the traffic situation at Central Junction?"* → Identifies exact 350m backlog opposite Metro Pillar #412 with Lanes 1 & 2 immobilized.
-  * *"Is Koramangala 4th Block clear?"* → Verifies 0m backlog and free-flowing green corridor.
-* ✅ **Intent-to-Action Execution:** Complete workflows execute natively within the chat stream without requiring a custom frontend:
-  * *"Clear 108 Ambulance corridor on North road"* $\rightarrow$ Executes Pole A siren and green carpet preemption.
-  * *"Report critical 6.8G crash on South road"* $\rightarrow$ Executes 108 CAD trauma dispatch with exact GPS coordinates.
-  * *"Report 1.3G minor scrape"* $\rightarrow$ Executes emergency bandwidth triage suppression.
-  * *"Activate pedestrian scramble for campus students"* $\rightarrow$ Executes Barnes Dance all-red walk window.
-  * *"What is the traffic situation?"* $\rightarrow$ Returns real-time delay reduction (-41.4%) and savings in ₹ Lakhs/Year.
+* 🚑 **108 Ambulance Green-Corridor Preemption:** When an ambulance approaches, `EmergencyFleetAgent` negotiates priority with `JunctionControllerAgent`. The system immediately triggers the approach's directional 115 dB corner pole siren (Poles A–D) and locks down conflicting traffic with a green carpet wave.
+* 💥 **Sub-Second Crash Triage (6.8G Collision):** When sensors detect a high-speed impact with severe deceleration, `TriageCADAgent` immediately dispatches an automated 108 CAD alert with exact GPS coordinates (`11.0245° N, 76.9982° E`) and hospital destination to the City Trauma Center.
+* 🛡️ **Minor Scrape CAD Suppression (1.3G Scrape):** Minor low-speed bumper contacts are triaged locally and suppressed from 108 emergency dispatch lines, protecting precious emergency hospital bandwidth for true life-threatening emergencies.
+* 🚶 **Campus Pedestrian VRU Safety:** `PedestrianVRUAgent` monitors pedestrian demand at college crossings, triggering a synchronized Barnes Dance all-pedestrian scramble phase when crowd thresholds are reached.
 
 ---
 
@@ -119,6 +100,12 @@ The system features an enterprise-grade decoupled architecture separating presen
 PS1/
 ├── run.py                           # Unified launcher with visual CLI banner
 ├── server.py                        # Root backward-compatible server entrypoint
+├── Removed_Agent/                   # Isolated retired agent components
+│   ├── agent_asi_one.py
+│   ├── agentverse_hosted_agent.py
+│   ├── cli_chat.py
+│   ├── do_register.py
+│   └── register_agent.py
 ├── backend/                         # Backend Service Layer (Python)
 │   ├── agents/                      # Fetch.ai Decentralized Multi-Agent Swarm (MAS)
 │   │   ├── __init__.py
@@ -127,9 +114,7 @@ PS1/
 │   │   ├── agent_ambulance.py       # 108 ALS Emergency Fleet Mobile Agent
 │   │   ├── agent_triage.py          # Sub-second Collision Triage & 108 CAD Agent
 │   │   ├── agent_pedestrian.py      # Campus Student & VRU Barnes Dance Scramble Agent
-│   │   ├── agent_asi_one.py         # Public ASI:One Agent Chat Protocol (ACP) Gateway Agent
-│   │   ├── bureau_runner.py         # Multi-Agent Swarm Bureau Runner (Port 8000)
-│   │   └── agentverse_hosted_agent.py # Self-contained Agentverse Hosted Agent (60s deploy)
+│   │   └── bureau_runner.py         # Multi-Agent Swarm Bureau Runner (Port 8000)
 │   ├── server.py                    # Threading HTTP server & 30Hz simulation loop
 │   ├── test_fullstack.py            # Automated 14-suite simulation test suite
 │   ├── test_agents.py               # Automated Fetch.ai multi-agent verification suite
@@ -261,15 +246,9 @@ python backend/test_fullstack.py
 ```
 
 ### Running Automated Fetch.ai Multi-Agent Swarm Tests
-To verify all 5 decentralized agents, sub-second crash triage, and ACP intent-to-action workflows:
+To verify all 4 decentralized cyber-physical agents, sub-second crash triage, and green carpet preemption:
 ```bash
 python backend/test_agents.py
-```
-
-### Interactive CLI Agent Chat (ACP Terminal Simulator)
-To chat directly with the multi-agent swarm from your command line:
-```bash
-python backend/cli_chat.py
 ```
 
 ---

@@ -112,7 +112,6 @@
       </div>
 
       <!-- Active Hero Controller Mode Badge -->
-      <a href="https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2" target="_blank" style="background: linear-gradient(135deg, #8B5CF6, #6366F1); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 12px rgba(139, 92, 246, 0.4); margin-right: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981; display: inline-block;"></span>💬 Live ASI:One Chat Space</a>
       <div class="active-controller-badge">
         <span>Displaying:</span>
         <button id="btn-toggle-hero-mode" class="mode-toggle-btn active-ai" title="Toggle which signal controller runs the hero intersection">
@@ -176,7 +175,8 @@
 
         <!-- Central Hero Intersection Viewport -->
         <div class="hero-viewport">
-          <canvas id="hero-canvas" class="hero-canvas"></canvas>
+          <div id="three-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+          <canvas id="hero-canvas" class="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></canvas>
 
           <!-- Unified Top Viewport HUD Ribbon (Perception Controls & Directional Pole Sirens) -->
           <div class="viewport-top-hud">
@@ -187,6 +187,16 @@
               <button id="btn-vision-thermal" class="hud-pill-btn" data-mode="THERMAL_ESG" title="Thermal Emissions Heatmap">🔥 Thermal</button>
               <button id="btn-toggle-weather" class="hud-pill-btn weather-pill" title="Toggle Clear Weather vs Wet Rain Adhesion">☀️ Clear</button>
               <button id="btn-vision-school-map" class="hud-pill-btn school-map-pill" data-mode="SCHOOL_CAMPUS" title="Toggle College / School Campus Map View">🏫 Campus Map</button>
+            </div>
+
+            <div class="hud-v-divider"></div>
+
+            <div class="hud-group view-3d-group">
+              <span class="hud-label">3D VIEW:</span>
+              <button id="btn-view-3d" class="hud-pill-btn active" title="Switch to High-End 3D Isometric Perspective View">📐 3D View</button>
+              <button id="btn-view-orbit" class="hud-pill-btn" title="Toggle 360° Smooth Cinematic Drone Orbit">🎥 Drone Orbit</button>
+              <button id="btn-view-street" class="hud-pill-btn" title="Low-Angle Driver / Street Level View">🚦 Street Level</button>
+              <button id="btn-view-2d" class="hud-pill-btn" title="Classic 2D Overhead Plan View">🗺️ 2D Plan</button>
             </div>
 
             <div class="hud-v-divider"></div>
@@ -824,41 +834,37 @@
     <section id="view-swarm" class="view-section">
       <div class="page-container" style="max-width: 1200px;">
         <div class="page-header" style="margin-bottom: 20px;">
-          <h2>🤖 Fetch.ai Decentralized Multi-Agent Swarm & ASI:One Integration</h2>
-          <p>Decentralized Autonomous Agents coordinating traffic preemption, sub-second collision triage, and pedestrian safety over the Agent Chat Protocol (ACP).</p>
+          <h2>🤖 Fetch.ai Decentralized Multi-Agent Swarm</h2>
+          <p>Decentralized Autonomous Agents coordinating traffic preemption, sub-second collision triage, and pedestrian safety in real time.</p>
         </div>
 
-        <!-- CHALLENGE & AGENTVERSE TOP CARDS -->
+        <!-- SWARM HIGHLIGHT CARDS -->
         <div class="grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
           <div class="panel-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 210, 106, 0.35); border-radius: 12px; padding: 18px;">
             <h3 style="color: #00D26A; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-              <span>✨</span> Challenge: ASI:One Intent to Action
+              <span>⚡</span> Cyber-Physical Agent Swarm
             </h3>
             <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0 0 12px 0;">
-              Built for the <strong>ASI:One Agent Challenge</strong>. Our public gateway agent implements official <code>uagents_core.contrib.protocols.chat</code> specifications. It takes natural language user intent on <strong>asi1.ai</strong> and immediately executes cyber-physical traffic actions (108 ambulance green carpet preemption, 6.8G crash 108 CAD dispatch, and minor scrape suppression).
+              Powered by the official <strong>Fetch.ai uAgents</strong> framework. Autonomous software agents interact with physical traffic infrastructure, executing 108 ambulance green-corridor preemption, 6.8G collision triage CAD dispatches, and campus pedestrian safety.
             </p>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <span class="badge-algo" style="background: rgba(121, 82, 222, 0.25); color: #C084FC; border: 1px solid #7952DE; font-size: 11px; padding: 3px 8px; border-radius: 6px;">Protocol: ACP 0.3.0</span>
               <span class="badge-algo" style="background: rgba(0, 210, 106, 0.2); color: #00D26A; border: 1px solid #00D26A; font-size: 11px; padding: 3px 8px; border-radius: 6px;">Network: Fetch.ai Almanac</span>
               <span class="badge-algo" style="background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid #3B82F6; font-size: 11px; padding: 3px 8px; border-radius: 6px;">Framework: uAgents 0.25+</span>
+              <span class="badge-algo" style="background: rgba(121, 82, 222, 0.25); color: #C084FC; border: 1px solid #7952DE; font-size: 11px; padding: 3px 8px; border-radius: 6px;">Protocol: A2A Typed Pydantic</span>
             </div>
           </div>
 
           <div class="panel-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 12px; padding: 18px;">
             <h3 style="color: #3B82F6; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-              <span>☁️</span> Agentverse Cloud Deployment
+              <span>🔒</span> Cryptographic Decentralized Architecture
             </h3>
             <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0 0 12px 0;">
-              Our standalone agent is live and registered on the <strong>Fetch.ai Agentverse Almanac</strong>. It runs 24/7 in the decentralized cloud and is directly discoverable on ASI:One:
+              Each autonomous agent possesses a unique <strong>Ed25519 Bech32 cryptographic identity</strong> registered on the decentralized network. Messages between agents are cryptographically signed, peer-to-peer, and verified without central points of failure.
             </p>
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
               <div style="display: flex; gap: 8px; align-items: center;">
-                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 6px;">@trafficflow-ai-traff</span>
-                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px;">Active &amp; ASI Available</span>
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <a href="https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2" target="_blank" style="background: linear-gradient(135deg, #8B5CF6, #6366F1); color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">💬 Chat on ASI:One</a>
-                <a href="https://agentverse.ai" target="_blank" style="background: rgba(255, 255, 255, 0.08); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.2); padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; text-decoration: none;">☁️ Agentverse</a>
+                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 6px;">Local Bureau Port 8000</span>
+                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px;">Active Mesh</span>
               </div>
             </div>
           </div>
@@ -875,7 +881,7 @@
               </h3>
               <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
                 <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981; display: inline-block;"></span>
-                5/5 AGENTS ONLINE
+                4/4 AGENTS ONLINE
               </div>
             </div>
             <div style="display: flex; gap: 14px; font-size: 12px; color: var(--text-dim);">
@@ -901,55 +907,7 @@
               </thead>
               <tbody>
 
-                <!-- ROW 1: ASI:ONE GATEWAY AGENT -->
-                <tr style="background: rgba(139, 92, 246, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                  <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #8B5CF6;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <span style="font-size: 24px; width: 36px; height: 36px; background: rgba(139, 92, 246, 0.2); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;">🌐</span>
-                      <div>
-                        <div style="font-weight: 700; color: #fff; font-size: 14px;">ASIOneGatewayAgent</div>
-                        <div style="display: flex; gap: 6px; align-items: center; margin-top: 3px;">
-                          <span style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; font-family: var(--font-mono); font-size: 10.5px; padding: 1px 5px; border-radius: 4px;">@trafficflow-ai-traff</span>
-                          <span style="color: var(--text-dim); font-size: 10.5px; font-family: var(--font-mono);">agent_asi_one.py</span>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08); white-space: nowrap;">
-                    <span style="display: inline-flex; align-items: center; gap: 5px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 10px;">
-                      <span style="width: 5px; height: 5px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
-                      Live on ASI:One
-                    </span>
-                    <div style="color: var(--text-dim); font-size: 11px; margin-top: 4px;">Fetch.ai Almanac</div>
-                  </td>
-                  <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                    <div style="color: var(--text-secondary); font-size: 12.5px; line-height: 1.5; margin-bottom: 6px;">
-                      Public Agent Chat Protocol (ACP) gateway. Discovered on <strong>asi1.ai</strong>. Converts natural language conversational intent directly into real-world traffic preemption &amp; triage without human middleman.
-                    </div>
-                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                      <span style="background: rgba(139, 92, 246, 0.15); color: #D8B4FE; border: 1px solid rgba(139, 92, 246, 0.3); font-size: 10.5px; padding: 2px 6px; border-radius: 4px;">ACP v0.3.0</span>
-                      <span style="background: rgba(139, 92, 246, 0.15); color: #D8B4FE; border: 1px solid rgba(139, 92, 246, 0.3); font-size: 10.5px; padding: 2px 6px; border-radius: 4px;">Intent-to-Action</span>
-                      <span style="background: rgba(139, 92, 246, 0.15); color: #D8B4FE; border: 1px solid rgba(139, 92, 246, 0.3); font-size: 10.5px; padding: 2px 6px; border-radius: 4px;">Agentverse Hosted</span>
-                    </div>
-                  </td>
-                  <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 6px 10px;">
-                      <code style="font-family: var(--font-mono); font-size: 11px; color: #C4B5FD; word-break: break-all;">agent1qwmawnyywfmhxgtyfl6uut9gkv4s36q4ykw220trle6053c4k8nrzvp98t4</code>
-                    </div>
-                  </td>
-                  <td style="padding: 14px; vertical-align: top; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); white-space: nowrap;">
-                    <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
-                      <button class="swarm-copy-btn" data-address="agent1qwmawnyywfmhxgtyfl6uut9gkv4s36q4ykw220trle6053c4k8nrzvp98t4" style="background: rgba(139, 92, 246, 0.2); border: 1px solid #8B5CF6; color: #fff; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 5px; cursor: pointer; width: 100%;">
-                        📋 Copy Address
-                      </button>
-                      <a href="https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2" target="_blank" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #38BDF8; font-size: 10.5px; padding: 3px 8px; border-radius: 5px; text-decoration: none; width: 100%; box-sizing: border-box;">
-                        💬 Open ASI:One
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- ROW 2: JUNCTION CONTROLLER AGENT -->
+                <!-- ROW 1: JUNCTION CONTROLLER AGENT -->
                 <tr style="background: rgba(15, 23, 42, 0.4); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                   <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #00E5FF;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -989,7 +947,7 @@
                   </td>
                 </tr>
 
-                <!-- ROW 3: EMERGENCY FLEET AGENT -->
+                <!-- ROW 2: EMERGENCY FLEET AGENT -->
                 <tr style="background: rgba(239, 68, 68, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                   <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #EF4444;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -1029,7 +987,7 @@
                   </td>
                 </tr>
 
-                <!-- ROW 4: TRIAGE CAD AGENT -->
+                <!-- ROW 3: TRIAGE CAD AGENT -->
                 <tr style="background: rgba(245, 158, 11, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                   <td style="padding: 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #F59E0B;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -1069,7 +1027,7 @@
                   </td>
                 </tr>
 
-                <!-- ROW 5: PEDESTRIAN VRU AGENT -->
+                <!-- ROW 4: PEDESTRIAN VRU AGENT -->
                 <tr style="background: rgba(16, 185, 129, 0.05);">
                   <td style="padding: 14px; vertical-align: top; border-left: 3px solid #10B981;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -1112,67 +1070,7 @@
               </tbody>
             </table>
           </div>
-        </div>
-
-        <!-- INTERACTIVE SWARM ACP CONSOLE (TRY IT IN THE BROWSER) -->
-        <div class="panel-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px; padding: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-            <div>
-              <h3 style="color: #fff; margin: 0 0 4px 0; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-                <span>💬</span> ASI:One Intelligent Traffic Chat Box &amp; Cyber-Physical Copilot
-              </h3>
-              <p style="color: var(--text-dim); margin: 0; font-size: 12.5px;">
-                Click any preset query below to watch the decentralized agents process natural language into cyber-physical action in real time:
-              </p>
-            </div>
-            <span class="badge-algo" style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.4); font-size: 11px; padding: 3px 8px; border-radius: 6px;">ACP v0.3.0 Live Engine</span>
-          </div>
-
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-            <button class="acp-preset-btn" data-query="Is there traffic at Silk Board?" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              📍 Silk Board Bottleneck?
-            </button>
-            <button class="acp-preset-btn" data-query="What is the traffic situation at Central Junction?" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #FCD34D; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🚦 Central Junction Pinpoint?
-            </button>
-            <button class="acp-preset-btn" data-query="Is Koramangala 4th Block clear?" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6EE7B7; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🟢 Koramangala Clear?
-            </button>
-            <button class="acp-preset-btn" data-query="How is traffic in Whitefield ITPL?" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #7DD3FC; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🏢 Whitefield ITPL Traffic?
-            </button>
-            <button class="acp-preset-btn" data-query="Clear 108 Ambulance corridor on North road" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🚑 108 Ambulance Corridor
-            </button>
-            <button class="acp-preset-btn" data-query="Report severe accident 55 km/h 6.8G crash" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #FCD34D; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              💥 6.8G Crash Triage CAD
-            </button>
-            <button class="acp-preset-btn" data-query="Report minor bumper scrape with 1.3G force" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #6EE7B7; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🛡️ 1.3G Scrape Suppression
-            </button>
-            <button class="acp-preset-btn" data-query="Activate pedestrian scramble for student crowd" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #7DD3FC; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              🚶 Barnes Dance Scramble
-            </button>
-            <button class="acp-preset-btn" data-query="What is the traffic congestion and savings?" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.35); color: #D8B4FE; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-              📊 Telemetry &amp; ROI
-            </button>
-          </div>
-
-          <div id="acp-terminal-output" style="background: #090D16; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; padding: 14px 18px; font-family: var(--font-mono); font-size: 12px; color: #E2E8F0; line-height: 1.6; min-height: 140px; max-height: 380px; overflow-y: auto; white-space: pre-wrap;"><span style="color: #64748B;">// ASI:One Agent Chat Protocol Terminal Initialized.
-// Connected to Autonomous Agent: @trafficflow-ai-traff (agent1qwmawnyywfmhxgtyfl6uut9gkv4s36q4ykw220trle6053c4k8nrzvp98t4)
-// Type any location or traffic query below, or test directly on asi1.ai:</span></div>
-
-          <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-            <input type="text" id="acp-input-box" placeholder="Ask about traffic at any place (e.g., 'Is there traffic at Silk Board?' or 'How is traffic in Hebbal?')..." style="flex: 1; min-width: 280px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 8px; padding: 11px 16px; color: #fff; font-size: 13px; font-family: var(--font-sans); outline: none;" />
-            <button id="btn-acp-send" style="background: linear-gradient(135deg, #8B5CF6, #6366F1); color: #fff; border: none; border-radius: 8px; padding: 11px 20px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-              <span>🚀</span> Ask Agent
-            </button>
-            <a href="https://asi1.ai/chat/449bfcc6-32dc-4a17-9fc7-9e1dcc99d9a4?space=9aafc223-1cae-43af-b246-de7feceb76a2" target="_blank" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #34D399; border-radius: 8px; padding: 11px 16px; font-weight: 700; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-              <span>💬</span> Chat on ASI:One
-            </a>
-          </div>
-        </div>
-      </div>
+        </div></div>
     </section>
 
     <!-- SECTION 5: ABOUT -->
@@ -1214,11 +1112,13 @@
   </div>
 
   <!-- Application Script -->
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/lib/OrbitControls.js"></script>
   <script type="module" src="js/app.js"></script>
-  <!-- Swarm Copy & Interactive ACP Simulator Script -->
+  <!-- Swarm Copy Address Script -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Copy Address Buttons
+      // Copy Address Buttons
       document.querySelectorAll('.swarm-copy-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1239,58 +1139,6 @@
             prompt('Copy address:', addr);
           }
         });
-      });
-
-      // 2. Interactive Live ACP Simulator & Intelligent Copilot
-      const terminal = document.getElementById('acp-terminal-output');
-      const inputEl = document.getElementById('acp-input-box');
-      const sendBtn = document.getElementById('btn-acp-send');
-
-      async function queryACPAgent(userQuery) {
-        if (!userQuery || !userQuery.trim() || !terminal) return;
-        const q = userQuery.trim();
-        terminal.innerHTML += `\n\n<span style="color: #38bdf8;">[YOU via ASI:One] &gt; "${q}"</span>\n<span style="color: #64748B;">[AGENT @trafficflow-ai-traff is querying Fetch.ai uAgents swarm &amp; GPS almanac...]</span>`;
-        terminal.scrollTop = terminal.scrollHeight;
-
-        try {
-          const res = await fetch('/api/acp/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: q })
-          });
-          const data = await res.json();
-          const reply = data.agentReply || 'No response from agent.';
-          terminal.innerHTML = terminal.innerHTML.replace(
-            '<span style="color: #64748B;">[AGENT @trafficflow-ai-traff is querying Fetch.ai uAgents swarm &amp; GPS almanac...]</span>',
-            '<span style="color: #a78bfa; font-weight: bold;">[AGENT @trafficflow-ai-traff]:</span>\n' + reply
-          );
-        } catch (err) {
-          terminal.innerHTML += `\n<span style="color: #ef4444;">[ERROR: Unable to communicate with uAgents server: ${err.message}]</span>`;
-        }
-        terminal.scrollTop = terminal.scrollHeight;
-      }
-
-      document.querySelectorAll('.acp-preset-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const q = btn.getAttribute('data-query');
-          if (inputEl) inputEl.value = q;
-          queryACPAgent(q);
-        });
-      });
-
-      if (sendBtn && inputEl) {
-        sendBtn.addEventListener('click', () => {
-          queryACPAgent(inputEl.value);
-          inputEl.value = '';
-        });
-        inputEl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            queryACPAgent(inputEl.value);
-            inputEl.value = '';
-          }
-        });
-      }
-    });
       });
     });
   </script>

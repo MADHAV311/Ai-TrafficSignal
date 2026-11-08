@@ -367,6 +367,31 @@ export class DashboardUI {
       });
     });
 
+    // 3D Perspective & Orbit View Controls
+    const btn3d = document.getElementById('btn-view-3d');
+    const btnOrbit = document.getElementById('btn-view-orbit');
+    const btnStreet = document.getElementById('btn-view-street');
+    const btn2d = document.getElementById('btn-view-2d');
+
+    const cameraButtons = [
+      { btn: btn3d, mode: '3D_PERSPECTIVE', toast: '📐 3D Perspective Isometric View' },
+      { btn: btnOrbit, mode: '3D_ORBIT', toast: '🎥 360° Cinematic Drone Orbit' },
+      { btn: btnStreet, mode: '3D_STREET', toast: '🚦 Low-Angle Street Level View' },
+      { btn: btn2d, mode: '2D_PLAN', toast: '🗺️ 2D Overhead Plan View' }
+    ];
+
+    cameraButtons.forEach(({ btn, mode, toast }) => {
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        cameraButtons.forEach(b => b.btn && b.btn.classList.remove('active'));
+        btn.classList.add('active');
+        if (this.renderer) {
+          this.renderer.setCameraMode(mode);
+        }
+        this.showToast(toast);
+      });
+    });
+
     // School Campus Map View Toggle
     if (this.btnVisionSchoolMap) {
       this.btnVisionSchoolMap.addEventListener('click', (e) => {
