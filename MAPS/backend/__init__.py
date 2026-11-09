@@ -1,3 +1,0 @@
-"""
-TrafficFlow-MAPS Backend Package
-"""

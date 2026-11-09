@@ -38,3 +38,10 @@ do_register.py
 *.pptx
 *.bak
 *video.html
+
+# Removed / Local-only folders
+Removed_MAPS/
+MAPS/
+Removed_Agents_1/
+Removed_Agent_1/
+Removed_Agent/
