@@ -81,7 +81,7 @@ SIM_CONFIG = {
             "maxSpeed": 115.0,
             "accel": 90.0,
             "decel": 120.0,
-            "weight": 0.45,
+            "weight": 0.32,
             "colors": ["#38bdf8", "#0ea5e9", "#e2e8f0", "#94a3b8", "#3b82f6", "#475569"]
         },
         "SUV": {
@@ -92,19 +92,30 @@ SIM_CONFIG = {
             "maxSpeed": 105.0,
             "accel": 80.0,
             "decel": 110.0,
-            "weight": 0.25,
+            "weight": 0.18,
             "colors": ["#059669", "#10b981", "#1e293b", "#64748b", "#0d9488"]
+        },
+        "AUTO_RICKSHAW": {
+            "type": "AUTO_RICKSHAW",
+            "name": "Auto Rickshaw (3-Wheeler)",
+            "length": 22,
+            "width": 13,
+            "maxSpeed": 75.0,
+            "accel": 65.0,
+            "decel": 90.0,
+            "weight": 0.18,
+            "colors": ["#eab308"]
         },
         "BUS": {
             "type": "BUS",
             "name": "City Bus",
-            "length": 50,
+            "length": 52,
             "width": 17,
             "maxSpeed": 85.0,
             "accel": 55.0,
             "decel": 90.0,
             "weight": 0.10,
-            "colors": ["#f59e0b", "#d97706", "#fbbf24"]
+            "colors": ["#0284c7", "#f59e0b", "#d97706"]
         },
         "TRUCK": {
             "type": "TRUCK",
@@ -114,7 +125,7 @@ SIM_CONFIG = {
             "maxSpeed": 80.0,
             "accel": 50.0,
             "decel": 85.0,
-            "weight": 0.10,
+            "weight": 0.08,
             "colors": ["#e11d48", "#be123c", "#cbd5e1"]
         },
         "SPORTS": {
@@ -128,6 +139,19 @@ SIM_CONFIG = {
             "weight": 0.06,
             "colors": ["#ec4899", "#f43f5e", "#8b5cf6"]
         },
+        "POLICE": {
+            "type": "POLICE",
+            "name": "Police Patrol / PCR Interceptor",
+            "length": 34,
+            "width": 16,
+            "maxSpeed": 135.0,
+            "accel": 115.0,
+            "decel": 135.0,
+            "weight": 0.03,
+            "isEmergency": True,
+            "emergencyType": "POLICE",
+            "colors": ["#1e3a8a", "#ffffff"]
+        },
         "AMBULANCE": {
             "type": "AMBULANCE",
             "name": "108 ALS Ambulance",
@@ -136,7 +160,7 @@ SIM_CONFIG = {
             "maxSpeed": 130.0,
             "accel": 110.0,
             "decel": 130.0,
-            "weight": 0.02,
+            "weight": 0.025,
             "isEmergency": True,
             "emergencyType": "AMBULANCE",
             "colors": ["#ffffff", "#ef4444"]
@@ -149,7 +173,7 @@ SIM_CONFIG = {
             "maxSpeed": 115.0,
             "accel": 95.0,
             "decel": 120.0,
-            "weight": 0.02,
+            "weight": 0.025,
             "isEmergency": True,
             "emergencyType": "FIRE_ENGINE",
             "colors": ["#dc2626", "#b91c1c"]

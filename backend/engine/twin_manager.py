@@ -176,10 +176,15 @@ class TwinManager:
 
     def spawn_emergency_vehicle(self, road_id="A", emergency_type="AMBULANCE"):
         """
-        Spawns emergency vehicle (AMBULANCE or FIRE_ENGINE) on specified road.
+        Spawns emergency vehicle (AMBULANCE, FIRE_ENGINE, or POLICE) on specified road.
         Activates directional pole sirens and green carpet priority.
         """
-        veh_type = "FIRE_ENGINE" if emergency_type == "FIRE_ENGINE" else "AMBULANCE"
+        if emergency_type == "FIRE_ENGINE":
+            veh_type = "FIRE_ENGINE"
+        elif emergency_type == "POLICE":
+            veh_type = "POLICE"
+        else:
+            veh_type = "AMBULANCE"
         spec = self.generator.generate_vehicle_spec(road_id, self.sim_adaptive.sim_time, forced_type=veh_type, forced_lane=1)
         self.sim_fixed.spawn_vehicle(dict(spec))
         self.sim_adaptive.spawn_vehicle(dict(spec))
