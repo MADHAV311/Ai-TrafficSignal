@@ -6,7 +6,7 @@
 
 > 🏆 **Built for FETCH-A-THON 3.0** | Presidency University, Bengaluru  
 > *Organized by Fetch.ai, Innovation Lab by Fetch.ai, and Masters' Union*  
-> **Team ID:** `FETCHATHON3.0-8799` | **Team Lead:** BANDILA MADHAV | **Members:** LAKSHMI REDDY M S, KEERTHIPATI SATHYASREE, KHAMITHKAR SUPRITHA
+> **Team ID:** `FETCHATHON3.0-8799` | **Team Lead:** BANDILA MADHAV | **Members:** DIDDUKURI NIKHIL, KEERTHIPATI SATHYASREE, KHAMITHKAR SUPRITHA
 ### Problem Statement 1: AI Traffic Management, 108 CAD Emergency Response, Directional Pole Sirens, VRU Crosswalk Scramble, & Arterial Green Wave Corridor
 
 ---
