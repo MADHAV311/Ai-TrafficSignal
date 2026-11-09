@@ -3,7 +3,7 @@
  * Full WebGL hardware-accelerated 3D digital twin:
  * - PBR Metallic Shaders, ACES Filmic Tone Mapping, Soft Directional Sun Shadows
  * - Procedural 3D Vehicles (108 ALS Ambulance, Fire Engine, Buses, Auto-Rickshaws, Cars)
- * - 3D City Environment (Presidency Campus, Clock Tower, Skyscrapers, Hospital, Metro Viaduct)
+ * - 3D City Environment (University Campus, Clock Tower, Skyscrapers, Hospital, Metro Viaduct)
  * - 3D Cantilever Signal Gantries with Realistic LED Blooms & Ground Light Wash
  * - 3D Directional Corner Pole Sirens with Rotating Strobe Lights & Acoustic Shockwaves
  * - OrbitControls with 360° Mouse Drag, Zoom, Drone Orbit, Street Level, and 2D Plan Views
@@ -225,7 +225,7 @@ export class ThreeScene {
 
   // 3D Architectural Cityscape
   initCityArchitecture() {
-    // 1. NORTH-WEST: Presidency University Campus
+    // 1. NORTH-WEST: University Campus
     // Academic Complex
     const campusMat = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.7, metalness: 0.2 });
     const campusGeo = new THREE.BoxGeometry(160, 75, 120);

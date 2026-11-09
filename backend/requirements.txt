@@ -1,5 +1,5 @@
 # TrafficFlow-AI: Smart City Adaptive Traffic Signal Digital Twin & Multi-Agent Swarm
-# Built for FETCH-A-THON 3.0 & ASI:ONE AGENT CHALLENGE
+# TrafficFlow-AI Multi-Agent Swarm Dependencies
 # Python >= 3.10
 
 # Fetch.ai Multi-Agent Swarm & Agent Chat Protocol (ACP)

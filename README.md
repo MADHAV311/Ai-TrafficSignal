@@ -1,13 +1,9 @@
 # TrafficFlow-AI: Smart City Adaptive Traffic Signal Digital Twin & Multi-Agent Swarm
-![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
 ![Framework: Fetch.ai uAgents](https://img.shields.io/badge/Framework-Fetch.ai_uAgents-00D26A?logo=fetch.ai)
 ![Protocol: Fetch.ai A2A Typed Messages](https://img.shields.io/badge/Protocol-Fetch.ai_A2A_Typed_Messages-7952DE)
 ![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)
 
-> 🏆 **Built for FETCH-A-THON 3.0** | Presidency University, Bengaluru  
-> *Organized by Fetch.ai, Innovation Lab by Fetch.ai, and Masters' Union*  
-> **Team ID:** `FETCHATHON3.0-8799` | **Team Lead:** BANDILA MADHAV | **Members:** DIDDUKURI NIKHIL, KEERTHIPATI SATHYASREE, KHAMITHKAR SUPRITHA
-### Problem Statement 1: AI Traffic Management, 108 CAD Emergency Response, Directional Pole Sirens, VRU Crosswalk Scramble, & Arterial Green Wave Corridor
+> **Autonomous AI Traffic Management, 108 CAD Emergency Response, Directional Pole Sirens, VRU Crosswalk Scramble, & Arterial Green Wave Corridor**
 
 ---
 

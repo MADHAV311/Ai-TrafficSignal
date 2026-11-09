@@ -3,7 +3,7 @@
  * Features:
  * - 3D Perspective & Isometric Projection with Interactive 360° Orbit & Tilt
  * - 3D Extruded Vehicles: Metallic Chassis, Elevated Cabins, Wheels, Volumetric Headlights & Taillights
- * - 3D High-Rise Cityscape: Presidency University Campus, Clock Tower, Hospital Emergency Bay, Metro Viaduct
+ * - 3D High-Rise Cityscape: University Campus, Clock Tower, Hospital Emergency Bay, Metro Viaduct
  * - 3D Cantilever Traffic Signal Gantries with Hooded LED Optics & Ground Light Wash
  * - 3D Directional Corner Pole Sirens (Poles A-D) with Rotating Strobes & Acoustic Shockwaves
  * - 3D Pedestrians & Radiant Barnes Dance Crosswalks
@@ -500,7 +500,7 @@ export class Renderer3D {
 
   // 4. 3D Architectural Cityscape
   draw3DCityscape(ctx, sim, isSchool) {
-    // A. NORTH-WEST QUADRANT: Presidency University / Metro Campus
+    // A. NORTH-WEST QUADRANT: University / Metro Campus
     this.draw3DBox(ctx, -240, -220, 0, 160, 100, 75, 0, {
       body: '#831843', // deep brick red
       roof: '#9d174d',
