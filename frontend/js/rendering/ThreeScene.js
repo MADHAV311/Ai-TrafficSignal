@@ -43,7 +43,7 @@ export class ThreeScene {
     // Shared Geometry Pool (prevents garbage collection lag)
     this.geoPool = {
       busChassis: new THREE.BoxGeometry(54, 10, 17),
-      wheel: new THREE.CylinderGeometry(3.5, 3.5, 2.5, 12).rotateZ(Math.PI / 2),
+      wheel: new THREE.CylinderGeometry(3.5, 3.5, 2.5, 12).rotateX(Math.PI / 2),
       headlight: new THREE.BoxGeometry(1.6, 2.2, 2.8),
       taillight: new THREE.BoxGeometry(1.6, 2.2, 2.8),
       signalLens: new THREE.SphereGeometry(3.6, 16, 16),
@@ -559,49 +559,549 @@ export class ThreeScene {
     }
   }
 
-  // 3D City Architecture (Optimized Lambert materials for zero lag)
+  // 3D City Architecture (Architectural Landmarks & Skybridge Campus)
   initCityArchitecture() {
-    // 1. NORTH-WEST: University Campus
-    const campusMat = new THREE.MeshLambertMaterial({ color: 0x881337 });
-    const campus = new THREE.Mesh(new THREE.BoxGeometry(160, 75, 120), campusMat);
-    campus.position.set(-220, 37.5, -220);
-    this.scene.add(campus);
-
-    // Clock Tower
-    const towerMat = new THREE.MeshLambertMaterial({ color: 0x9f1239 });
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(45, 140, 45), towerMat);
-    tower.position.set(-145, 70, -145);
-    this.scene.add(tower);
-
-    // 2. NORTH-EAST: Glass High-Rise Skyscraper
-    const skyMat = new THREE.MeshLambertMaterial({ color: 0x0369a1 });
-    const sky = new THREE.Mesh(new THREE.BoxGeometry(130, 240, 130), skyMat);
-    sky.position.set(220, 120, -220);
-    this.scene.add(sky);
-
-    // 3. SOUTH-EAST: Trauma Center & Emergency Hospital
-    const hospMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
-    const hospital = new THREE.Mesh(new THREE.BoxGeometry(170, 65, 150), hospMat);
-    hospital.position.set(220, 32.5, 220);
-    this.scene.add(hospital);
-
-    // 3D Illuminated Red Cross on Hospital
-    const crossMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-    const c1 = new THREE.Mesh(new THREE.BoxGeometry(28, 6, 2), crossMat);
-    c1.position.set(220, 52, 144);
-    const c2 = new THREE.Mesh(new THREE.BoxGeometry(6, 28, 2), crossMat);
-    c2.position.set(220, 52, 144);
-    this.scene.add(c1);
-    this.scene.add(c2);
-
-    // 4. SOUTH-WEST: Metro Tech Park
-    const techMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
-    const tech = new THREE.Mesh(new THREE.BoxGeometry(150, 70, 130), techMat);
-    tech.position.set(-220, 35, 220);
-    this.scene.add(tech);
+    this.buildApexSkyscraper(220, -220);
+    this.buildHospitalCampus(220, 220);
+    this.buildUniversityCampus(-220, -220);
+    this.buildCyberTechPark(-220, 220);
 
     // 5. ELEVATED METRO VIADUCT
     this.initMetroViaduct();
+  }
+
+  // Landmark 1 (North-East): Apex Horizon Skyscraper (Glass & Aluminum Tower, Spandrels, Sky-Terrace, Crown & Spire)
+  buildApexSkyscraper(baseX, baseZ) {
+    const skyGroup = new THREE.Group();
+    skyGroup.position.set(baseX, 0, baseZ);
+
+    const graniteMat = new THREE.MeshLambertMaterial({ color: 0x0f172a }); // Dark granite foundation
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.85, roughness: 0.15 }); // Azure curtain glass
+    const warmGlassMat = new THREE.MeshBasicMaterial({ color: 0xfef08a }); // Illuminated office windows
+    const spandrelMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 }); // Brushed aluminum spandrels
+    const finMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 }); // White vertical structural fins
+    const canopyMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const steelColMat = new THREE.MeshStandardMaterial({ color: 0xcfd8dc, metalness: 0.7, roughness: 0.3 });
+    const hvacMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+    const ventMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+
+    // 1. Foundation Base Plinth
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(152, 4.0, 152), graniteMat);
+    plinth.position.set(0, 2.0, 0);
+    skyGroup.add(plinth);
+
+    // 2. Double-Height Glass Galleria Lobby (Y: 4 to 28, height 24)
+    const lobby = new THREE.Mesh(new THREE.BoxGeometry(138, 24, 138), glassMat);
+    lobby.position.set(0, 16, 0);
+    skyGroup.add(lobby);
+
+    // Lobby interior structural columns
+    for (const cx of [-55, 0, 55]) {
+      for (const cz of [-55, 55]) {
+        const col = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.0, 24, 8), steelColMat);
+        col.position.set(cx, 16, cz);
+        skyGroup.add(col);
+      }
+    }
+
+    // Grand Cantilevered Entrance Canopy (facing intersection at -Z / road side)
+    const canopy = new THREE.Mesh(new THREE.BoxGeometry(50, 3.0, 26), canopyMat);
+    canopy.position.set(0, 18, 76);
+    skyGroup.add(canopy);
+
+    for (const px of [-18, 18]) {
+      const pCol = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 18, 8), steelColMat);
+      pCol.position.set(px, 9, 86);
+      skyGroup.add(pCol);
+    }
+
+    // 3. Main Tower Shaft (Y: 28 to 168, height 140, 118x118)
+    const shaft = new THREE.Mesh(new THREE.BoxGeometry(118, 140, 118), glassMat);
+    shaft.position.set(0, 98, 0);
+    skyGroup.add(shaft);
+
+    // Horizontal Structural Aluminum Spandrels & Office Window Rows
+    for (let sy = 38; sy <= 160; sy += 15) {
+      const spandrel = new THREE.Mesh(new THREE.BoxGeometry(120.4, 2.2, 120.4), spandrelMat);
+      spandrel.position.set(0, sy, 0);
+      skyGroup.add(spandrel);
+
+      if (sy % 30 === 8 || sy === 83 || sy === 128) {
+        const winBand = new THREE.Mesh(new THREE.BoxGeometry(118.6, 3.8, 118.6), warmGlassMat);
+        winBand.position.set(0, sy - 5, 0);
+        skyGroup.add(winBand);
+      }
+    }
+
+    // Vertical Aerodynamic Corner Fins (full height of tower shaft)
+    for (const fx of [-59.5, 59.5]) {
+      for (const fz of [-59.5, 59.5]) {
+        const fin = new THREE.Mesh(new THREE.BoxGeometry(3.6, 142, 3.6), finMat);
+        fin.position.set(fx, 98, fz);
+        skyGroup.add(fin);
+      }
+    }
+
+    // 4. Setback Tier 2 (Floors 41-55: Y: 168 to 228, height 60, 88x88)
+    const terraceRail = new THREE.Mesh(new THREE.BoxGeometry(118, 2.4, 118), spandrelMat);
+    terraceRail.position.set(0, 169.2, 0);
+    skyGroup.add(terraceRail);
+
+    const upperShaft = new THREE.Mesh(new THREE.BoxGeometry(88, 60, 88), glassMat);
+    upperShaft.position.set(0, 198, 0);
+    skyGroup.add(upperShaft);
+
+    for (let uy = 178; uy <= 220; uy += 14) {
+      const uSpandrel = new THREE.Mesh(new THREE.BoxGeometry(90.2, 2.0, 90.2), spandrelMat);
+      uSpandrel.position.set(0, uy, 0);
+      skyGroup.add(uSpandrel);
+    }
+
+    // 5. Crown & Mechanical Penthouse (Y: 228 to 258, height 30, 64x64)
+    const crown = new THREE.Mesh(new THREE.BoxGeometry(64, 26, 64), graniteMat);
+    crown.position.set(0, 241, 0);
+    skyGroup.add(crown);
+
+    const crownGlow = new THREE.Mesh(new THREE.BoxGeometry(65.2, 2.4, 65.2), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+    crownGlow.position.set(0, 252, 0);
+    skyGroup.add(crownGlow);
+
+    // 4 Rooftop HVAC Chiller Towers
+    for (const hx of [-18, 18]) {
+      for (const hz of [-18, 18]) {
+        const hvac = new THREE.Mesh(new THREE.BoxGeometry(14, 8, 14), hvacMat);
+        hvac.position.set(hx, 258, hz);
+        skyGroup.add(hvac);
+
+        const fan = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 5.0, 1.2, 12), ventMat);
+        fan.position.set(hx, 262.5, hz);
+        skyGroup.add(fan);
+      }
+    }
+
+    // Elevator Overrun House
+    const elevatorHouse = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 26), spandrelMat);
+    elevatorHouse.position.set(0, 260, 0);
+    skyGroup.add(elevatorHouse);
+
+    // 6. Broadcast Spire with Red Aviation Warning Beacon
+    const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 2.4, 48, 8), steelColMat);
+    spire.position.set(0, 288, 0);
+    skyGroup.add(spire);
+
+    const beacon = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), beaconMat);
+    beacon.position.set(0, 312, 0);
+    skyGroup.add(beacon);
+
+    this.scene.add(skyGroup);
+  }
+
+  // Landmark 2 (South-East): St. Jude Trauma & Emergency Medical Center (ER Bay, Ribbon Louvers, 3D Red Crosses, Helipad)
+  buildHospitalCampus(baseX, baseZ) {
+    const hospGroup = new THREE.Group();
+    hospGroup.position.set(baseX, 0, baseZ);
+
+    const precastWhiteMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc }); // Precast white concrete
+    const slatePlinthMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const clinicalGlassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.6 });
+    const redAccentMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 });
+    const redGlowMat = new THREE.MeshBasicMaterial({ color: 0xef4444 }); // 3D Illuminated Red Cross
+    const louverMat = new THREE.MeshLambertMaterial({ color: 0xe2e8f0 });
+    const helipadDeckMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const helipadWhiteMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+    const helipadGreenMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+    const canopyMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const steelColMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.3 });
+
+    // 1. Foundation Base Plinth
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(176, 3.0, 156), slatePlinthMat);
+    plinth.position.set(0, 1.5, 0);
+    hospGroup.add(plinth);
+
+    // 2. Main Clinical Hospital Podium (Y: 3 to 55, height 52, 164x144)
+    const mainPodium = new THREE.Mesh(new THREE.BoxGeometry(164, 52, 144), precastWhiteMat);
+    mainPodium.position.set(0, 29, 0);
+    hospGroup.add(mainPodium);
+
+    // Continuous Horizontal Clinical Window Ribbons & Projecting Louvers (Brise-Soleil)
+    for (const wy of [14, 25, 36, 47]) {
+      const winRibbon = new THREE.Mesh(new THREE.BoxGeometry(165.2, 4.4, 145.2), clinicalGlassMat);
+      winRibbon.position.set(0, wy, 0);
+      hospGroup.add(winRibbon);
+
+      const louver = new THREE.Mesh(new THREE.BoxGeometry(167.0, 0.8, 147.0), louverMat);
+      louver.position.set(0, wy + 2.5, 0);
+      hospGroup.add(louver);
+    }
+
+    // Vertical Architectural Red Accent Reveals
+    for (const rx of [-40, 40]) {
+      const redFin = new THREE.Mesh(new THREE.BoxGeometry(3.0, 52, 145.4), redAccentMat);
+      redFin.position.set(rx, 29, 0);
+      hospGroup.add(redFin);
+    }
+
+    // 3. Emergency Trauma ER Ambulance Intake Bay (facing intersection towards -Z)
+    const erCanopy = new THREE.Mesh(new THREE.BoxGeometry(60, 3.2, 28), canopyMat);
+    erCanopy.position.set(0, 16, -78);
+    hospGroup.add(erCanopy);
+
+    for (const cx of [-24, 24]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 16, 8), steelColMat);
+      col.position.set(cx, 8, -90);
+      hospGroup.add(col);
+    }
+
+    // Illuminated "EMERGENCY" Signboard on ER Canopy Fascia
+    const erSign = new THREE.Mesh(new THREE.BoxGeometry(44, 3.4, 0.6), redGlowMat);
+    erSign.position.set(0, 16, -92.2);
+    hospGroup.add(erSign);
+
+    // Double automatic sliding trauma doors
+    const erDoors = new THREE.Mesh(new THREE.BoxGeometry(18, 9, 0.5), clinicalGlassMat);
+    erDoors.position.set(0, 6, -72.2);
+    hospGroup.add(erDoors);
+
+    // 4. Two Giant 3D Illuminated Red Crosses
+    // Cross 1: North Facade (facing intersection)
+    const c1H = new THREE.Mesh(new THREE.BoxGeometry(30, 7.0, 2.5), redGlowMat);
+    c1H.position.set(0, 40, -72.8);
+    const c1V = new THREE.Mesh(new THREE.BoxGeometry(7.0, 30, 2.5), redGlowMat);
+    c1V.position.set(0, 40, -72.8);
+    hospGroup.add(c1H);
+    hospGroup.add(c1V);
+
+    // Cross 2: West Facade (facing South approach road)
+    const c2H = new THREE.Mesh(new THREE.BoxGeometry(2.5, 7.0, 30), redGlowMat);
+    c2H.position.set(-82.8, 40, 0);
+    const c2V = new THREE.Mesh(new THREE.BoxGeometry(2.5, 30, 7.0), redGlowMat);
+    c2V.position.set(-82.8, 40, 0);
+    hospGroup.add(c2H);
+    hospGroup.add(c2V);
+
+    // 5. Inpatient Bed Ward Tower (Y: 55 to 87, height 32, 110x96)
+    const wardTower = new THREE.Mesh(new THREE.BoxGeometry(110, 32, 96), precastWhiteMat);
+    wardTower.position.set(0, 71, 0);
+    hospGroup.add(wardTower);
+
+    for (const wy of [64, 76]) {
+      const wardWin = new THREE.Mesh(new THREE.BoxGeometry(111.2, 4.0, 97.2), clinicalGlassMat);
+      wardWin.position.set(0, wy, 0);
+      hospGroup.add(wardWin);
+    }
+
+    // 6. Rooftop Trauma Heliport (Air Ambulance Landing Deck at Y: 88)
+    const padDeck = new THREE.Mesh(new THREE.CylinderGeometry(28, 30, 2.4, 16), helipadDeckMat);
+    padDeck.position.set(0, 88, 0);
+    hospGroup.add(padDeck);
+
+    // White Landing Circle Ring
+    const padRing = new THREE.Mesh(new THREE.RingGeometry(18, 20, 24).rotateX(-Math.PI / 2), helipadWhiteMat);
+    padRing.position.set(0, 89.3, 0);
+    hospGroup.add(padRing);
+
+    // Giant 3D "H" Helipad Marking in center
+    const hBar1 = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.2, 18), helipadWhiteMat);
+    hBar1.position.set(-6.5, 89.3, 0);
+    const hBar2 = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.2, 18), helipadWhiteMat);
+    hBar2.position.set(6.5, 89.3, 0);
+    const hCross = new THREE.Mesh(new THREE.BoxGeometry(10, 0.2, 3.6), helipadWhiteMat);
+    hCross.position.set(0, 89.3, 0);
+    hospGroup.add(hBar1);
+    hospGroup.add(hBar2);
+    hospGroup.add(hCross);
+
+    // 8 Green Perimeter Approach Lights
+    for (let a = 0; a < 8; a++) {
+      const ang = (Math.PI / 4) * a;
+      const lx = Math.cos(ang) * 27.5;
+      const lz = Math.sin(ang) * 27.5;
+      const pLight = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 6), helipadGreenMat);
+      pLight.position.set(lx, 89.6, lz);
+      hospGroup.add(pLight);
+    }
+
+    // Flight Operations Bulkhead & Elevator Penthouse
+    const flightOps = new THREE.Mesh(new THREE.BoxGeometry(22, 11, 18), slatePlinthMat);
+    flightOps.position.set(-36, 92.5, 24);
+    hospGroup.add(flightOps);
+
+    this.scene.add(hospGroup);
+  }
+
+  // Landmark 3 (North-West): Imperial Academy & 4-Faced Heritage Clock Tower
+  buildUniversityCampus(baseX, baseZ) {
+    const campusGroup = new THREE.Group();
+    campusGroup.position.set(baseX, 0, baseZ);
+
+    const brickMat = new THREE.MeshLambertMaterial({ color: 0x991b1b }); // Terracotta collegiate brick
+    const stoneMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 }); // Classical limestone trim
+    const slateRoofMat = new THREE.MeshLambertMaterial({ color: 0x334155 }); // Dark slate roof
+    const copperRoofMat = new THREE.MeshLambertMaterial({ color: 0x0f766e }); // Verdigris teal copper spire
+    const glassMat = new THREE.MeshLambertMaterial({ color: 0x1e3a8a, emissive: 0x172554, emissiveIntensity: 0.3 });
+    const clockFaceMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const clockHandMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+    const bellMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.3 });
+    const goldFinialMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+
+    // 1. Classical Academic Hall (Main Quad Wing)
+    const hallBase = new THREE.Mesh(new THREE.BoxGeometry(130, 6.0, 90), stoneMat);
+    hallBase.position.set(-20, 3.0, 0);
+    campusGroup.add(hallBase);
+
+    const hallBody = new THREE.Mesh(new THREE.BoxGeometry(124, 62, 84), brickMat);
+    hallBody.position.set(-20, 37, 0);
+    campusGroup.add(hallBody);
+
+    for (const cy of [20, 42, 68]) {
+      const cornice = new THREE.Mesh(new THREE.BoxGeometry(127, 2.0, 87), stoneMat);
+      cornice.position.set(-20, cy, 0);
+      campusGroup.add(cornice);
+    }
+
+    // Rows of Collegiate Windows
+    for (const wx of [-48, -24, 0, 24, 48]) {
+      for (const wy of [28, 52]) {
+        for (const wz of [-42.4, 42.4]) {
+          const win = new THREE.Mesh(new THREE.BoxGeometry(8, 12, 0.6), glassMat);
+          win.position.set(-20 + wx, wy, wz);
+          campusGroup.add(win);
+
+          const keystone = new THREE.Mesh(new THREE.BoxGeometry(10, 1.6, 1.2), stoneMat);
+          keystone.position.set(-20 + wx, wy + 7, wz);
+          campusGroup.add(keystone);
+        }
+      }
+    }
+
+    // Pitched Slate Mansard Roof on Academic Hall
+    const hallRoof = new THREE.Mesh(new THREE.BoxGeometry(120, 12, 80), slateRoofMat);
+    hallRoof.position.set(-20, 74, 0);
+    campusGroup.add(hallRoof);
+
+    // Classical Columned Portico Entrance
+    const porticoRoof = new THREE.Mesh(new THREE.BoxGeometry(36, 4.0, 18), stoneMat);
+    porticoRoof.position.set(-20, 26, 46);
+    campusGroup.add(porticoRoof);
+
+    for (const colX of [-12, -4, 4, 12]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 22, 10), stoneMat);
+      col.position.set(-20 + colX, 13, 50);
+      campusGroup.add(col);
+    }
+
+    // 2. Library / Lecture Wing
+    const libBody = new THREE.Mesh(new THREE.BoxGeometry(85, 54, 90), brickMat);
+    libBody.position.set(-60, 30, -60);
+    campusGroup.add(libBody);
+
+    const libRoof = new THREE.Mesh(new THREE.BoxGeometry(82, 10, 86), slateRoofMat);
+    libRoof.position.set(-60, 62, -60);
+    campusGroup.add(libRoof);
+
+    // ========================================================
+    // 3. ICONIC FOUR-FACED HERITAGE CLOCK TOWER (Commanding corner)
+    // Positioned at X = +70, Z = +70 relative to campus (world: -150, -150)
+    // ========================================================
+    const towerGroup = new THREE.Group();
+    towerGroup.position.set(70, 0, 70);
+
+    const tBase = new THREE.Mesh(new THREE.BoxGeometry(42, 8.0, 42), stoneMat);
+    tBase.position.set(0, 4.0, 0);
+    towerGroup.add(tBase);
+
+    const tShaft = new THREE.Mesh(new THREE.BoxGeometry(34, 122, 34), brickMat);
+    tShaft.position.set(0, 69, 0);
+    towerGroup.add(tShaft);
+
+    // Corner Stone Quoins (masonry corner teeth)
+    for (const qy of [20, 45, 70, 95, 120]) {
+      for (const qx of [-17.2, 17.2]) {
+        for (const qz of [-17.2, 17.2]) {
+          const quoin = new THREE.Mesh(new THREE.BoxGeometry(3.0, 6.0, 3.0), stoneMat);
+          quoin.position.set(qx, qy, qz);
+          towerGroup.add(quoin);
+        }
+      }
+    }
+
+    for (const cy of [50, 95, 130]) {
+      const tCornice = new THREE.Mesh(new THREE.BoxGeometry(38, 2.5, 38), stoneMat);
+      tCornice.position.set(0, cy, 0);
+      towerGroup.add(tCornice);
+    }
+
+    // Upper Clock Chamber (Y: 130 to 156, height 26, 38x38)
+    const clockChamber = new THREE.Mesh(new THREE.BoxGeometry(38, 26, 38), stoneMat);
+    clockChamber.position.set(0, 143, 0);
+    towerGroup.add(clockChamber);
+
+    // Four Giant Circular Clock Faces
+    const clockOffsets = [
+      { x: 0, z: 19.3, rotY: 0 },
+      { x: 0, z: -19.3, rotY: Math.PI },
+      { x: 19.3, z: 0, rotY: Math.PI / 2 },
+      { x: -19.3, z: 0, rotY: -Math.PI / 2 }
+    ];
+
+    for (const cOff of clockOffsets) {
+      const bezel = new THREE.Mesh(
+        new THREE.CylinderGeometry(7.5, 7.5, 0.4, 24).rotateX(Math.PI / 2),
+        stoneMat
+      );
+      bezel.position.set(cOff.x, 143, cOff.z);
+      bezel.rotation.y = cOff.rotY;
+      towerGroup.add(bezel);
+
+      const dial = new THREE.Mesh(
+        new THREE.CylinderGeometry(6.4, 6.4, 0.5, 24).rotateX(Math.PI / 2),
+        clockFaceMat
+      );
+      dial.position.set(cOff.x, 143, cOff.z);
+      dial.rotation.y = cOff.rotY;
+      towerGroup.add(dial);
+
+      const hHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 3.2, 0.6), clockHandMat);
+      hHand.position.set(cOff.x, 144, cOff.z);
+      hHand.rotation.z = 0.55;
+      hHand.rotation.y = cOff.rotY;
+      towerGroup.add(hHand);
+
+      const mHand = new THREE.Mesh(new THREE.BoxGeometry(0.4, 4.4, 0.6), clockHandMat);
+      mHand.position.set(cOff.x, 144.5, cOff.z);
+      mHand.rotation.z = -0.55;
+      mHand.rotation.y = cOff.rotY;
+      towerGroup.add(mHand);
+    }
+
+    // Open-Arched Belfry / Bell Chamber
+    const belfryPillars = new THREE.Mesh(new THREE.BoxGeometry(34, 14, 34), stoneMat);
+    belfryPillars.position.set(0, 163, 0);
+    towerGroup.add(belfryPillars);
+
+    const bell = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 4.8, 6.5, 12), bellMat);
+    bell.position.set(0, 162, 0);
+    towerGroup.add(bell);
+
+    // Steep Pyramidal Copper/Verdigris Spire Roof
+    const spireRoof = new THREE.Mesh(
+      new THREE.ConeGeometry(20, 28, 4).rotateY(Math.PI / 4),
+      copperRoofMat
+    );
+    spireRoof.position.set(0, 184, 0);
+    towerGroup.add(spireRoof);
+
+    // Golden Weathervane Finial
+    const weathervaneRod = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8.0, 8), goldFinialMat);
+    weathervaneRod.position.set(0, 201, 0);
+    towerGroup.add(weathervaneRod);
+
+    const weathervaneOrb = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8), goldFinialMat);
+    weathervaneOrb.position.set(0, 205, 0);
+    towerGroup.add(weathervaneOrb);
+
+    campusGroup.add(towerGroup);
+    this.scene.add(campusGroup);
+  }
+
+  // Landmark 4 (South-West): CyberTech Innovation Hub (Dual Towers, Suspended Glass Skybridge, Solar Arrays)
+  buildCyberTechPark(baseX, baseZ) {
+    const techGroup = new THREE.Group();
+    techGroup.position.set(baseX, 0, baseZ);
+
+    const titaniumMat = new THREE.MeshLambertMaterial({ color: 0x0f172a }); // Matte titanium composite
+    const slateTrimMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const smartGlassMat = new THREE.MeshStandardMaterial({ color: 0x0e7490, metalness: 0.8, roughness: 0.2 });
+    const cyanNeonMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 }); // Smart-city cyan LED neon glow
+    const warmLobbyMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+    const solarMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.85, roughness: 0.2 });
+    const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.3 });
+
+    // 1. Foundation Base Plinth
+    const techPlinth = new THREE.Mesh(new THREE.BoxGeometry(164, 3.0, 144), slateTrimMat);
+    techPlinth.position.set(-10, 1.5, 0);
+    techGroup.add(techPlinth);
+
+    // 2. Tower 1 (West Wing: X = -50, width 68, depth 84, height 95)
+    const t1Body = new THREE.Mesh(new THREE.BoxGeometry(68, 95, 84), titaniumMat);
+    t1Body.position.set(-50, 50.5, 0);
+    techGroup.add(t1Body);
+
+    for (const wy of [20, 36, 52, 68, 84]) {
+      const win1 = new THREE.Mesh(new THREE.BoxGeometry(69.2, 4.6, 85.2), smartGlassMat);
+      win1.position.set(-50, wy, 0);
+      techGroup.add(win1);
+
+      const neon1 = new THREE.Mesh(new THREE.BoxGeometry(69.6, 0.6, 85.6), cyanNeonMat);
+      neon1.position.set(-50, wy + 2.8, 0);
+      techGroup.add(neon1);
+    }
+
+    // 3. Tower 2 (East Wing facing intersection: X = +28, width 62, depth 84, height 125)
+    const t2Body = new THREE.Mesh(new THREE.BoxGeometry(62, 125, 84), titaniumMat);
+    t2Body.position.set(28, 65.5, 0);
+    techGroup.add(t2Body);
+
+    for (const wy of [20, 36, 52, 68, 84, 100, 116]) {
+      const win2 = new THREE.Mesh(new THREE.BoxGeometry(63.2, 4.6, 85.2), smartGlassMat);
+      win2.position.set(28, wy, 0);
+      techGroup.add(win2);
+
+      const neon2 = new THREE.Mesh(new THREE.BoxGeometry(63.6, 0.6, 85.6), cyanNeonMat);
+      neon2.position.set(28, wy + 2.8, 0);
+      techGroup.add(neon2);
+    }
+
+    // 4. SUSPENDED ARCHITECTURAL GLASS SKYBRIDGE
+    const bridgeX = -11;
+    const bridgeY = 60;
+    const skybridge = new THREE.Mesh(new THREE.BoxGeometry(32, 12, 22), smartGlassMat);
+    skybridge.position.set(bridgeX, bridgeY, 0);
+    techGroup.add(skybridge);
+
+    const bTop = new THREE.Mesh(new THREE.BoxGeometry(33, 1.2, 23), slateTrimMat);
+    bTop.position.set(bridgeX, bridgeY + 6.2, 0);
+    const bBot = new THREE.Mesh(new THREE.BoxGeometry(33, 1.2, 23), slateTrimMat);
+    bBot.position.set(bridgeX, bridgeY - 6.2, 0);
+    techGroup.add(bTop);
+    techGroup.add(bBot);
+
+    const bGlow = new THREE.Mesh(new THREE.BoxGeometry(31, 8.0, 20), warmLobbyMat);
+    bGlow.position.set(bridgeX, bridgeY, 0);
+    techGroup.add(bGlow);
+
+    const bNeon1 = new THREE.Mesh(new THREE.BoxGeometry(33.2, 0.5, 23.2), cyanNeonMat);
+    bNeon1.position.set(bridgeX, bridgeY + 6.5, 0);
+    techGroup.add(bNeon1);
+
+    // 5. Rooftop Photovoltaic Solar Arrays on Tower 1
+    for (const sx of [-65, -45, -25]) {
+      const panel = new THREE.Mesh(
+        new THREE.BoxGeometry(14, 0.8, 26).rotateX(0.25),
+        solarMat
+      );
+      panel.position.set(sx, 100, 0);
+      techGroup.add(panel);
+    }
+
+    // 6. Rooftop Satellite Microwave Dish on Tower 2
+    const dishMast = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.0, 10, 8), steelMat);
+    dishMast.position.set(28, 133, -15);
+    techGroup.add(dishMast);
+
+    const dish = new THREE.Mesh(
+      new THREE.CylinderGeometry(6.0, 1.0, 2.5, 16).rotateZ(0.6),
+      steelMat
+    );
+    dish.position.set(28, 139, -15);
+    techGroup.add(dish);
+
+    const t2Pent = new THREE.Mesh(new THREE.BoxGeometry(28, 12, 34), slateTrimMat);
+    t2Pent.position.set(28, 134, 15);
+    techGroup.add(t2Pent);
+
+    this.scene.add(techGroup);
   }
 
   initMetroViaduct() {
@@ -1229,7 +1729,7 @@ export class ThreeScene {
       w.position.set(ox, radius, oz);
       group.add(w);
       if (hubColor !== null && hubColor !== undefined) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 2.6, 8).rotateZ(Math.PI / 2), new THREE.MeshLambertMaterial({ color: hubColor }));
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 2.6, 8).rotateX(Math.PI / 2), new THREE.MeshLambertMaterial({ color: hubColor }));
         cap.position.set(ox, radius, oz);
         group.add(cap);
       }
@@ -1330,7 +1830,7 @@ export class ThreeScene {
       const w = new THREE.Mesh(this.geoPool.wheel, this.matPool.wheel);
       w.position.set(wx, 3.5, wz);
       group.add(w);
-      const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2.6, 8).rotateZ(Math.PI / 2), this.matPool.steel);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2.6, 8).rotateX(Math.PI / 2), this.matPool.steel);
       cap.position.set(wx, 3.5, wz);
       group.add(cap);
     }
@@ -1600,7 +2100,7 @@ export class ThreeScene {
       const w = new THREE.Mesh(this.geoPool.wheel, this.matPool.wheel);
       w.position.set(wx, 3.5, wz);
       group.add(w);
-      const redCap = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 2.6, 8).rotateZ(Math.PI / 2), redMat);
+      const redCap = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 2.6, 8).rotateX(Math.PI / 2), redMat);
       redCap.position.set(wx, 3.5, wz);
       group.add(redCap);
     }
@@ -1672,16 +2172,27 @@ export class ThreeScene {
     }
 
     // 5. 3 Wheels (Single Centered Front Wheel + Dual Rear Wheels)
-    const frontWheel = new THREE.Mesh(new THREE.CylinderGeometry(2.8, 2.8, 2.0, 10).rotateZ(Math.PI / 2), this.matPool.wheel);
+    const frontWheel = new THREE.Mesh(new THREE.CylinderGeometry(2.8, 2.8, 2.0, 12).rotateX(Math.PI / 2), this.matPool.wheel);
     frontWheel.position.set(8.5, 2.8, 0);
     group.add(frontWheel);
+
+    const fCap = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 2.2, 8).rotateX(Math.PI / 2), this.matPool.steel);
+    fCap.position.set(8.5, 2.8, 0);
+    group.add(fCap);
 
     const rearW1 = new THREE.Mesh(this.geoPool.wheel, this.matPool.wheel);
     rearW1.position.set(-6.5, 3.5, 6.8);
     group.add(rearW1);
+    const rCap1 = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 2.6, 8).rotateX(Math.PI / 2), this.matPool.steel);
+    rCap1.position.set(-6.5, 3.5, 6.8);
+    group.add(rCap1);
+
     const rearW2 = new THREE.Mesh(this.geoPool.wheel, this.matPool.wheel);
     rearW2.position.set(-6.5, 3.5, -6.8);
     group.add(rearW2);
+    const rCap2 = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 2.6, 8).rotateX(Math.PI / 2), this.matPool.steel);
+    rCap2.position.set(-6.5, 3.5, -6.8);
+    group.add(rCap2);
 
     // 6. Round Front Headlight & Rear Taillights
     const hl = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 12), this.matPool.headlight);
@@ -1811,6 +2322,9 @@ export class ThreeScene {
       const w = new THREE.Mesh(this.geoPool.wheel, this.matPool.wheel);
       w.position.set(wx, 3.5, wz);
       group.add(w);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2.6, 8).rotateX(Math.PI / 2), this.matPool.steel);
+      cap.position.set(wx, 3.5, wz);
+      group.add(cap);
     }
 
     // 4. Lights
