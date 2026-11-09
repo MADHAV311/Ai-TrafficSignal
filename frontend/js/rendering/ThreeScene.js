@@ -617,15 +617,606 @@ export class ThreeScene {
       this.scene.add(p);
     }
 
+    // Concrete Viaduct Deck
     const deck = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 6, 22), concreteMat);
     deck.position.set(0, deckY, viaductZ);
     this.scene.add(deck);
 
-    // Metro Train
-    const trainMat = new THREE.MeshLambertMaterial({ color: 0x0284c7 });
-    this.metroTrain = new THREE.Mesh(new THREE.BoxGeometry(110, 16, 16), trainMat);
-    this.metroTrain.position.set(this.metroX, deckY + 11, viaductZ);
+    // North & South Concrete Parapets / Crash Barrier Guardwalls
+    const parapetMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+    const railHandMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+    for (const zOffset of [-10.3, 10.3]) {
+      const parapet = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 3.8, 1.4), parapetMat);
+      parapet.position.set(0, deckY + 4.9, viaductZ + zOffset);
+      this.scene.add(parapet);
+
+      const handrail = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.4, 0.8), railHandMat);
+      handrail.position.set(0, deckY + 7.0, viaductZ + zOffset);
+      this.scene.add(handrail);
+    }
+
+    // Track Plinth (Continuous Concrete Trackbed)
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.8, 14), new THREE.MeshLambertMaterial({ color: 0x334155 }));
+    plinth.position.set(0, deckY + 3.4, viaductZ);
+    this.scene.add(plinth);
+
+    // Twin Steel Running Rails
+    const steelRailMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.85, roughness: 0.25 });
+    const railNorth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.7, 0.6), steelRailMat);
+    railNorth.position.set(0, deckY + 4.15, viaductZ - 3.8);
+    this.scene.add(railNorth);
+
+    const railSouth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.7, 0.6), steelRailMat);
+    railSouth.position.set(0, deckY + 4.15, viaductZ + 3.8);
+    this.scene.add(railSouth);
+
+    // Third Rail (750V DC Power Supply Rail with High-Vis Yellow Cover)
+    const thirdRail = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.65, 0.5), new THREE.MeshLambertMaterial({ color: 0xf59e0b }));
+    thirdRail.position.set(0, deckY + 4.25, viaductZ + 5.5);
+    this.scene.add(thirdRail);
+
+    // Overhead Catenary System (Electrification Masts & Suspended Contact Wires)
+    const mastMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+    const armMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+    const insulatorMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
+    const wireMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+    const mastPositions = [-500, -375, -250, -125, 0, 125, 250, 375, 500];
+
+    for (const mx of mastPositions) {
+      // Vertical Mast on south deck edge
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.9, 23, 6), mastMat);
+      mast.position.set(mx, deckY + 3.0 + 11.5, viaductZ + 10.3);
+      this.scene.add(mast);
+
+      // Horizontal Cantilever Arm reaching over the tracks
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 11), armMat);
+      arm.position.set(mx, deckY + 25.5, viaductZ + 5.0);
+      this.scene.add(arm);
+
+      // Vertical Insulator Dropper
+      const insulator = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 2.4, 6), insulatorMat);
+      insulator.position.set(mx, deckY + 24.0, viaductZ);
+      this.scene.add(insulator);
+    }
+
+    // Continuous Overhead Catenary Contact Wire (skims pantograph)
+    const contactWire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, span * 2, 4).rotateZ(Math.PI / 2),
+      wireMat
+    );
+    contactWire.position.set(0, deckY + 22.8, viaductZ);
+    this.scene.add(contactWire);
+
+    // Upper Messenger Suspension Cable
+    const messengerWire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.07, span * 2, 4).rotateZ(Math.PI / 2),
+      armMat
+    );
+    messengerWire.position.set(0, deckY + 25.5, viaductZ);
+    this.scene.add(messengerWire);
+
+    // High-Fidelity 3-Car Articulated Metro EMU Trainset
+    this.metroTrain = this.buildMetroTrainset();
+    this.metroTrain.position.set(this.metroX, deckY, viaductZ);
     this.scene.add(this.metroTrain);
+  }
+
+  // Constructs an articulated 3-car high-speed Metro EMU trainset:
+  // Car 1 (Lead DMC): Aerodynamic bullet wedge nose, driver windscreen, headlights, amber LED route sign, forward track light
+  // Car 2 (Mid Trailer): Passenger saloon, continuous windows, sliding doors with yellow trim, rooftop diamond pantograph
+  // Car 3 (Trail DMC): Aerodynamic rear bullet nose, dual red marker taillights, driver windscreen, amber route sign
+  // Inter-car Gangways: Articulated black rubber accordion bellows
+  // Undercarriage: 6 two-axle bogies with 24 steel flanged train wheels, traction equipment & air reservoirs
+  buildMetroTrainset() {
+    const trainGroup = new THREE.Group();
+
+    // 1. Shared Train Materials
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.15 });
+    const stripeMat = new THREE.MeshLambertMaterial({ color: 0x0284c7 }); // Electric Cyan / Transit Blue
+    const pinstripeMat = new THREE.MeshLambertMaterial({ color: 0x38bdf8 }); // Sky blue secondary accent
+    const darkSkirtMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Slate 800 lower chassis
+    const windowMat = new THREE.MeshLambertMaterial({ color: 0x0a1128, emissive: 0x1e3a8a, emissiveIntensity: 0.2 }); // Glossy tinted glass
+    const doorMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3, metalness: 0.4 }); // Stainless steel
+    const doorYellowMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 }); // Safety yellow warning threshold
+    const roofMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 }); // Slate 400 roof cap
+    const hvacMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+    const ventMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const bogieMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.85, roughness: 0.2 });
+    const pantoArmMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 }); // Vibrant signal red
+    const carbonMat = new THREE.MeshLambertMaterial({ color: 0x0f172a }); // Dark carbon contact strip
+    const ceramicMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 }); // White ceramic insulator
+    const headlightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const taillightMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    const destSignMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b }); // Amber LED matrix
+    const bellowsMat = new THREE.MeshLambertMaterial({ color: 0x0f172a }); // Matte black accordion
+    const ribMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+
+    // Helper: Build a 2-axle undercarriage bogie with 4 flanged steel wheels
+    const addBogie = (parent, bogieX) => {
+      const bogie = new THREE.Group();
+      bogie.position.set(bogieX, 0, 0);
+
+      // Steel bolster frame
+      const bolster = new THREE.Mesh(new THREE.BoxGeometry(8.6, 1.2, 9.4), bogieMat);
+      bolster.position.set(0, 6.8, 0);
+      bogie.add(bolster);
+
+      // Side frames & suspension air springs
+      for (const sz of [-4.5, 4.5]) {
+        const sideFrame = new THREE.Mesh(new THREE.BoxGeometry(8.2, 1.4, 0.8), bogieMat);
+        sideFrame.position.set(0, 6.6, sz);
+        bogie.add(sideFrame);
+
+        const spring = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.8, 8), darkSkirtMat);
+        spring.position.set(0, 7.3, sz);
+        bogie.add(spring);
+      }
+
+      // 2 Axles with flanged steel train wheels
+      for (const ax of [-2.6, 2.6]) {
+        const axle = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.3, 0.3, 8.2, 8).rotateX(Math.PI / 2),
+          darkSkirtMat
+        );
+        axle.position.set(ax, 6.3, 0);
+        bogie.add(axle);
+
+        for (const wz of [-3.8, 3.8]) {
+          // Wheel tread riding on rail
+          const wheel = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.8, 1.8, 0.7, 12).rotateX(Math.PI / 2),
+            wheelMat
+          );
+          wheel.position.set(ax, 6.3, wz);
+          bogie.add(wheel);
+
+          // Inner wheel safety flange
+          const flangeZ = wz > 0 ? wz - 0.42 : wz + 0.42;
+          const flange = new THREE.Mesh(
+            new THREE.CylinderGeometry(2.1, 2.1, 0.16, 12).rotateX(Math.PI / 2),
+            wheelMat
+          );
+          flange.position.set(ax, 6.3, flangeZ);
+          bogie.add(flange);
+
+          // Hubcap
+          const hub = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.55, 0.55, 0.85, 8).rotateX(Math.PI / 2),
+            bogieMat
+          );
+          hub.position.set(ax, 6.3, wz);
+          bogie.add(hub);
+        }
+      }
+
+      parent.add(bogie);
+    };
+
+    // Helper: Underfloor electrical equipment & air reservoir tanks
+    const addUnderfloor = (parent, startX, endX) => {
+      const midX = (startX + endX) / 2;
+      const len = Math.abs(endX - startX);
+      const eqBox = new THREE.Mesh(new THREE.BoxGeometry(len, 1.6, 6.0), darkSkirtMat);
+      eqBox.position.set(midX, 5.6, 0);
+      parent.add(eqBox);
+
+      // Compressed air cylinders
+      const tank1 = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.85, 0.85, len * 0.8, 8).rotateZ(Math.PI / 2),
+        ventMat
+      );
+      tank1.position.set(midX, 5.6, 3.8);
+      parent.add(tank1);
+    };
+
+    // Helper: Rooftop HVAC climate control module
+    const addHvac = (parent, hvacX) => {
+      const hvac = new THREE.Mesh(new THREE.BoxGeometry(6.4, 1.3, 6.0), hvacMat);
+      hvac.position.set(hvacX, 18.25, 0);
+      parent.add(hvac);
+
+      // Fan grilles on top
+      for (const fx of [-1.8, 1.8]) {
+        const fan = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.2, 10), ventMat);
+        fan.position.set(hvacX + fx, 18.95, 0);
+        parent.add(fan);
+      }
+    };
+
+    // Helper: Windows, Passenger Doors & Livery Stripes on coach saloon
+    const addCoachFixtures = (parent, len, isTrailer) => {
+      // Lower dark skirt
+      const skirt = new THREE.Mesh(new THREE.BoxGeometry(len, 1.4, 10.9), darkSkirtMat);
+      skirt.position.set(0, 7.7, 0);
+      parent.add(skirt);
+
+      // Speed stripe along body waistline
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(len, 1.1, 11.16), stripeMat);
+      stripe.position.set(0, 9.4, 0);
+      parent.add(stripe);
+
+      // Secondary sky blue thin stripe
+      const pinstripe = new THREE.Mesh(new THREE.BoxGeometry(len, 0.35, 11.16), pinstripeMat);
+      pinstripe.position.set(0, 15.6, 0);
+      parent.add(pinstripe);
+
+      // Tinted window ribbon on both sides
+      const winLen = len - 4;
+      for (const wz of [-5.53, 5.53]) {
+        const winBand = new THREE.Mesh(new THREE.BoxGeometry(winLen, 2.8, 0.18), windowMat);
+        winBand.position.set(0, 12.8, wz);
+        parent.add(winBand);
+
+        // Window mullion vertical dividers
+        const numPillars = Math.floor(winLen / 4.5);
+        for (let i = 0; i <= numPillars; i++) {
+          const px = -winLen / 2 + (winLen / numPillars) * i;
+          const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.35, 2.8, 0.22), bodyMat);
+          pillar.position.set(px, 12.8, wz);
+          parent.add(pillar);
+        }
+      }
+
+      // Passenger Sliding Doors (2 pairs per side)
+      const doorOffsets = isTrailer ? [-9.0, 9.0] : [-5.0, 5.0];
+      for (const dx of doorOffsets) {
+        for (const dz of [-5.55, 5.55]) {
+          // Stainless steel door leaves
+          const door = new THREE.Mesh(new THREE.BoxGeometry(3.2, 6.2, 0.2), doorMat);
+          door.position.set(dx, 11.1, dz);
+          parent.add(door);
+
+          // Center door rubber seam
+          const seam = new THREE.Mesh(new THREE.BoxGeometry(0.12, 6.2, 0.24), darkSkirtMat);
+          seam.position.set(dx, 11.1, dz);
+          parent.add(seam);
+
+          // Door window inserts
+          for (const leafX of [-0.8, 0.8]) {
+            const dw = new THREE.Mesh(new THREE.BoxGeometry(0.9, 2.4, 0.24), windowMat);
+            dw.position.set(dx + leafX, 12.8, dz);
+            parent.add(dw);
+          }
+
+          // High-visibility yellow threshold strip
+          const threshold = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.25, 0.26), doorYellowMat);
+          threshold.position.set(dx, 8.1, dz);
+          parent.add(threshold);
+        }
+      }
+
+      // Rooftop curved cap
+      const roofCap = new THREE.Mesh(new THREE.BoxGeometry(len, 1.0, 10.4), roofMat);
+      roofCap.position.set(0, 17.8, 0);
+      parent.add(roofCap);
+    };
+
+    // Helper: Build Accordion Gangway Bellows between coaches
+    const addGangway = (gx) => {
+      const gangway = new THREE.Group();
+      gangway.position.set(gx, 0, 0);
+
+      // Black rubber bellows body
+      const bellows = new THREE.Mesh(new THREE.BoxGeometry(9.6, 8.8, 9.4), bellowsMat);
+      bellows.position.set(0, 12.6, 0);
+      gangway.add(bellows);
+
+      // Accordion convolutions / ribs
+      for (const rx of [-3.2, 0, 3.2]) {
+        const rib = new THREE.Mesh(new THREE.BoxGeometry(0.5, 9.2, 9.8), ribMat);
+        rib.position.set(rx, 12.6, 0);
+        gangway.add(rib);
+      }
+
+      // Footplate coupler link
+      const footplate = new THREE.Mesh(new THREE.BoxGeometry(9.8, 0.4, 5.0), darkSkirtMat);
+      footplate.position.set(0, 7.8, 0);
+      gangway.add(footplate);
+
+      trainGroup.add(gangway);
+    };
+
+    // ==========================================
+    // CAR 1: LEAD DRIVING MOTOR CAR (+X Facing)
+    // ==========================================
+    const leadCar = new THREE.Group();
+    leadCar.position.set(46, 0, 0);
+
+    // Saloon main body (X from -17 to +10, length 27)
+    const leadBody = new THREE.Mesh(new THREE.BoxGeometry(27, 9.6, 11.0), bodyMat);
+    leadBody.position.set(-3.5, 12.6, 0);
+    leadCar.add(leadBody);
+
+    // Saloon fixtures
+    const leadSaloonGroup = new THREE.Group();
+    leadSaloonGroup.position.set(-3.5, 0, 0);
+    addCoachFixtures(leadSaloonGroup, 27, false);
+    leadCar.add(leadSaloonGroup);
+
+    // Aerodynamic Streamlined Bullet Nosecone (Facing +X)
+    // Tier 1: Cab lower skirt & deflector
+    const cabBase = new THREE.Mesh(new THREE.BoxGeometry(6.0, 3.4, 10.6), bodyMat);
+    cabBase.position.set(13.0, 9.5, 0);
+    leadCar.add(cabBase);
+
+    const cabSkirt = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.4, 10.6), darkSkirtMat);
+    cabSkirt.position.set(13.0, 7.7, 0);
+    leadCar.add(cabSkirt);
+
+    const cabStripe = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.1, 10.7), stripeMat);
+    cabStripe.position.set(13.0, 9.4, 0);
+    leadCar.add(cabStripe);
+
+    // Tier 2: Mid-wedge nose
+    const noseMid = new THREE.Mesh(new THREE.BoxGeometry(5.0, 4.0, 9.0), bodyMat);
+    noseMid.position.set(17.5, 9.6, 0);
+    leadCar.add(noseMid);
+
+    const noseMidStripe = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.1, 9.1), stripeMat);
+    noseMidStripe.position.set(17.5, 9.4, 0);
+    leadCar.add(noseMidStripe);
+
+    // Tier 3: Extreme aerodynamic nose tip
+    const noseTip = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.6, 7.0), bodyMat);
+    noseTip.position.set(20.5, 9.2, 0);
+    leadCar.add(noseTip);
+
+    // Obstacle deflector plow / cowcatcher
+    const plow = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.4, 8.4), darkSkirtMat);
+    plow.position.set(19.0, 6.0, 0);
+    leadCar.add(plow);
+
+    // Sloped Driver Windshield (angled 30 degrees)
+    const windshield = new THREE.Mesh(
+      new THREE.BoxGeometry(4.8, 3.8, 8.6).rotateZ(-0.55),
+      windowMat
+    );
+    windshield.position.set(14.8, 14.2, 0);
+    leadCar.add(windshield);
+
+    // Cab sloped roof cap
+    const cabRoof = new THREE.Mesh(
+      new THREE.BoxGeometry(5.5, 1.2, 9.2).rotateZ(-0.3),
+      roofMat
+    );
+    cabRoof.position.set(13.5, 17.0, 0);
+    leadCar.add(cabRoof);
+
+    // Amber LED Destination Display ("METRO RAPID")
+    const destSign = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.3, 5.2), destSignMat);
+    destSign.position.set(17.0, 16.2, 0);
+    leadCar.add(destSign);
+
+    // Dual Projector Headlights
+    for (const hlz of [-2.6, 2.6]) {
+      const hlHousing = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.85, 0.85, 0.4, 12).rotateZ(Math.PI / 2),
+        darkSkirtMat
+      );
+      hlHousing.position.set(21.8, 9.6, hlz);
+      leadCar.add(hlHousing);
+
+      const hlLens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.65, 0.45, 12).rotateZ(Math.PI / 2),
+        headlightMat
+      );
+      hlLens.position.set(21.95, 9.6, hlz);
+      leadCar.add(hlLens);
+    }
+
+    // High-beam center marker
+    const highBeam = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.45, 0.45, 0.4, 10).rotateZ(Math.PI / 2),
+      headlightMat
+    );
+    highBeam.position.set(16.5, 17.4, 0);
+    leadCar.add(highBeam);
+
+    // Forward Track Illumination Light
+    const trackLight = new THREE.PointLight(0xfff7ed, 1.2, 120);
+    trackLight.position.set(23, 9.6, 0);
+    leadCar.add(trackLight);
+
+    // Undercarriage Bogies, Equipment & Roof HVAC
+    addBogie(leadCar, -8);
+    addBogie(leadCar, 8);
+    addUnderfloor(leadCar, -4, 4);
+    addHvac(leadCar, -6);
+    addHvac(leadCar, 6);
+
+    trainGroup.add(leadCar);
+
+    // ==========================================
+    // INTER-CAR GANGWAY 1 (Between Lead & Mid)
+    // ==========================================
+    addGangway(24);
+
+    // ==========================================
+    // CAR 2: MIDDLE TRAILER COACH (Pantograph)
+    // ==========================================
+    const midCar = new THREE.Group();
+    midCar.position.set(0, 0, 0);
+
+    const midBody = new THREE.Mesh(new THREE.BoxGeometry(38, 9.6, 11.0), bodyMat);
+    midBody.position.set(0, 12.6, 0);
+    midCar.add(midBody);
+
+    addCoachFixtures(midCar, 38, true);
+    addBogie(midCar, -11);
+    addBogie(midCar, 11);
+    addUnderfloor(midCar, -6, 6);
+    addHvac(midCar, -11);
+    addHvac(midCar, 11);
+
+    // Rooftop Diamond / Z-Shaped Articulated Pantograph
+    const pantoGroup = new THREE.Group();
+    pantoGroup.position.set(0, 17.8, 0);
+
+    // Base frame
+    const pantoBase = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.35, 4.6), darkSkirtMat);
+    pantoBase.position.set(0, 0.2, 0);
+    pantoGroup.add(pantoBase);
+
+    // 4 Corner Insulator Standoffs
+    for (const px of [-2.0, 2.0]) {
+      for (const pz of [-1.6, 1.6]) {
+        const ins = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.8, 8), ceramicMat);
+        ins.position.set(px, 0.45, pz);
+        pantoGroup.add(ins);
+      }
+    }
+
+    // Lower Pantograph Articulated Arm (angled back)
+    const lowerArm = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.2, 3.4, 6).rotateZ(0.55),
+      pantoArmMat
+    );
+    lowerArm.position.set(-0.8, 2.0, 0);
+    pantoGroup.add(lowerArm);
+
+    // Upper Pantograph Articulated Arm (angled forward up to contact wire)
+    const upperArm = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.16, 0.18, 3.6, 6).rotateZ(-0.6),
+      pantoArmMat
+    );
+    upperArm.position.set(0.6, 3.8, 0);
+    pantoGroup.add(upperArm);
+
+    // Carbon Contact Collector Shoe Crosshead (touches wire at Y = 22.8)
+    const shoe = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.3, 7.4), carbonMat);
+    shoe.position.set(1.5, 5.0, 0);
+    pantoGroup.add(shoe);
+
+    // Safety curved horn ends
+    for (const hz of [-3.7, 3.7]) {
+      const horn = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6, 0.5, 0.8).rotateX(hz > 0 ? -0.4 : 0.4),
+        pantoArmMat
+      );
+      horn.position.set(1.5, 4.8, hz);
+      pantoGroup.add(horn);
+    }
+
+    midCar.add(pantoGroup);
+    trainGroup.add(midCar);
+
+    // ==========================================
+    // INTER-CAR GANGWAY 2 (Between Mid & Trail)
+    // ==========================================
+    addGangway(-24);
+
+    // ==========================================
+    // CAR 3: TRAILING MOTOR CAR (-X Facing)
+    // ==========================================
+    const trailCar = new THREE.Group();
+    trailCar.position.set(-46, 0, 0);
+
+    // Saloon main body (X from -10 to +17, length 27)
+    const trailBody = new THREE.Mesh(new THREE.BoxGeometry(27, 9.6, 11.0), bodyMat);
+    trailBody.position.set(3.5, 12.6, 0);
+    trailCar.add(trailBody);
+
+    // Saloon fixtures
+    const trailSaloonGroup = new THREE.Group();
+    trailSaloonGroup.position.set(3.5, 0, 0);
+    addCoachFixtures(trailSaloonGroup, 27, false);
+    trailCar.add(trailSaloonGroup);
+
+    // Aerodynamic Streamlined Rear Bullet Nosecone (Facing -X)
+    // Tier 1: Rear skirt & lower base
+    const rCabBase = new THREE.Mesh(new THREE.BoxGeometry(6.0, 3.4, 10.6), bodyMat);
+    rCabBase.position.set(-13.0, 9.5, 0);
+    trailCar.add(rCabBase);
+
+    const rCabSkirt = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.4, 10.6), darkSkirtMat);
+    rCabSkirt.position.set(-13.0, 7.7, 0);
+    trailCar.add(rCabSkirt);
+
+    const rCabStripe = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.1, 10.7), stripeMat);
+    rCabStripe.position.set(-13.0, 9.4, 0);
+    trailCar.add(rCabStripe);
+
+    // Tier 2: Mid-wedge nose
+    const rNoseMid = new THREE.Mesh(new THREE.BoxGeometry(5.0, 4.0, 9.0), bodyMat);
+    rNoseMid.position.set(-17.5, 9.6, 0);
+    trailCar.add(rNoseMid);
+
+    const rNoseMidStripe = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.1, 9.1), stripeMat);
+    rNoseMidStripe.position.set(-17.5, 9.4, 0);
+    trailCar.add(rNoseMidStripe);
+
+    // Tier 3: Extreme rear nose tip
+    const rNoseTip = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.6, 7.0), bodyMat);
+    rNoseTip.position.set(-20.5, 9.2, 0);
+    trailCar.add(rNoseTip);
+
+    // Rear deflector plow
+    const rPlow = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.4, 8.4), darkSkirtMat);
+    rPlow.position.set(-19.0, 6.0, 0);
+    trailCar.add(rPlow);
+
+    // Sloped Rear Windshield (angled 30 degrees)
+    const rWindshield = new THREE.Mesh(
+      new THREE.BoxGeometry(4.8, 3.8, 8.6).rotateZ(0.55),
+      windowMat
+    );
+    rWindshield.position.set(-14.8, 14.2, 0);
+    trailCar.add(rWindshield);
+
+    // Rear sloped roof cap
+    const rCabRoof = new THREE.Mesh(
+      new THREE.BoxGeometry(5.5, 1.2, 9.2).rotateZ(0.3),
+      roofMat
+    );
+    rCabRoof.position.set(-13.5, 17.0, 0);
+    trailCar.add(rCabRoof);
+
+    // Amber LED Destination Display ("METRO RAPID")
+    const rDestSign = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.3, 5.2), destSignMat);
+    rDestSign.position.set(-17.0, 16.2, 0);
+    trailCar.add(rDestSign);
+
+    // Dual Glowing Red LED Marker Taillights
+    for (const tlz of [-2.6, 2.6]) {
+      const tlHousing = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.85, 0.85, 0.4, 12).rotateZ(Math.PI / 2),
+        darkSkirtMat
+      );
+      tlHousing.position.set(-21.8, 9.6, tlz);
+      trailCar.add(tlHousing);
+
+      const tlLens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.65, 0.45, 12).rotateZ(Math.PI / 2),
+        taillightMat
+      );
+      tlLens.position.set(-21.95, 9.6, tlz);
+      trailCar.add(tlLens);
+    }
+
+    // High marker red light
+    const highTail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.45, 0.45, 0.4, 10).rotateZ(Math.PI / 2),
+      taillightMat
+    );
+    highTail.position.set(-16.5, 17.4, 0);
+    trailCar.add(highTail);
+
+    // Rear Red Track Marker Glow
+    const tailLightGlow = new THREE.PointLight(0xef4444, 1.2, 80);
+    tailLightGlow.position.set(-23, 9.6, 0);
+    trailCar.add(tailLightGlow);
+
+    // Undercarriage Bogies, Equipment & Roof HVAC
+    addBogie(trailCar, -8);
+    addBogie(trailCar, 8);
+    addUnderfloor(trailCar, -4, 4);
+    addHvac(trailCar, -6);
+    addHvac(trailCar, 6);
+
+    trainGroup.add(trailCar);
+
+    return trainGroup;
   }
 
   // Helper: Adds 4 rubber wheels with optional hubcap centers
@@ -1285,8 +1876,10 @@ export class ThreeScene {
 
     // 2. Metro Train Motion
     if (this.metroTrain) {
-      this.metroX += 1.8;
-      if (this.metroX > 600) this.metroX = -600;
+      if (!window.__freezeMetro) {
+        this.metroX += 1.8;
+        if (this.metroX > 750) this.metroX = -750;
+      }
       this.metroTrain.position.x = this.metroX;
     }
 
