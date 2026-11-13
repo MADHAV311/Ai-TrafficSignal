@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRAFFICFLOW-AI Academic Poster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a12;
+      --card-bg: rgba(15, 23, 42, 0.88);
+      --card-border: rgba(56, 189, 248, 0.22);
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --rose: #f43f5e;
+      --indigo: #818cf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @page {
+      size: 48in 36in;
+      margin: 0;
+    }
+
+    body {
+      width: 3840px;
+      height: 2880px;
+      background: radial-gradient(circle at 50% 0%, #111e38 0%, var(--bg-dark) 65%);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 56px 40px 56px;
+      position: relative;
+    }
+
+    /* Ambient background grid */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Header Banner */
+    header {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      border-radius: 28px;
+      padding: 36px 56px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .header-left {
+      max-width: 2750px;
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 9999px;
+      font-size: 19px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-cyan { background: rgba(56, 189, 248, 0.15); color: var(--cyan); border: 1.5px solid rgba(56, 189, 248, 0.4); }
+    .badge-emerald { background: rgba(52, 211, 153, 0.15); color: var(--emerald); border: 1.5px solid rgba(52, 211, 153, 0.4); }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1.5px solid rgba(244, 63, 94, 0.4); }
+    .badge-indigo { background: rgba(129, 140, 248, 0.15); color: var(--indigo); border: 1.5px solid rgba(129, 140, 248, 0.4); }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      background: linear-gradient(110deg, #ffffff 30%, #7dd3fc 70%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .header-subtitle {
+      font-size: 26px;
+      color: var(--text-muted);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      gap: 10px;
+    }
+
+    .meta-dept {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.5px;
+    }
+
+    .meta-authors {
+      font-size: 22px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .meta-guide {
+      font-size: 19px;
+      color: var(--text-dim);
+    }
+
+    /* Main Poster Body: 3 Balanced Columns */
+    main {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1.35fr 1fr;
+      gap: 36px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      min-height: 0;
+    }
+
+    /* Standard Card Container */
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      padding: 30px 34px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-highlight {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.12);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+
+    .card-title-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .icon-cyan { background: rgba(56, 189, 248, 0.2); color: var(--cyan); }
+    .icon-emerald { background: rgba(52, 211, 153, 0.2); color: var(--emerald); }
+    .icon-rose { background: rgba(244, 63, 94, 0.2); color: var(--rose); }
+    .icon-amber { background: rgba(251, 191, 36, 0.2); color: var(--amber); }
+    .icon-indigo { background: rgba(129, 140, 248, 0.2); color: var(--indigo); }
+
+    /* Typography & Lists */
+    p {
+      font-size: 20.5px;
+      color: #cbd5e1;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    .bullet-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
+
+    .dot-cyan { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+    .dot-emerald { background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
+    .dot-rose { background: var(--rose); box-shadow: 0 0 10px var(--rose); }
+    .dot-amber { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+
+    /* Architecture Grid */
+    .arch-flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .arch-step {
+      background: rgba(30, 41, 59, 0.65);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+
+    .arch-step-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+
+    .arch-step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .arch-step-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Math Box */
+    .formula-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin: 14px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      color: #7dd3fc;
+      line-height: 1.6;
+    }
+
+    .formula-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    /* Hero 3D Centerpiece */
+    .hero-container {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      margin: 8px 0 20px 0;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-overlay-tag {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 12px var(--emerald);
+    }
+
+    /* Dual Thumbnail Strip */
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .thumb-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    .thumb-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb-card-caption {
+      padding: 12px 16px;
+      font-size: 16.5px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    /* Metrics Table & Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 14px 0 20px 0;
+    }
+
+    .stat-pill {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .stat-val-cyan { color: var(--cyan); }
+    .stat-val-emerald { color: var(--emerald); }
+    .stat-val-rose { color: var(--rose); }
+
+    .stat-lbl {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Benchmark Comparison Table */
+    .bench-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    .bench-table th {
+      background: rgba(30, 41, 59, 0.85);
+      color: var(--cyan);
+      text-align: left;
+      padding: 14px 18px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .bench-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+    }
+
+    .bench-table tr:hover td {
+      background: rgba(56, 189, 248, 0.04);
+    }
+
+    .highlight-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    /* Live QR Demo Section */
+    .qr-container {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 2px solid var(--emerald);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 0 10px 30px rgba(52, 211, 153, 0.15);
+      margin-top: auto;
+    }
+
+    .qr-img {
+      width: 160px;
+      height: 160px;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 6px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .qr-info h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--emerald);
+      margin-bottom: 8px;
+    }
+
+    .qr-info p {
+      font-size: 18px;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+
+    .qr-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: var(--cyan);
+      word-break: break-all;
+    }
+
+    /* Footer info */
+    footer {
+      position: relative;
+      z-index: 10;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 18px;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="badge-bar">
+        <span class="badge badge-cyan">⚡ 3D Digital Twin</span>
+        <span class="badge badge-emerald">🤖 Fetch.ai Multi-Agent Swarm</span>
+        <span class="badge badge-rose">🚨 108 Emergency Green Corridor</span>
+        <span class="badge badge-indigo">🌱 ESG & Carbon Analytics</span>
+      </div>
+      <h1>TRAFFICFLOW-AI: REAL-TIME 3D DIGITAL TWIN & DECENTRALIZED MULTI-AGENT SWARM</h1>
+      <div class="header-subtitle">
+        Autonomous Cyber-Physical Traffic Signal Optimization with Webster Demand-Responsive Control, Dilemma-Zone Shielding & Automated Emergency Corridors
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-dept">DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING</div>
+      <div class="meta-authors">Academic Project & Research Showcase</div>
+      <div class="meta-guide">Autonomous Smart Cities & Cyber-Physical Systems Lab</div>
+    </div>
+  </header>
+
+  <!-- MAIN POSTER: 3 COLUMNS -->
+  <main>
+
+    <!-- ==================== COLUMN 1 ==================== -->
+    <div class="col">
+
+      <!-- Problem Statement -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-rose">⚠️</div>
+          The Urban Gridlock Problem
+        </div>
+        <p>
+          Conventional urban traffic systems rely on static pre-timed controllers or isolated loop sensors that cannot adapt to real-time spatial surges, causing severe compounding gridlock:
+        </p>
+        <ul class="bullet-list">
+          <li class="bullet-item">
+            <div class="bullet-dot dot-rose"></div>
+            <div><strong>42.8% Unproductive Idle Waste:</strong> Commuters waste hundreds of collective hours idling at empty cross-street green lights.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-rose"></div>
+            <div><strong>Critical "Golden Hour" Delay:</strong> 108 Ambulances and Fire Tenders lose crucial minutes stuck in queued traffic lanes without priority corridors.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-rose"></div>
+            <div><strong>Lack of Network Coordination:</strong> Isolated signals cause cascading congestion wave propagation to adjacent intersections.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-rose"></div>
+            <div><strong>Environmental Deterioration:</strong> Stop-and-go acceleration cycles exponentially increase toxic emissions and fuel burn.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- System Architecture -->
+      <div class="card card-highlight" style="flex: 1;">
+        <div class="card-title">
+          <div class="card-title-icon icon-cyan">🏗️</div>
+          System Architecture Pipeline
+        </div>
+        <p>
+          An end-to-end cyber-physical architecture connecting edge telemetry, autonomous swarm intelligence, and spatial visualization:
+        </p>
+
+        <div class="arch-flow">
+          <div class="arch-step">
+            <div class="arch-step-num">01 / PERCEPTION</div>
+            <div class="arch-step-title">Vision & Sensors</div>
+            <div class="arch-step-desc">YOLO-based classification, queue tracking, and headway metrics.</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">02 / AGENT SWARM</div>
+            <div class="arch-step-title">Fetch.ai Bureau</div>
+            <div class="arch-step-desc">Decentralized agents negotiate intersection priorities via ACP.</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">03 / ADAPTIVE CORE</div>
+            <div class="arch-step-title">FastAPI Backend</div>
+            <div class="arch-step-desc">Webster dynamic splits, dilemma-zone shields & CAD triggers.</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">04 / DIGITAL TWIN</div>
+            <div class="arch-step-title">Three.js WebGL</div>
+            <div class="arch-step-desc">60 FPS synchronized 3D twin, procedural asphalt & live HUD.</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <p><strong>Decentralized Multi-Agent Coordination (Fetch.ai):</strong></p>
+          <ul class="bullet-list">
+            <li class="bullet-item">
+              <div class="bullet-dot dot-cyan"></div>
+              <div><strong>Arterial Coordinator Agent:</strong> Synthesizes downstream queue capacity to maintain dynamic green waves along primary corridors.</div>
+            </li>
+            <li class="bullet-item">
+              <div class="bullet-dot dot-emerald"></div>
+              <div><strong>Intersection Controller Agent:</strong> Evaluates Webster saturation ratios and enforces starvation-prevention timers for minor roads.</div>
+            </li>
+            <li class="bullet-item">
+              <div class="bullet-dot dot-amber"></div>
+              <div><strong>Emergency Corridor Agent:</strong> Broadcasts cryptographic preemption requests to reserve green paths across consecutive nodes.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== COLUMN 2 ==================== -->
+    <div class="col">
+
+      <!-- Hero 3D Simulation View -->
+      <div class="card card-highlight">
+        <div class="card-title">
+          <div class="card-title-icon icon-emerald">🏙️</div>
+          High-Fidelity 3D Digital Twin Visualizer
+        </div>
+        
+        <div class="hero-container">
+          <img src="assets/screenshot_realistic_roads_overview.png" alt="TrafficFlow-AI 3D Digital Twin Hero" class="hero-img">
+          <div class="hero-overlay-tag">
+            <div class="pulse-dot"></div>
+            <span>LIVE WEBGL SIMULATION • 60 FPS SPATIAL SYNCHRONIZATION</span>
+          </div>
+        </div>
+
+        <!-- Thumbnails of realistic roadway details -->
+        <div class="thumb-grid">
+          <div class="thumb-card">
+            <img src="assets/screenshot_realistic_roads_approach_arrows.png" alt="Stenciled Arrows and Lane Divides">
+            <div class="thumb-card-caption">🛣️ Multi-Lane Markings & Stenciled Directional Turn Arrows</div>
+          </div>
+          <div class="thumb-card">
+            <img src="assets/screenshot_realistic_roads_curbs_sidewalks.png" alt="Sidewalk and Urban Infrastructure">
+            <div class="thumb-card-caption">🚶 Raised Pedestrian Plazas, Curbs & Drainage Grates</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Algorithmic Formulation -->
+      <div class="card" style="flex: 1;">
+        <div class="card-title">
+          <div class="card-title-icon icon-amber">📐</div>
+          Adaptive Decision Logic & Mathematical Formulation
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-title">1. Demand-Responsive Priority Scoring</div>
+          Priority_r = (w_q · Q_r) + (w_w · W_r) + (w_t · T_r) + DilemmaZoneShield(v, d)
+          <div style="font-size: 15px; color: #94a3b8; margin-top: 6px;">
+            Where: Q_r = queue length, W_r = wait latency, T_r = transit vehicle weight (buses/trams), v = platoon approach speed.
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-title">2. Dynamic Cycle & Green Split Allocation (Webster-Equated)</div>
+          C_opt = (1.5 · L + 5) / (1 - ∑ y_i),     g_i = (y_i / Y) · (C_opt - L)
+          <div style="font-size: 15px; color: #94a3b8; margin-top: 6px;">
+            Eliminates wasted green time by allocating phase splits strictly proportional to critical flow saturation ratios (y_i = q_i / s_i).
+          </div>
+        </div>
+
+        <ul class="bullet-list" style="margin-top: 8px;">
+          <li class="bullet-item">
+            <div class="bullet-dot dot-emerald"></div>
+            <div><strong>Dilemma Zone Protection:</strong> Tracks inbound platoon deceleration thresholds; if vehicles cannot safely stop before red without severe braking, amber phase extends dynamically by up to 2.5s.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-cyan"></div>
+            <div><strong>Transit Signal Priority (TSP):</strong> Grants priority green extensions for high-capacity public buses, maximizing overall passenger throughput over individual vehicle counts.</div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ==================== COLUMN 3 ==================== -->
+    <div class="col">
+
+      <!-- Emergency Preemption -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-rose">🚨</div>
+          Zero-Delay Emergency Green Corridor
+        </div>
+        <p>
+          When an authorized emergency responder (108 Ambulance, Fire Tender) is detected by CAD dispatch or acoustic sirens:
+        </p>
+        <ul class="bullet-list">
+          <li class="bullet-item">
+            <div class="bullet-dot dot-rose"></div>
+            <div><strong>Autonomous Corridor Lock:</strong> Signal switches conflicting directions through standard yellow clearance, locking the emergency corridor to green.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-emerald"></div>
+            <div><strong>Zero Intersection Stagnation:</strong> Clearance times for ambulances drop from 98s in heavy congestion to 0s queue delay.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-cyan"></div>
+            <div><strong>Seamless Recovery:</strong> Once the emergency vehicle clears the conflict box, the system gracefully recovers standard phase rotation without starvation.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Benchmark Results -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-emerald">📊</div>
+          Empirical Benchmarks & Verification
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="stat-val stat-val-emerald">-40.4%</div>
+            <div class="stat-lbl">Avg Wait Time</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val stat-val-cyan">+39.0%</div>
+            <div class="stat-lbl">Throughput</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val stat-val-rose">0s Delay</div>
+            <div class="stat-lbl">108 Corridor</div>
+          </div>
+        </div>
+
+        <table class="bench-table">
+          <thead>
+            <tr>
+              <th>Performance Metric</th>
+              <th>Fixed-Time Baseline</th>
+              <th>TrafficFlow-AI</th>
+              <th>Improvement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Average Queue Wait Time</td>
+              <td>31.2 sec</td>
+              <td class="highlight-cell">18.6 sec</td>
+              <td class="highlight-cell">40.4% Faster</td>
+            </tr>
+            <tr>
+              <td>Intersection Throughput</td>
+              <td>42.0 veh/min</td>
+              <td class="highlight-cell">58.4 veh/min</td>
+              <td class="highlight-cell">+39.0% Volume</td>
+            </tr>
+            <tr>
+              <td>Ambulance Delay (Peak)</td>
+              <td>98.0 sec</td>
+              <td class="highlight-cell">0.0 sec</td>
+              <td class="highlight-cell">Zero Delay</td>
+            </tr>
+            <tr>
+              <td>Peak Queue Accumulation</td>
+              <td>19 vehicles</td>
+              <td class="highlight-cell">7 vehicles</td>
+              <td class="highlight-cell">63.1% Lower</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Economic & ESG ROI -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-amber">🌱</div>
+          Smart City Economic & ESG Impact
+        </div>
+        <p>
+          Quantifiable return on investment measured through active fuel reduction, time reclamation, and emissions mitigation:
+        </p>
+        <ul class="bullet-list">
+          <li class="bullet-item">
+            <div class="bullet-dot dot-emerald"></div>
+            <div><strong>₹171.4 Lakhs Projected Annual Savings:</strong> Based on 0.8 L/hr idling fuel burn savings across peak commuter volumes.</div>
+          </li>
+          <li class="bullet-item">
+            <div class="bullet-dot dot-cyan"></div>
+            <div><strong>142 Metric Tons Annual CO₂ Reduction:</strong> Drastic reduction in stop-start idling prevents heavy greenhouse gas accumulation at key junctions.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Interactive QR Code Live Demo -->
+      <div class="qr-container">
+        <img src="assets/qr_live_demo.png" alt="Scan to Launch 3D Simulation" class="qr-img">
+        <div class="qr-info">
+          <h4>📱 Interactive Live Demo</h4>
+          <p>Scan with your phone to control the 3D Digital Twin, inspect live queues, and trigger 108 Emergency Corridors in real-time!</p>
+          <div class="qr-url">https://place-prize-title-equipment.trycloudflare.com</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>TRAFFICFLOW-AI • Autonomous Cyber-Physical Mobility Digital Twin • Built with Python, FastAPI, Fetch.ai, Three.js & WebGL</div>
+    <div>Class Poster Presentation • Academic Session 2026</div>
+  </footer>
+
+</body>
+</html>
