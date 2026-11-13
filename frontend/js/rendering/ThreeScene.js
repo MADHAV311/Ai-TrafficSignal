@@ -153,11 +153,225 @@ export class ThreeScene {
     this.scene.add(sunLight);
   }
 
+  // ========================================================
+  // REALISTIC ROAD INFRASTRUCTURE & STREETSCAPE ENGINE
+  // ========================================================
+
+  // Creates procedural aggregate asphalt texture with tire-wear tracks & bituminous grain
+  createAsphaltTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    // 1. Dark asphalt base
+    ctx.fillStyle = '#171e28';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // 2. High-density aggregate gravel grit (bitumen stippling)
+    const imgData = ctx.getImageData(0, 0, 512, 512);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const noise = (Math.random() - 0.5) * 36;
+      d[i] = Math.max(16, Math.min(48, d[i] + noise));
+      d[i + 1] = Math.max(20, Math.min(54, d[i + 1] + noise));
+      d[i + 2] = Math.max(26, Math.min(65, d[i + 2] + noise));
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    // 3. Longitudinal rubberized tire-wear paths along travel lanes
+    for (const lx of [64, 192, 320, 448]) {
+      const grad = ctx.createLinearGradient(lx - 42, 0, lx + 42, 0);
+      grad.addColorStop(0, 'rgba(10, 14, 22, 0)');
+      grad.addColorStop(0.5, 'rgba(10, 14, 22, 0.45)');
+      grad.addColorStop(1, 'rgba(10, 14, 22, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(lx - 42, 0, 84, 512);
+    }
+
+    // 4. Subtle asphalt longitudinal paver rolling seams
+    ctx.fillStyle = 'rgba(10, 14, 22, 0.5)';
+    ctx.fillRect(254, 0, 4, 512);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }
+
+  // Creates procedural sidewalk paving flagstone texture with grid joints
+  createSidewalkTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(0, 0, 512, 512);
+
+    const imgData = ctx.getImageData(0, 0, 512, 512);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const n = (Math.random() - 0.5) * 22;
+      d[i] = Math.max(45, Math.min(115, d[i] + n));
+      d[i + 1] = Math.max(55, Math.min(128, d[i + 1] + n));
+      d[i + 2] = Math.max(70, Math.min(148, d[i + 2] + n));
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    // Flagstone joint grid
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 3;
+    for (let x = 0; x <= 512; x += 64) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 512);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= 512; y += 64) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(512, y);
+      ctx.stroke();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }
+
+  // Creates directional turn arrow decal textures
+  createArrowTexture(type) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 128, 256);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const cx = 64;
+    if (type === 'straight') {
+      ctx.beginPath();
+      ctx.moveTo(cx, 32);
+      ctx.lineTo(cx - 38, 88);
+      ctx.lineTo(cx - 15, 88);
+      ctx.lineTo(cx - 15, 224);
+      ctx.lineTo(cx + 15, 224);
+      ctx.lineTo(cx + 15, 88);
+      ctx.lineTo(cx + 38, 88);
+      ctx.closePath();
+      ctx.fill();
+    } else if (type === 'left') {
+      ctx.beginPath();
+      ctx.moveTo(cx + 20, 220);
+      ctx.lineTo(cx + 20, 140);
+      ctx.quadraticCurveTo(cx + 20, 80, cx - 24, 80);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx - 48, 80);
+      ctx.lineTo(cx - 16, 50);
+      ctx.lineTo(cx - 16, 68);
+      ctx.lineTo(cx + 10, 68);
+      ctx.lineTo(cx + 10, 92);
+      ctx.lineTo(cx - 16, 92);
+      ctx.lineTo(cx - 16, 110);
+      ctx.closePath();
+      ctx.fill();
+    } else if (type === 'straight_left') {
+      // Straight Arrow component
+      ctx.beginPath();
+      ctx.moveTo(cx + 12, 34);
+      ctx.lineTo(cx - 12, 76);
+      ctx.lineTo(cx + 4, 76);
+      ctx.lineTo(cx + 4, 224);
+      ctx.lineTo(cx + 20, 224);
+      ctx.lineTo(cx + 20, 76);
+      ctx.lineTo(cx + 36, 76);
+      ctx.closePath();
+      ctx.fill();
+
+      // Branching Left Turn component
+      ctx.beginPath();
+      ctx.moveTo(cx + 12, 150);
+      ctx.quadraticCurveTo(cx + 12, 100, cx - 28, 100);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx - 48, 100);
+      ctx.lineTo(cx - 24, 78);
+      ctx.lineTo(cx - 24, 92);
+      ctx.lineTo(cx + 4, 92);
+      ctx.lineTo(cx + 4, 108);
+      ctx.lineTo(cx - 24, 108);
+      ctx.lineTo(cx - 24, 122);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    return tex;
+  }
+
+  // Cast-Iron Utility Manhole Texture
+  createManholeTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(64, 64, 60, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(64, 64, 54, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    for (let r = 16; r < 50; r += 10) {
+      ctx.beginPath();
+      ctx.arc(64, 64, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    return new THREE.CanvasTexture(canvas);
+  }
+
+  // Cast-Iron Storm Drain Grate Texture
+  createDrainGrateTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 128, 128);
+
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(4, 4, 120, 120);
+
+    ctx.fillStyle = '#334155';
+    for (let y = 14; y < 114; y += 14) {
+      ctx.fillRect(12, y, 104, 6);
+    }
+    return new THREE.CanvasTexture(canvas);
+  }
+
   initGroundAndRoads() {
-    const rw = 70; // Half road width
+    const rw = 70; // Half road width (Total width 140)
     const span = 600;
 
-    // Ground Base
+    // 1. Surrounding Earth & Urban Foundation Base
     const groundGeo = new THREE.PlaneGeometry(span * 2, span * 2);
     const groundMat = new THREE.MeshLambertMaterial({ color: 0x070c14 });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
@@ -165,35 +379,60 @@ export class ThreeScene {
     groundMesh.receiveShadow = true;
     this.scene.add(groundMesh);
 
-    // Asphalt Roads (East-West & North-South)
-    const asphaltMat = new THREE.MeshLambertMaterial({ color: 0x18202d });
+    // 2. High-Fidelity Textured Asphalt Roads (East-West & North-South)
+    const asphaltTex = this.createAsphaltTexture();
+    const asphaltMatEW = new THREE.MeshLambertMaterial({ map: asphaltTex.clone() });
+    asphaltMatEW.map.repeat.set(span / 25, rw / 18);
+    asphaltMatEW.map.needsUpdate = true;
 
     const ewGeo = new THREE.PlaneGeometry(span * 2, rw * 2);
-    const ewMesh = new THREE.Mesh(ewGeo, asphaltMat);
+    const ewMesh = new THREE.Mesh(ewGeo, asphaltMatEW);
     ewMesh.rotation.x = -Math.PI / 2;
     ewMesh.position.y = 0.2;
     ewMesh.receiveShadow = true;
     this.scene.add(ewMesh);
 
+    const asphaltMatNS = new THREE.MeshLambertMaterial({ map: asphaltTex.clone() });
+    asphaltMatNS.map.repeat.set(rw / 18, span / 25);
+    asphaltMatNS.map.needsUpdate = true;
+
     const nsGeo = new THREE.PlaneGeometry(rw * 2, span * 2);
-    const nsMesh = new THREE.Mesh(nsGeo, asphaltMat);
+    const nsMesh = new THREE.Mesh(nsGeo, asphaltMatNS);
     nsMesh.rotation.x = -Math.PI / 2;
     nsMesh.position.y = 0.22;
     nsMesh.receiveShadow = true;
     this.scene.add(nsMesh);
 
-    // Double-Solid Yellow Centerlines
-    const yellowMat = new THREE.MeshBasicMaterial({ color: 0xeab308 });
-    this.createRoadLine(0, 0.4, -span / 2 - rw / 2, 2.5, span - rw, yellowMat, false);
-    this.createRoadLine(0, 0.4,  span / 2 + rw / 2, 2.5, span - rw, yellowMat, false);
-    this.createRoadLine(-span / 2 - rw / 2, 0.4, 0, span - rw, 2.5, yellowMat, true);
-    this.createRoadLine( span / 2 + rw / 2, 0.4, 0, span - rw, 2.5, yellowMat, true);
+    // Central Intersection Conflict Box (With cross-directional wear)
+    const intBoxMat = new THREE.MeshLambertMaterial({ map: asphaltTex.clone() });
+    intBoxMat.map.repeat.set(4, 4);
+    intBoxMat.map.needsUpdate = true;
+    const intBox = new THREE.Mesh(new THREE.PlaneGeometry(rw * 2, rw * 2), intBoxMat);
+    intBox.rotation.x = -Math.PI / 2;
+    intBox.position.set(0, 0.24, 0);
+    intBox.receiveShadow = true;
+    this.scene.add(intBox);
 
-    // Zebra Crosswalk Stripes
+    // 3. Multi-Lane Road Markings (Double Yellows, Dashed Dividers, Edge Fog Lines, Arrows)
+    this.createRoadMarkings(rw, span);
+
+    // 4. Zebra Crosswalk Stripes (Barnes Dance Scramble Compliant)
     this.crosswalkGroup = new THREE.Group();
     this.scene.add(this.crosswalkGroup);
     const whiteMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
     this.initCrosswalks(rw, whiteMat);
+
+    // 5. 3D Raised Concrete Curbs & Paved Sidewalk Plazas
+    this.createCurbsAndSidewalks(rw, span);
+
+    // 6. Raised Central Medians (Traffic Islands with Hazard Bullnoses & Cats-Eyes)
+    this.createCentralMedians(rw);
+
+    // 7. Street Drainage Grates & Utility Manholes
+    this.createDrainageAndManholes(rw);
+
+    // 8. Stainless Steel Pedestrian Safety Barricades
+    this.createPedestrianRailings(rw);
   }
 
   createRoadLine(x, y, z, w, l, mat, isHoriz) {
@@ -203,6 +442,364 @@ export class ThreeScene {
     mesh.position.set(x, y, z);
     this.scene.add(mesh);
     return mesh;
+  }
+
+  // Full Multi-Lane Markings: Double Yellows, Dashed Lane Dividers, Outer Fog Lines, and Stenciled Arrows
+  createRoadMarkings(rw, span) {
+    const yellowMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const whiteMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+    const stopOffset = 74;
+
+    // A. Double-Solid Yellow Centerlines (Two parallel lines separated by dark asphalt gap)
+    const stripeW = 0.9;
+    const gap = 0.8;
+    const yOff = (stripeW + gap) / 2;
+
+    for (const s of [-yOff, yOff]) {
+      // North approach
+      this.createRoadLine(s, 0.38, -span / 2 - stopOffset / 2, stripeW, span - stopOffset, yellowMat, false);
+      // South approach
+      this.createRoadLine(s, 0.38,  span / 2 + stopOffset / 2, stripeW, span - stopOffset, yellowMat, false);
+      // East approach
+      this.createRoadLine( span / 2 + stopOffset / 2, 0.38, s, span - stopOffset, stripeW, yellowMat, true);
+      // West approach
+      this.createRoadLine(-span / 2 - stopOffset / 2, 0.38, s, span - stopOffset, stripeW, yellowMat, true);
+    }
+
+    // B. Dashed White Lane Dividers (Separating Lane 0 and Lane 1 in both directions at +/- 35 units)
+    const dashL = 10;
+    const dashGap = 10;
+    const dashW = 1.2;
+
+    // North & South Roads (Dashes along Z axis at X = -35 and X = +35)
+    for (let z = -span + 10; z <= -stopOffset - 10; z += dashL + dashGap) {
+      this.createRoadLine(-35, 0.36, z, dashW, dashL, whiteMat, false);
+      this.createRoadLine( 35, 0.36, z, dashW, dashL, whiteMat, false);
+    }
+    for (let z = stopOffset + 10; z <= span - 10; z += dashL + dashGap) {
+      this.createRoadLine(-35, 0.36, z, dashW, dashL, whiteMat, false);
+      this.createRoadLine( 35, 0.36, z, dashW, dashL, whiteMat, false);
+    }
+
+    // East & West Roads (Dashes along X axis at Z = -35 and Z = +35)
+    for (let x = -span + 10; x <= -stopOffset - 10; x += dashL + dashGap) {
+      this.createRoadLine(x, 0.36, -35, dashL, dashW, whiteMat, true);
+      this.createRoadLine(x, 0.36,  35, dashL, dashW, whiteMat, true);
+    }
+    for (let x = stopOffset + 10; x <= span - 10; x += dashL + dashGap) {
+      this.createRoadLine(x, 0.36, -35, dashL, dashW, whiteMat, true);
+      this.createRoadLine(x, 0.36,  35, dashL, dashW, whiteMat, true);
+    }
+
+    // C. Solid White Shoulder / Fog Lines (Along both outer curbs at +/- 67.5)
+    const fogW = 1.2;
+    this.createRoadLine(-67.5, 0.36, -span / 2 - stopOffset / 2, fogW, span - stopOffset, whiteMat, false);
+    this.createRoadLine( 67.5, 0.36, -span / 2 - stopOffset / 2, fogW, span - stopOffset, whiteMat, false);
+    this.createRoadLine(-67.5, 0.36,  span / 2 + stopOffset / 2, fogW, span - stopOffset, whiteMat, false);
+    this.createRoadLine( 67.5, 0.36,  span / 2 + stopOffset / 2, fogW, span - stopOffset, whiteMat, false);
+
+    this.createRoadLine(-span / 2 - stopOffset / 2, 0.36, -67.5, span - stopOffset, fogW, whiteMat, true);
+    this.createRoadLine(-span / 2 - stopOffset / 2, 0.36,  67.5, span - stopOffset, fogW, whiteMat, true);
+    this.createRoadLine( span / 2 + stopOffset / 2, 0.36, -67.5, span - stopOffset, fogW, whiteMat, true);
+    this.createRoadLine( span / 2 + stopOffset / 2, 0.36,  67.5, span - stopOffset, fogW, whiteMat, true);
+
+    // D. Reflective Amber Cats-Eyes / Road Studs along Centerline
+    const studGeo = new THREE.BoxGeometry(0.8, 0.35, 1.4);
+    const studMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    for (let z = -span + 20; z <= -stopOffset - 10; z += 24) {
+      const stud = new THREE.Mesh(studGeo, studMat);
+      stud.position.set(0, 0.42, z);
+      this.scene.add(stud);
+    }
+    for (let z = stopOffset + 10; z <= span - 20; z += 24) {
+      const stud = new THREE.Mesh(studGeo, studMat);
+      stud.position.set(0, 0.42, z);
+      this.scene.add(stud);
+    }
+    const studGeoH = new THREE.BoxGeometry(1.4, 0.35, 0.8);
+    for (let x = -span + 20; x <= -stopOffset - 10; x += 24) {
+      const stud = new THREE.Mesh(studGeoH, studMat);
+      stud.position.set(x, 0.42, 0);
+      this.scene.add(stud);
+    }
+    for (let x = stopOffset + 10; x <= span - 20; x += 24) {
+      const stud = new THREE.Mesh(studGeoH, studMat);
+      stud.position.set(x, 0.42, 0);
+      this.scene.add(stud);
+    }
+
+    // E. Directional Approach Stencils / Painted Turn Arrows
+    const strTex = this.createArrowTexture('straight');
+    const turnTex = this.createArrowTexture('straight_left');
+    const arrowMatStr = new THREE.MeshBasicMaterial({ map: strTex, transparent: true });
+    const arrowMatTurn = new THREE.MeshBasicMaterial({ map: turnTex, transparent: true });
+
+    const addArrow = (x, z, rotY, isTurn) => {
+      const arrowMesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 20), isTurn ? arrowMatTurn : arrowMatStr);
+      arrowMesh.rotation.x = -Math.PI / 2;
+      arrowMesh.rotation.z = rotY;
+      arrowMesh.position.set(x, 0.37, z);
+      this.scene.add(arrowMesh);
+    };
+
+    // Approach Arrows for All 4 Inbound Corridors
+    for (const dist of [125, 205]) {
+      // Road A (North Inbound flows South towards center, X < 0)
+      addArrow(-17.5, -dist, Math.PI, true);  // Inner Lane: Straight + Left
+      addArrow(-52.5, -dist, Math.PI, false); // Outer Lane: Straight
+
+      // Road C (South Inbound flows North towards center, X > 0)
+      addArrow(17.5, dist, 0, true);
+      addArrow(52.5, dist, 0, false);
+
+      // Road B (East Inbound flows West towards center, Z < 0)
+      addArrow(dist, -17.5, Math.PI / 2, true);
+      addArrow(dist, -52.5, Math.PI / 2, false);
+
+      // Road D (West Inbound flows East towards center, Z > 0)
+      addArrow(-dist, 17.5, -Math.PI / 2, true);
+      addArrow(-dist, 52.5, -Math.PI / 2, false);
+    }
+  }
+
+  // 3D Raised Concrete Curbs with Chamfered Fillet Corners & Paved Pedestrian Sidewalks
+  createCurbsAndSidewalks(rw, span) {
+    const curbMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+    const hazardCurbMat = new THREE.MeshBasicMaterial({ color: 0xeab308 });
+    const darkCurbMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const sidewalkTex = this.createSidewalkTexture();
+
+    // 1. Four Massive Quadrant Sidewalk Slabs (Paved Concrete Pedestrian Plaza)
+    const swWidth = 260;
+    const swDepth = 260;
+    const swH = 1.0;
+    const swY = swH / 2 + 0.1;
+
+    const quadConfigs = [
+      { name: 'NE', x:  rw + swWidth / 2, z: -rw - swDepth / 2 },
+      { name: 'NW', x: -rw - swWidth / 2, z: -rw - swDepth / 2 },
+      { name: 'SE', x:  rw + swWidth / 2, z:  rw + swDepth / 2 },
+      { name: 'SW', x: -rw - swWidth / 2, z:  rw + swDepth / 2 }
+    ];
+
+    for (const q of quadConfigs) {
+      const swMat = new THREE.MeshLambertMaterial({ map: sidewalkTex.clone() });
+      swMat.map.repeat.set(swWidth / 24, swDepth / 24);
+      swMat.map.needsUpdate = true;
+
+      const swMesh = new THREE.Mesh(new THREE.BoxGeometry(swWidth, swH, swDepth), swMat);
+      swMesh.position.set(q.x, swY, q.z);
+      swMesh.receiveShadow = true;
+      this.scene.add(swMesh);
+
+      // Yellow Tactile Paving Strip (Blind / Accessibility Blister Studs) at crosswalk ramps
+      const tactileMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+      const t1 = new THREE.Mesh(new THREE.BoxGeometry(24, 0.2, 4.0), tactileMat);
+      t1.position.set(q.x > 0 ? rw + 14 : -rw - 14, swH + 0.12, q.z > 0 ? rw + 2.5 : -rw - 2.5);
+      this.scene.add(t1);
+
+      const t2 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.2, 24), tactileMat);
+      t2.position.set(q.x > 0 ? rw + 2.5 : -rw - 2.5, swH + 0.12, q.z > 0 ? rw + 14 : -rw - 14);
+      this.scene.add(t2);
+    }
+
+    // 2. Linear Concrete Curbs along the Street Edges (X = +/- 70, Z = +/- 70)
+    const curbH = 1.8;
+    const curbW = 2.4;
+    const curbY = curbH / 2;
+    const curbL = span - rw;
+
+    // Linear Straight Curbs (North, South, East, West approaches)
+    for (const sideX of [-rw - curbW / 2, rw + curbW / 2]) {
+      // North approach curbs
+      const cN = new THREE.Mesh(new THREE.BoxGeometry(curbW, curbH, curbL), curbMat);
+      cN.position.set(sideX, curbY, -span / 2 - rw / 2);
+      this.scene.add(cN);
+
+      // South approach curbs
+      const cS = new THREE.Mesh(new THREE.BoxGeometry(curbW, curbH, curbL), curbMat);
+      cS.position.set(sideX, curbY, span / 2 + rw / 2);
+      this.scene.add(cS);
+    }
+
+    for (const sideZ of [-rw - curbW / 2, rw + curbW / 2]) {
+      // East approach curbs
+      const cE = new THREE.Mesh(new THREE.BoxGeometry(curbL, curbH, curbW), curbMat);
+      cE.position.set(span / 2 + rw / 2, curbY, sideZ);
+      this.scene.add(cE);
+
+      // West approach curbs
+      const cW = new THREE.Mesh(new THREE.BoxGeometry(curbL, curbH, curbW), curbMat);
+      cW.position.set(-span / 2 - rw / 2, curbY, sideZ);
+      this.scene.add(cW);
+    }
+
+    // 3. Alternating Yellow & Black Reflective Hazard Curb Stones near Crosswalk Ramps
+    for (const cx of [-rw - 1.2, rw + 1.2]) {
+      for (const cz of [-rw - 20, rw + 20]) {
+        for (let seg = 0; seg < 4; seg++) {
+          const hzCurb = new THREE.Mesh(
+            new THREE.BoxGeometry(curbW * 1.05, curbH * 1.02, 5.0),
+            seg % 2 === 0 ? hazardCurbMat : darkCurbMat
+          );
+          hzCurb.position.set(cx, curbY, cz > 0 ? cz + seg * 5.0 : cz - seg * 5.0);
+          this.scene.add(hzCurb);
+        }
+      }
+    }
+  }
+
+  // Raised Central Medians (Traffic Islands with Rounded Hazard Bullnoses & Cats-Eyes)
+  createCentralMedians(rw) {
+    const medW = 4.2;
+    const medH = 1.6;
+    const medL = 140;
+    const medY = medH / 2 + 0.15;
+    const medOffset = 105;
+
+    const medConcreteMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+    const medGrassMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+    const hazardMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const darkMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+
+    const medians = [
+      { axis: 'Z', x: 0, z: -medOffset - medL / 2, rotY: 0 },         // North Road Median
+      { axis: 'Z', x: 0, z:  medOffset + medL / 2, rotY: Math.PI },   // South Road Median
+      { axis: 'X', x:  medOffset + medL / 2, z: 0, rotY: -Math.PI / 2 }, // East Road Median
+      { axis: 'X', x: -medOffset - medL / 2, z: 0, rotY:  Math.PI / 2 }  // West Road Median
+    ];
+
+    for (const m of medians) {
+      const medGroup = new THREE.Group();
+      medGroup.position.set(m.x, 0, m.z);
+      medGroup.rotation.y = m.rotY;
+
+      // Concrete Curb Enclosure
+      const cBox = new THREE.Mesh(new THREE.BoxGeometry(medW, medH, medL), medConcreteMat);
+      cBox.position.y = medY;
+      medGroup.add(cBox);
+
+      // Grass / Greenery Top Infill
+      const grass = new THREE.Mesh(new THREE.BoxGeometry(medW - 1.2, 0.4, medL - 2.0), medGrassMat);
+      grass.position.y = medH + 0.1;
+      medGroup.add(grass);
+
+      // Low Urban Median Hedges
+      for (let hz = -medL / 2 + 16; hz <= medL / 2 - 16; hz += 22) {
+        const shrub = new THREE.Mesh(new THREE.SphereGeometry(1.6, 6, 6), medGrassMat);
+        shrub.position.set(0, medH + 1.2, hz);
+        shrub.scale.set(1.1, 0.75, 1.4);
+        medGroup.add(shrub);
+      }
+
+      // Rounded Bullnose Tip Facing Intersection with Hazard Chevrons
+      const noseTip = new THREE.Mesh(new THREE.CylinderGeometry(medW / 2, medW / 2, medH, 12, 1, false, 0, Math.PI), medConcreteMat);
+      noseTip.rotation.y = Math.PI / 2;
+      noseTip.position.set(0, medY, medL / 2);
+      medGroup.add(noseTip);
+
+      // Alternating Yellow/Black Chevron on Bullnose
+      const chevron = new THREE.Mesh(new THREE.BoxGeometry(medW * 1.05, medH * 0.7, 1.2), hazardMat);
+      chevron.position.set(0, medY, medL / 2 + 0.4);
+      medGroup.add(chevron);
+
+      const chevStripe = new THREE.Mesh(new THREE.BoxGeometry(1.4, medH * 0.72, 1.3), darkMat);
+      chevStripe.position.set(0, medY, medL / 2 + 0.45);
+      medGroup.add(chevStripe);
+
+      // Illuminated High-Visibility Median Bollard
+      const bollard = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.7, 7.5, 8), new THREE.MeshLambertMaterial({ color: 0xf8fafc }));
+      bollard.position.set(0, medH + 3.75, medL / 2 - 4);
+      medGroup.add(bollard);
+
+      const band1 = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 1.0, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+      band1.position.set(0, medH + 6.0, medL / 2 - 4);
+      medGroup.add(band1);
+
+      this.scene.add(medGroup);
+    }
+  }
+
+  // Street Drainage Grates & Utility Manhole Covers
+  createDrainageAndManholes(rw) {
+    const drainTex = this.createDrainGrateTexture();
+    const manholeTex = this.createManholeTexture();
+
+    const drainMat = new THREE.MeshLambertMaterial({ map: drainTex });
+    const manholeMat = new THREE.MeshLambertMaterial({ map: manholeTex });
+
+    // Drainage Catch Basins along curbs
+    const drainPositions = [
+      [-64, 0.26, -95], [ 64, 0.26, -95], [-64, 0.26, 95], [ 64, 0.26, 95],
+      [-95, 0.26, -64], [-95, 0.26,  64], [ 95, 0.26, -64], [ 95, 0.26, 64],
+      [-64, 0.26, -185], [ 64, 0.26, -185], [-64, 0.26, 185], [ 64, 0.26, 185],
+      [-185, 0.26, -64], [-185, 0.26,  64], [ 185, 0.26, -64], [ 185, 0.26, 64]
+    ];
+
+    for (const p of drainPositions) {
+      const drain = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 6.5), drainMat);
+      drain.rotation.x = -Math.PI / 2;
+      drain.position.set(p[0], p[1], p[2]);
+      this.scene.add(drain);
+    }
+
+    // Circular Utility Manholes embedded in travel lanes
+    const manholePositions = [
+      [-17.5, 0.26, -150], [17.5, 0.26, 150],
+      [150, 0.26, -17.5], [-150, 0.26, 17.5],
+      [-52.5, 0.26, -260], [52.5, 0.26, 260],
+      [260, 0.26, -52.5], [-260, 0.26, 52.5]
+    ];
+
+    for (const p of manholePositions) {
+      const mh = new THREE.Mesh(new THREE.CircleGeometry(3.2, 16), manholeMat);
+      mh.rotation.x = -Math.PI / 2;
+      mh.position.set(p[0], p[1], p[2]);
+      this.scene.add(mh);
+    }
+  }
+
+  // Stainless Steel Pedestrian Safety Barricades along Sidewalk Curbs
+  createPedestrianRailings(rw) {
+    const railMat = new THREE.MeshStandardMaterial({ color: 0xcfd8dc, metalness: 0.85, roughness: 0.2 });
+
+    const cornerConfigs = [
+      { x:  rw + 4, z: -rw - 30, axis: 'Z', rotY: 0 },
+      { x: -rw - 4, z: -rw - 30, axis: 'Z', rotY: 0 },
+      { x:  rw + 4, z:  rw + 30, axis: 'Z', rotY: 0 },
+      { x: -rw - 4, z:  rw + 30, axis: 'Z', rotY: 0 },
+      { x:  rw + 30, z: -rw - 4, axis: 'X', rotY: Math.PI / 2 },
+      { x: -rw - 30, z: -rw - 4, axis: 'X', rotY: Math.PI / 2 },
+      { x:  rw + 30, z:  rw + 4, axis: 'X', rotY: Math.PI / 2 },
+      { x: -rw - 30, z:  rw + 4, axis: 'X', rotY: Math.PI / 2 }
+    ];
+
+    for (const c of cornerConfigs) {
+      const group = new THREE.Group();
+      group.position.set(c.x, 1.0, c.z);
+      group.rotation.y = c.rotY;
+
+      // Top Rail
+      const topRail = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 34, 8), railMat);
+      topRail.rotation.x = Math.PI / 2;
+      topRail.position.set(0, 5.2, 0);
+      group.add(topRail);
+
+      // Mid Rail
+      const midRail = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 34, 8), railMat);
+      midRail.rotation.x = Math.PI / 2;
+      midRail.position.set(0, 2.8, 0);
+      group.add(midRail);
+
+      // Upright Stanchions
+      for (const sz of [-15, 0, 15]) {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 5.4, 8), railMat);
+        post.position.set(0, 2.7, sz);
+        group.add(post);
+      }
+
+      this.scene.add(group);
+    }
   }
 
   initCrosswalks(rw, whiteMat) {
