@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TrafficFlow-AI: Comprehensive Technology Stack, Tools & Architecture Specification</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 14mm 14mm 14mm 14mm;
+      @bottom-right {
+        content: counter(page) " of " counter(pages);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 10pt;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Cover / Header Banner */
+    .header-banner {
+      background: linear-gradient(135deg, #090d16 0%, #0f172a 60%, #1e293b 100%);
+      color: #ffffff;
+      padding: 22px 24px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title h1 {
+      font-size: 19pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .tag-badge {
+      display: inline-block;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    .tag-blue { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .tag-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+
+    .header-subtitle {
+      font-size: 11pt;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 8pt;
+    }
+
+    .meta-item strong {
+      display: block;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      font-size: 7pt;
+      letter-spacing: 0.4px;
+    }
+
+    .meta-item span {
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    /* Section Headings */
+    h2 {
+      font-size: 12.5pt;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 5px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+      text-align: justify;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      margin-bottom: 14px;
+      font-size: 8.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #0f172a;
+      text-align: left;
+      padding: 7px 10px;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    td {
+      padding: 6.5px 10px;
+      border: 1px solid #e2e8f0;
+      vertical-align: top;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    td strong {
+      color: #0f172a;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* Callout & Architecture Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+      page-break-inside: avoid;
+    }
+
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 11px 13px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .card.blue { border-left: 4px solid #0284c7; }
+    .card.green { border-left: 4px solid #10b981; }
+    .card.purple { border-left: 4px solid #8b5cf6; }
+    .card.amber { border-left: 4px solid #f59e0b; }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 9.5pt;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #0f172a;
+    }
+
+    .card ul {
+      margin-left: 16px;
+      font-size: 8.5pt;
+      color: #475569;
+    }
+
+    .card li {
+      margin-bottom: 3px;
+    }
+
+    /* Diagram Block */
+    .diagram-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      line-height: 1.35;
+      margin: 10px 0 14px 0;
+      overflow-x: auto;
+      border: 1px solid #334155;
+      page-break-inside: avoid;
+      white-space: pre;
+    }
+
+    .highlight-pill {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Page Break Rules */
+    .page-break {
+      page-break-before: always;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 7.5pt;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 8px;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =======================================================================
+       HEADER / COVER BANNER
+       ======================================================================= -->
+  <div class="header-banner">
+    <div class="brand-row">
+      <div class="brand-title">
+        <span style="font-size: 24pt;">🚦</span>
+        <h1>TRAFFICFLOW-AI</h1>
+      </div>
+      <div>
+        <span class="tag-badge tag-blue">Smart City Digital Twin</span>
+        <span class="tag-badge tag-green">60 FPS WebGL</span>
+        <span class="tag-badge tag-purple">Edge IoT Architecture</span>
+      </div>
+    </div>
+    <div class="header-subtitle">
+      Comprehensive Engineering Technology Stack, Programming Languages, Architectural Frameworks & Hardware Blueprints
+    </div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <strong>Application Domain</strong>
+        <span>ITS / Cyber-Physical</span>
+      </div>
+      <div class="meta-item">
+        <strong>Primary Stack</strong>
+        <span>Python 3.10+ / Three.js</span>
+      </div>
+      <div class="meta-item">
+        <strong>AI Optimization</strong>
+        <span>Webster + RL DQN</span>
+      </div>
+      <div class="meta-item">
+        <strong>Standard Benchmarks</strong>
+        <span>MoRTH / Indian Smart City</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       SECTION 1: PROGRAMMING LANGUAGES & RUNTIMES
+       ======================================================================= -->
+  <h2><span>1.</span> Programming Languages & Core Runtime Environments</h2>
+  <p>
+    TrafficFlow-AI is engineered with a strict <strong>zero heavy-dependency architecture</strong>, completely decoupling the backend physics and AI simulation engine from the high-performance client presentation layer. The system runs out-of-the-box on standard Python without requiring C++ compilation, SUMO, or Docker.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Language / Runtime</th>
+        <th style="width: 18%;">Version / Target</th>
+        <th>Engineering Role & Technical Responsibilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Python</strong></td>
+        <td><code>3.10 / 3.11 / 3.12+</code></td>
+        <td>
+          <strong>Backend Simulation Engine & REST Service:</strong> Runs the dual-twin simulation loops, physical car-following kinematics (IDM), Webster demand-responsive signal allocation, Deep Q-Network reinforcement learning policies, multi-sensor collision triage (108 CAD), and 14 automated verification test suites.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>JavaScript</strong></td>
+        <td><code>Modern ES6+ Modules</code></td>
+        <td>
+          <strong>Client Simulation & 3D WebGL Pipeline:</strong> Manages the 60 FPS Three.js rendering scene graph, kinematic dead-reckoning position extrapolation, Web Audio API procedural acoustics, and asynchronous telemetry state synchronization (16.6 Hz).
+        </td>
+      </tr>
+      <tr>
+        <td><strong>HTML5</strong></td>
+        <td><code>HTML5 Semantic</code></td>
+        <td>
+          <strong>Viewport & HUD Structure:</strong> Multi-layered 3D/2D canvas viewports, top perception HUD ribbons, interactive situation modes showcase bar, emergency dispatch drawers, and accessible telemetry cards.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>CSS3</strong></td>
+        <td><code>CSS Custom Properties</code></td>
+        <td>
+          <strong>Glassmorphism & Cyber-Dark Design System:</strong> Hardware-accelerated frosted glass panels (<code>backdrop-filter: blur(14px)</code>), responsive CSS grid/flexbox layouts, situational neon status badges, and print-optimized media queries.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- =======================================================================
+       SECTION 2: 3D GRAPHICS & VISUAL COMPUTING ENGINE
+       ======================================================================= -->
+  <h2><span>2.</span> 3D Visual Computing & Digital Twin Graphics Engine</h2>
+  <p>
+    The visual core is powered by <strong>Three.js WebGL 2.0</strong>, delivering a photorealistic, hardware-accelerated 3D environment running at a locked 60 FPS with zero frame drops:
+  </p>
+
+  <div class="card-grid">
+    <div class="card blue">
+      <div class="card-title">🌌 Celestial Skydome & Atmosphere</div>
+      <ul>
+        <li><strong>Procedural Inverted Skydome:</strong> Custom 1024x512 canvas gradient transitioning from space zenith (<code>#020617</code>) to warm horizon dusk haze (<code>#2a4875</code>).</li>
+        <li><strong>Distant Skyline Silhouettes:</strong> Procedural building profiles with illuminated micro-window slits and celestial star clusters.</li>
+        <li><strong>Depth Mist:</strong> Exponential ground fog (<code>0x0d1a33</code>, density 0.00062) seamlessly blending distant viaducts and terrain.</li>
+      </ul>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">💡 Volumetric Beams & Shaders</div>
+      <ul>
+        <li><strong>Forward Headlight Beams:</strong> Conical light meshes (<code>CylinderGeometry</code> with additive blending) projecting dynamic illumination forward on asphalt.</li>
+        <li><strong>Asphalt Illumination Pools:</strong> Projected oval ground light spots dynamically tracking vehicle headings and steering angles.</li>
+        <li><strong>Dynamic Brake Lights:</strong> Taillights flare to high-radiance crimson (<code>0xff1111</code>) upon deceleration or red-light stopping.</li>
+      </ul>
+    </div>
+
+    <div class="card amber">
+      <div class="card-title">🎨 Procedural Texture Generators</div>
+      <ul>
+        <li><strong>Aggregate Bitumen Asphalt:</strong> High-density stippling noise with longitudinal rubberized tire-wear paths along travel lanes.</li>
+        <li><strong>Flagstone Sidewalk Paving:</strong> 512x512 grid joints with amber tactile accessibility blister paving at crosswalk curb cuts.</li>
+        <li><strong>Photovoltaic Silicon Wafer:</strong> 36-cell polycrystalline solar texture with fine silver micro-busbars and aluminum framing.</li>
+      </ul>
+    </div>
+
+    <div class="card purple">
+      <div class="card-title">🚀 60 FPS Performance Optimization</div>
+      <ul>
+        <li><strong>Static Matrix Freezing:</strong> <code>matrixAutoUpdate = false</code> on 800+ static buildings, curbs, and gantries, eliminating ~48,000 CPU matrix calculations/sec.</li>
+        <li><strong>PointLight Elimination:</strong> Zero dynamic shadow passes; relies on emissive shaders and geometric light cones for fluid rendering.</li>
+        <li><strong>Throttled Raycasting:</strong> Mouse vehicle-inspection raycasting throttled to 1 check per render frame, eliminating cursor jitter.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- =======================================================================
+       SECTION 3: BACKEND ARCHITECTURE & REST APIS
+       ======================================================================= -->
+  <h2><span>3.</span> Backend Service Layer & REST API Engine</h2>
+  <p>
+    Built using Python's standard library, the backend service architecture features high-concurrency request servicing and decoupled simulation threads:
+  </p>
+
+  <div class="diagram-box">
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                    TRAFFICFLOW-AI FULL-STACK CYBER-PHYSICAL PIPELINE                            │
+└────────────────────────────────┬────────────────────────────────────────────────────────────────┘
+                                 │
+         ┌───────────────────────┴───────────────────────┐
+         ▼                                               ▼
+ ┌───────────────────────────────┐               ┌───────────────────────────────┐
+ │   HTTP Service Layer (8080)   │               │ Simulation Engine Worker      │
+ │ - ThreadingHTTPServer         │               │ - 30 Hz Physics Tick Loop     │
+ │ - REST API Handlers & Decoders│◄──(State API)─┤ - IDM Car-Following Kinematics│
+ │ - Situational Mode Dispatcher │               │ - Poisson Vehicle Generator   │
+ │ - Cloudflare Tunnel Proxy     │               │ - Webster / RL DQN Controller │
+ └───────────────┬───────────────┘               └───────────────┬───────────────┘
+                 │                                               │
+                 ▼                                               ▼
+ ┌───────────────────────────────┐               ┌───────────────────────────────┐
+ │  Frontend Client (Browser)    │               │ Multi-Sensor Triage & CAD     │
+ │ - Three.js WebGL (60 FPS)     │               │ - 108 Emergency Dispatch CAD  │
+ │ - 2D Canvas Fallback & Charts │               │ - Sub-Second Crash Severity   │
+ │ - Web Audio Procedural Sound  │               │ - Minor Scrape Suppression    │
+ └───────────────────────────────┘               └───────────────────────────────┘
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">API Endpoint</th>
+        <th style="width: 10%;">Method</th>
+        <th style="width: 25%;">Payload / Parameters</th>
+        <th>Description & Operational Trigger</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/api/state</code></td>
+        <td><code>GET</code></td>
+        <td>None</td>
+        <td>Streams full dual-twin telemetry: vehicle $x,y,z$, heading angles, speeds, signal phases, civic states, and ₹ economic savings.</td>
+      </tr>
+      <tr>
+        <td><code>/api/situation/mode</code></td>
+        <td><code>POST</code></td>
+        <td><code>{"mode": "AMBULANCE" | ...}</code></td>
+        <td>Instantly triggers demonstration modes (108 Ambulance, Critical Crash, Minor Scrape, Ped Scramble, Pothole Alert, Garbage Overflow, Waterlogging).</td>
+      </tr>
+      <tr>
+        <td><code>/api/accident/trigger</code></td>
+        <td><code>POST</code></td>
+        <td><code>{"severity": "CRITICAL", "roadId": "A"}</code></td>
+        <td>Injects multi-sensor collision (optical flow anomaly + 6.8G deceleration) and executes sub-second emergency triage.</td>
+      </tr>
+      <tr>
+        <td><code>/api/pedestrian/surge</code></td>
+        <td><code>POST</code></td>
+        <td><code>{}</code></td>
+        <td>Triggers student crowd surge near campus, locking all vehicular roads at Red and initiating the Barnes Dance Scramble.</td>
+      </tr>
+      <tr>
+        <td><code>/api/control</code></td>
+        <td><code>POST</code></td>
+        <td><code>{"action": "play" | "pause" | "reset"}</code></td>
+        <td>Controls digital twin playback state and global clock stepping.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- =======================================================================
+       SECTION 4: AI MODELS, MATHEMATICAL LOGIC & PHYSICS
+       ======================================================================= -->
+  <h2><span>4.</span> Artificial Intelligence, Kinematics & Traffic Optimization Models</h2>
+
+  <div class="card-grid">
+    <div class="card blue">
+      <div class="card-title">🚗 Intelligent Driver Model (IDM) Physics</div>
+      <p style="font-size: 8.5pt;">
+        Vehicles follow continuous non-linear differential equations governing acceleration:
+      </p>
+      <code>a = a_max * [ 1 - (v/v0)^4 - (s*(v, Δv) / s)^2 ]</code>
+      <p style="font-size: 8.5pt; margin-top: 4px;">
+        Where <code>s*</code> represents the dynamic desired headway, factoring safe stopping distance, driver reaction time (1.0s), and comfortable deceleration (2.0 m/s²).
+      </p>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">⏱️ Webster Demand-Responsive Optimization</div>
+      <p style="font-size: 8.5pt;">
+        Dynamically calculates allocated green times based on queue accumulation and saturation headways:
+      </p>
+      <code>Green = clamp(G_min, t_lost + (Queue/lanes * h_sat), G_max)</code>
+      <p style="font-size: 8.5pt; margin-top: 4px;">
+        Features automatic <strong>Gap-Out Early Clear</strong>: if an approach clears before maximum green expires, the controller transitions to yellow early to serve waiting cross-streets.
+      </p>
+    </div>
+
+    <div class="card purple">
+      <div class="card-title">🤖 Deep Q-Network (RL DQN Controller)</div>
+      <p style="font-size: 8.5pt;">
+        Reinforcement learning policy evaluating state-action pairs <code>Q(s, a)</code>. The reward function optimizes throughput while enforcing starvation equity bonuses (+1.5/sec) for neglected approaches.
+      </p>
+    </div>
+
+    <div class="card amber">
+      <div class="card-title">🚦 Arterial Platoon Wave Progression</div>
+      <p style="font-size: 8.5pt;">
+        Synchronizes 3 consecutive junctions (Upstream Feeder, Central Main, Downstream Exit) along the metropolitan corridor at 50 km/h progression speeds, eliminating stop-and-go waves.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- =======================================================================
+       SECTION 5: PHYSICAL SMART POLE EDGE IOT HARDWARE BLUEPRINT
+       ======================================================================= -->
+  <h2><span>5.</span> Physical Smart Pole Edge IoT Hardware Architecture (Lab Replica)</h2>
+  <p>
+    Modeled 1:1 after the college laboratory hardware prototype, the smart pole integrates multidisciplinary electronics, renewable energy harvesting, and public safety infrastructure:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Hardware Component</th>
+        <th style="width: 30%;">Technical Specification</th>
+        <th>Functional Role & Cyber-Physical Integration</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Structural Mast</strong></td>
+        <td>6-foot Industrial UPVC Conduit (Grey, Ø 3.7")</td>
+        <td>Weatherproof cylindrical vertical riser with circular 8-bolt flanged mounting collar, dark walnut wooden platform, and translucent footing crate.</td>
+      </tr>
+      <tr>
+        <td><strong>Solar Energy Canopy</strong></td>
+        <td>12V 10W Polycrystalline PV (36-cell wafer)</td>
+        <td>Mounted on top square wooden canopy platform with 4-bolt circular flange, providing autonomous off-grid solar energy harvesting.</td>
+      </tr>
+      <tr>
+        <td><strong>Downward Luminaire</strong></td>
+        <td>90° UPVC Elbow + 12V High-CRI Frosted LED</td>
+        <td>Downward elbow bracket casting a warm conical beam (<code>#fef08a</code>) and circular illumination footprint on the sidewalk apron.</td>
+      </tr>
+      <tr>
+        <td><strong>Environmental Sensor</strong></td>
+        <td><strong>MQ-135 Gas / Air Quality Sensor</strong></td>
+        <td>Housed in upper rectangular cutout behind perforated stainless-steel canister; monitors ambient AQI, CO₂, smoke, and ammonia.</td>
+      </tr>
+      <tr>
+        <td><strong>Presence Radar</strong></td>
+        <td><strong>RCWL-0516 / 24GHz mmWave Radar</strong></td>
+        <td>Micro-strip microwave Doppler sensor detecting approaching vehicular speed and pedestrian presence in the curb detection zone.</td>
+      </tr>
+      <tr>
+        <td><strong>Visual Status Ring</strong></td>
+        <td><strong>WS2812B NeoPixel 360° RGB LED Ring</strong></td>
+        <td>Mounted around the elbow collar; dynamically shifts between Emerald (normal), Amber (pothole/waste alert), and Red/Blue strobes (108 emergency CAD).</td>
+      </tr>
+      <tr>
+        <td><strong>Public Interface</strong></td>
+        <td><strong>0.96" I2C OLED Display + 112 SOS Button</strong></td>
+        <td>Lower interactive cutout displaying real-time street environmental telemetry (<code>AQI 42 PPM | TEMP 28°C</code>) and emergency panic call switch with white bezel.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- =======================================================================
+       SECTION 6: COMPUTER VISION CIVIC & SUSTAINABLE DETECTIONS
+       ======================================================================= -->
+  <h2><span>6.</span> Computer Vision Civic & Sustainable Detection Stack</h2>
+
+  <div class="card-grid">
+    <div class="card amber">
+      <div class="card-title">🕳️ Road Pothole Fissures (PWD Work Orders)</div>
+      <p style="font-size: 8.5pt;">
+        <strong>Perception Model:</strong> Road surface camera segmentation monitors asphalt craters, measuring diameter and depth severity.
+        <br><strong>Action:</strong> Automated Public Works Department (PWD) road repair work orders dispatched with exact coordinates.
+        <br><strong>3D Visual:</strong> Rendered with broken aggregate stone chips, radial asphalt cracks, and two reflective fluorescent orange/white municipal PWD safety cones.
+      </p>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">🗑️ Solid Waste Overflows (SWM SLAs)</div>
+      <p style="font-size: 8.5pt;">
+        <strong>Perception Model:</strong> Municipal bin volume tracking and ground perimeter litter scatter analysis.
+        <br><strong>Action:</strong> Automated Solid Waste Management (SWM) route optimization and municipal clearance SLA dispatch.
+        <br><strong>3D Visual:</strong> Green wheelie bin with rubber wheels, steel axle, yellow ajar lid, corrugated cardboard parcel box with shipping label, and crushed soda cans.
+      </p>
+    </div>
+
+    <div class="card blue">
+      <div class="card-title">🌊 Urban Stormwater Drainage & Waterlogging</div>
+      <p style="font-size: 8.5pt;">
+        <strong>Perception Model:</strong> Hydrological curb monitoring detects standing water depth (&gt; 5 cm) and clogged drainage catch-basins.
+        <br><strong>Action:</strong> Warns approaching vehicles of hydroplaning risk and generates municipal stormwater drain maintenance alerts.
+        <br><strong>3D Visual:</strong> Specular-reflective water puddle with darker moisture-soaked asphalt halo and animated expanding ripples.
+      </p>
+    </div>
+
+    <div class="card purple">
+      <div class="card-title">💥 Sub-Second Crash Triage (Bandwidth-Conscious)</div>
+      <p style="font-size: 8.5pt;">
+        <strong>Perception Model:</strong> Fusion of CCTV optical flow, G-force accelerometers, and acoustic shockwaves.
+        <br><strong>Critical 6.8G Crash:</strong> Dials 108 CAD to City Trauma Center + perimeter red signal lockdown.
+        <br><strong>Minor 1.3G Scrape:</strong> Strictly <strong>suppresses</strong> 108 emergency calls to preserve critical ambulance bandwidth.
+      </p>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       SECTION 7: ECONOMIC ROI & TOOLING SUMMARY
+       ======================================================================= -->
+  <h2><span>7.</span> Economic Valuation Engine & Tooling Summary</h2>
+  <p>
+    Directly grounded in Indian Ministry of Road Transport and Highways (<strong>MoRTH</strong>) standards, the digital twin quantifies tangible financial and ESG savings:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Domain</th>
+        <th style="width: 35%;">Standard / Formula</th>
+        <th>Resulting Benchmark in Prototype</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Fuel Economy</strong></td>
+        <td>Idling fuel consumption @ 1.2 L/hr; Petrol price @ <strong>₹102.50 / Liter</strong></td>
+        <td>41.4% reduction in idle fuel consumption; direct reporting in Liters and ₹ INR saved.</td>
+      </tr>
+      <tr>
+        <td><strong>Commuter Delay Value</strong></td>
+        <td>MoRTH Economic Time Value @ <strong>₹150.00 / Commuter Hour</strong></td>
+        <td>Quantified in <strong>₹ in Lakhs/Year</strong> saved per intersection across traffic scenarios.</td>
+      </tr>
+      <tr>
+        <td><strong>Development Tools</strong></td>
+        <td><strong>Git & GitHub</strong>, <strong>Cloudflare Tunnel (HTTPS)</strong>, <strong>Chrome CDP</strong></td>
+        <td>Secure public edge deployment, automated headless test harness, and collaborative version control.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer-note">
+    TrafficFlow-AI • Smart City Adaptive Traffic Signal Digital Twin & Edge IoT Infrastructure • Official Technical Specification Report
+  </div>
+
+</body>
+</html>
