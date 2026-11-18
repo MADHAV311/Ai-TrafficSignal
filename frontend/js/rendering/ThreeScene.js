@@ -3175,16 +3175,6 @@ export class ThreeScene {
       leadCar.add(hlLens);
     }
 
-    // High-beam center marker
-    const highBeam = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.45, 0.45, 0.4, 10).rotateZ(Math.PI / 2),
-      headlightMat
-    );
-    highBeam.position.set(16.5, 17.4, 0);
-    leadCar.add(highBeam);
-
-    // Forward Track Illumination (Optimized: high-beam emissive lamp provides crisp visual beam)
-
     // Undercarriage Bogies, Equipment & Roof HVAC
     addBogie(leadCar, -8);
     addBogie(leadCar, 8);
@@ -3402,48 +3392,8 @@ export class ThreeScene {
 
   // Helper: Adds dual front LED headlights with realistic forward light beam cones & ground illumination
   addHeadlights(group, x, y, z) {
-    const hl1 = new THREE.Mesh(this.geoPool.headlight, this.matPool.headlight);
-    hl1.position.set(x, y, z);
-    const hl2 = new THREE.Mesh(this.geoPool.headlight, this.matPool.headlight);
-    hl2.position.set(x, y, -z);
-    group.add(hl1);
-    group.add(hl2);
-
-    if (!this.geoPool.headlightBeam) {
-      this.geoPool.headlightBeam = new THREE.CylinderGeometry(0.9, 7.5, 34, 10, 1, true).rotateZ(-Math.PI / 2);
-      this.matPool.headlightBeam = new THREE.MeshBasicMaterial({
-        color: 0xfff7ed,
-        transparent: true,
-        opacity: 0.12,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        depthWrite: false
-      });
-      this.geoPool.headlightSpot = new THREE.PlaneGeometry(14, 28);
-      this.matPool.headlightSpot = new THREE.MeshBasicMaterial({
-        color: 0xffedd5,
-        transparent: true,
-        opacity: 0.16,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-    }
-
-    const beam1 = new THREE.Mesh(this.geoPool.headlightBeam, this.matPool.headlightBeam);
-    beam1.position.set(x + 17, y - 1.0, z);
-    beam1.rotation.y = -0.05;
-    group.add(beam1);
-
-    const beam2 = new THREE.Mesh(this.geoPool.headlightBeam, this.matPool.headlightBeam);
-    beam2.position.set(x + 17, y - 1.0, -z);
-    beam2.rotation.y = 0.05;
-    group.add(beam2);
-
-    const spot = new THREE.Mesh(this.geoPool.headlightSpot, this.matPool.headlightSpot);
-    spot.rotation.x = -Math.PI / 2;
-    spot.rotation.z = Math.PI / 2;
-    spot.position.set(x + 30, 0.32, 0);
-    group.add(spot);
+    // Vehicle lights removed per user requirement (eliminates GPU blending overhead and clutter)
+    return;
   }
 
   // Helper: Adds dual rear red LED taillights and tracks them for braking
@@ -3621,15 +3571,10 @@ export class ThreeScene {
     rearBeaconR.position.set(-17.5, 18.0, -7.5);
     group.add(rearBeaconR);
 
-    const strobeLight = new THREE.PointLight(0xff0044, 2.5, 70, 2);
-    strobeLight.position.set(10, 17, 0);
-    group.add(strobeLight);
-
     group.userData.ambulanceRedPod = redPod;
     group.userData.ambulanceBluePod = bluePod;
     group.userData.rearBeaconL = rearBeaconL;
     group.userData.rearBeaconR = rearBeaconR;
-    group.userData.strobeLight = strobeLight;
 
     // 6. Rear Windows & Details
     const rearWindow1 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 4.0, 4.0), this.matPool.glass);
@@ -3704,13 +3649,8 @@ export class ThreeScene {
     pBluePod.position.set(-2, 16.5, -2.5);
     group.add(pBluePod);
 
-    const strobeLight = new THREE.PointLight(0x0055ff, 2.5, 65, 2);
-    strobeLight.position.set(-2, 17.5, 0);
-    group.add(strobeLight);
-
     group.userData.policeRedPod = pRedPod;
     group.userData.policeBluePod = pBluePod;
-    group.userData.strobeLight = strobeLight;
 
     // 6. Tactical Wheels & Lights
     this.addWheels(group, 34, 16, 3.5, 0x111827);
@@ -3782,13 +3722,8 @@ export class ThreeScene {
     b2.position.set(20, 17.2, -6.0);
     group.add(b2);
 
-    const strobeLight = new THREE.PointLight(0xff2200, 2.5, 70, 2);
-    strobeLight.position.set(20, 18.5, 0);
-    group.add(strobeLight);
-
     group.userData.fireBeacon1 = b1;
     group.userData.fireBeacon2 = b2;
-    group.userData.strobeLight = strobeLight;
 
     // 6. 6 Heavy-Duty Wheels (Dual Rear Axle)
     const wheelOffsets = [
@@ -3894,10 +3829,7 @@ export class ThreeScene {
     rCap2.position.set(-6.5, 3.5, -6.8);
     group.add(rCap2);
 
-    // 6. Round Front Headlight & Rear Taillights
-    const hl = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 12), this.matPool.headlight);
-    hl.position.set(11.2, 6.5, 0);
-    group.add(hl);
+    // 6. Rear Taillights
     this.addTaillights(group, -10.2, 4.5, 4.5);
   }
 
@@ -4115,13 +4047,17 @@ export class ThreeScene {
         mesh.userData.currentZ = v.y;
       }
 
-      // Record latest server telemetry targets
-      mesh.userData.targetX = v.x;
-      mesh.userData.targetZ = v.y;
+      // Fresh telemetry coordinate packet detection
+      if (mesh.userData.serverX !== v.x || mesh.userData.serverZ !== v.y) {
+        mesh.userData.serverX = v.x;
+        mesh.userData.serverZ = v.y;
+        mesh.userData.serverTime = performance.now();
+      }
+
       mesh.userData.speed = v.speed || 0;
       mesh.userData.angle = v.angle || 0;
 
-      // Dynamic Strobe & Beacon Flash for Emergency Vehicles
+      // Dynamic Strobe & Beacon Flash for Emergency Vehicles (Mesh colors - zero PointLight overhead)
       if (mesh.userData.ambulanceRedPod && mesh.userData.ambulanceBluePod) {
         const t = Date.now() * 0.02;
         const isRed = Math.sin(t) > 0;
@@ -4129,10 +4065,6 @@ export class ThreeScene {
         mesh.userData.ambulanceBluePod.material.color.setHex(isRed ? 0x001133 : 0x0077ff);
         if (mesh.userData.rearBeaconL) mesh.userData.rearBeaconL.material.color.setHex(isRed ? 0xff0022 : 0x220005);
         if (mesh.userData.rearBeaconR) mesh.userData.rearBeaconR.material.color.setHex(isRed ? 0x001133 : 0x0077ff);
-        if (mesh.userData.strobeLight) {
-          mesh.userData.strobeLight.color.setHex(isRed ? 0xff0033 : 0x0066ff);
-          mesh.userData.strobeLight.intensity = Math.abs(Math.sin(t * 2)) * 3.0;
-        }
       }
 
       if (mesh.userData.policeRedPod && mesh.userData.policeBluePod) {
@@ -4140,10 +4072,6 @@ export class ThreeScene {
         const isRed = Math.sin(t) > 0;
         mesh.userData.policeRedPod.material.color.setHex(isRed ? 0xff0022 : 0x220005);
         mesh.userData.policeBluePod.material.color.setHex(isRed ? 0x001133 : 0x0077ff);
-        if (mesh.userData.strobeLight) {
-          mesh.userData.strobeLight.color.setHex(isRed ? 0xff0033 : 0x0066ff);
-          mesh.userData.strobeLight.intensity = Math.abs(Math.sin(t * 2)) * 3.0;
-        }
       }
 
       if (mesh.userData.fireBeacon1 && mesh.userData.fireBeacon2) {
@@ -4151,22 +4079,10 @@ export class ThreeScene {
         const flash1 = Math.sin(t) > 0;
         mesh.userData.fireBeacon1.material.color.setHex(flash1 ? 0xff1100 : 0x330500);
         mesh.userData.fireBeacon2.material.color.setHex(!flash1 ? 0xffaa00 : 0x331500);
-        if (mesh.userData.strobeLight) {
-          mesh.userData.strobeLight.intensity = flash1 ? 2.5 : 1.0;
-        }
-      }
-
-      // Dynamic Brake Lights (Turns bright red when stopping/stopped)
-      if (mesh.userData.taillights) {
-        const isBraking = (mesh.userData.speed < 4) || Boolean(v.brakeLightsOn);
-        const tColor = isBraking ? 0xff1111 : 0x550000;
-        for (const tl of mesh.userData.taillights) {
-          tl.material.color.setHex(tColor);
-        }
       }
     }
 
-    // Continuous 60 FPS forward kinematic integration for ALL vehicles
+    // Continuous 60 FPS forward kinematic integration for ALL vehicles (Feedforward + Gentle Proportional Drift)
     for (const [id, mesh] of this.vehicleMeshes.entries()) {
       if (!activeIds.has(id)) {
         this.scene.remove(mesh);
@@ -4176,23 +4092,37 @@ export class ThreeScene {
 
       const speed = mesh.userData.speed || 0;
       const angle = mesh.userData.angle || 0;
+      const sX = mesh.userData.serverX;
+      const sZ = mesh.userData.serverZ;
 
-      if (speed > 1) {
-        // Extrapolate forward along heading vector at current velocity
+      if (sX === undefined || sZ === undefined) continue;
+
+      if (speed > 4.0) {
+        // 1. Primary Feedforward Velocity: guarantees continuous non-zero motion every single frame
         const vx = Math.cos(angle) * speed;
         const vz = Math.sin(angle) * speed;
+
         mesh.position.x += vx * dt;
         mesh.position.z += vz * dt;
 
-        // Smooth error correction toward latest server packet
-        const errX = mesh.userData.targetX - mesh.position.x;
-        const errZ = mesh.userData.targetZ - mesh.position.z;
-        mesh.position.x += errX * Math.min(1.0, 7.5 * dt);
-        mesh.position.z += errZ * Math.min(1.0, 7.5 * dt);
+        // 2. Gentle Proportional Correction toward latest server ground-truth
+        const errX = sX - mesh.position.x;
+        const errZ = sZ - mesh.position.z;
+        const errDistSq = errX * errX + errZ * errZ;
+
+        if (errDistSq > 3600) {
+          // Respawn or teleport: snap immediately
+          mesh.position.x = sX;
+          mesh.position.z = sZ;
+        } else {
+          // Damped drift: nudges the vehicle without ever stalling forward velocity
+          mesh.position.x += errX * Math.min(1.0, 2.5 * dt);
+          mesh.position.z += errZ * Math.min(1.0, 2.5 * dt);
+        }
       } else {
-        // Vehicle is stopping / stopped at red light: smoothly settle to stop line
-        mesh.position.x += (mesh.userData.targetX - mesh.position.x) * Math.min(1.0, 10.0 * dt);
-        mesh.position.z += (mesh.userData.targetZ - mesh.position.z) * Math.min(1.0, 10.0 * dt);
+        // Vehicle is stopping / stopped at red light: smoothly settle to exact stop line
+        mesh.position.x += (sX - mesh.position.x) * Math.min(1.0, 12.0 * dt);
+        mesh.position.z += (sZ - mesh.position.z) * Math.min(1.0, 12.0 * dt);
       }
 
       // Smooth heading rotation interpolation
@@ -4200,7 +4130,7 @@ export class ThreeScene {
       let diff = targetRot - mesh.rotation.y;
       while (diff < -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
-      mesh.rotation.y += diff * Math.min(1.0, 14.0 * dt);
+      mesh.rotation.y += diff * Math.min(1.0, 16.0 * dt);
     }
 
     // 4. Traffic Signal Heads & Optics Sync (Real-Time LEDs, Stop Lines & Overhead Gantries)

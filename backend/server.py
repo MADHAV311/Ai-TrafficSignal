@@ -7,6 +7,11 @@ and exposes REST APIs + serves static frontend assets.
 import sys
 import os
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Ensure parent directory is in sys.path
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(CURRENT_DIR)
@@ -86,7 +91,6 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
 
     def do_GET(self):
-        print(f"[SERVER GET] {self.path}", flush=True)
         try:
             parsed = urllib.parse.urlparse(self.path)
             path = parsed.path
@@ -121,13 +125,14 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
 
             # Fallback to serving static files from root directory
             return super().do_GET()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
         except Exception as e:
             import traceback
             traceback.print_exc()
             sys.stderr.flush()
 
     def do_POST(self):
-        print(f"[SERVER POST] {self.path}", flush=True)
         try:
             parsed = urllib.parse.urlparse(self.path)
             path = parsed.path
@@ -200,13 +205,17 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
             })
 
     def _send_response_dict(self, res):
-        body_bytes = res["body"].encode("utf-8")
-        self.send_response(res["status"])
-        self.send_header("Content-Type", res["content_type"])
-        self.send_header("Content-Length", str(len(body_bytes)))
-        self.end_headers()
-        self.wfile.write(body_bytes)
-        self.wfile.flush()
+        try:
+            body_bytes = res["body"].encode("utf-8")
+            self.send_response(res["status"])
+            self.send_header("Content-Type", res["content_type"])
+            self.send_header("Content-Length", str(len(body_bytes)))
+            self.send_header("Connection", "keep-alive")
+            self.end_headers()
+            self.wfile.write(body_bytes)
+            self.wfile.flush()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
 
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -219,8 +228,10 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def log_message(self, format, *args):
-        # Mute repetitive state polling log noise
-        if len(args) > 0 and "/api/state" in str(args[0]):
+        # Mute state polling and routine static request logs for maximum performance
+        if len(args) > 0 and ("/api/state" in str(args[0]) or "/api/" in str(args[0])):
+            return
+        if len(args) > 1 and str(args[1]) in ("200", "304"):
             return
         super().log_message(format, *args)
 

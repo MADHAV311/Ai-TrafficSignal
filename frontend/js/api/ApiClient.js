@@ -10,14 +10,19 @@ export class ApiClient {
   }
 
   async request(endpoint, options = {}) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 300);
+
     try {
       const res = await fetch(`${this.baseUrl}${endpoint}`, {
+        signal: options.signal || controller.signal,
         headers: {
           'Content-Type': 'application/json',
           ...(options.headers || {})
         },
         ...options
       });
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
@@ -30,8 +35,8 @@ export class ApiClient {
       }
       return await res.text();
     } catch (err) {
+      clearTimeout(timeoutId);
       this.isOnline = false;
-      console.warn(`[ApiClient] Error communicating with backend:`, err.message);
       throw err;
     }
   }
