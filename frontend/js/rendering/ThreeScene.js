@@ -39,6 +39,7 @@ export class ThreeScene {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     this.hoveredVehicleId = null;
+    this.mouseNeedsRaycast = false;
 
     // Shared Geometry Pool (prevents garbage collection lag)
     this.geoPool = {
@@ -86,10 +87,9 @@ export class ThreeScene {
       depth: true
     });
     this.renderer.setSize(width, height);
-    // Cap pixel ratio at 1.5 to prevent 4K screen GPU fillrate lag
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap; // Much faster than PCFSoftShadowMap
+    // Locked at 1.0 pixel ratio for maximum framerate & zero lag
+    this.renderer.setPixelRatio(1.0);
+    this.renderer.shadowMap.enabled = false;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
     this.container.appendChild(this.renderer.domElement);
@@ -124,6 +124,9 @@ export class ThreeScene {
     // 10b. 3D Civic Health & Sustainable Infrastructure (Potholes, Waste & Smart Pole)
     this.initCivicInfrastructure();
 
+    // 10c. Lock all static meshes for maximum 60 FPS zero-lag rendering
+    this.freezeStaticEnvironment();
+
     // 11. Event Listeners
     window.addEventListener('resize', () => this.onWindowResize());
     this.renderer.domElement.addEventListener('mousemove', (e) => this.onMouseMove(e));
@@ -139,20 +142,10 @@ export class ThreeScene {
     const hemiLight = new THREE.HemisphereLight(0x60a5fa, 0x0f172a, 0.75);
     this.scene.add(hemiLight);
 
-    // Directional Sunlight (1024x1024 shadow map for fast rendering)
+    // Directional Sunlight (Optimized without heavy shadow maps)
     const sunLight = new THREE.DirectionalLight(0xffedd5, 1.7);
     sunLight.position.set(-280, 550, -200);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
-    sunLight.shadow.camera.near = 100;
-    sunLight.shadow.camera.far = 1300;
-    const d = 420;
-    sunLight.shadow.camera.left = -d;
-    sunLight.shadow.camera.right = d;
-    sunLight.shadow.camera.top = d;
-    sunLight.shadow.camera.bottom = -d;
-    sunLight.shadow.bias = -0.0005;
+    sunLight.castShadow = false;
     this.scene.add(sunLight);
   }
 
@@ -506,6 +499,7 @@ export class ThreeScene {
     halo1Mesh.rotation.x = -Math.PI / 2;
     halo1Mesh.position.y = 0.05;
     pot1Group.add(halo1Mesh);
+    halo1Mesh.userData.dynamic = true;
     pot1Group.userData.halo = halo1Mesh;
 
     // Overhead 3D label
@@ -532,6 +526,7 @@ export class ThreeScene {
     halo2Mesh.rotation.x = -Math.PI / 2;
     halo2Mesh.position.y = 0.05;
     pot2Group.add(halo2Mesh);
+    halo2Mesh.userData.dynamic = true;
     pot2Group.userData.halo = halo2Mesh;
 
     const pot2Badge = this.createBadgeSprite('🕳️ POTHOLE #108 | 16cm | PWD LOGGED', 'rgba(15, 23, 42, 0.92)', '#38bdf8', '#7dd3fc');
@@ -618,6 +613,7 @@ export class ThreeScene {
     const ripMesh = new THREE.Mesh(ripGeo, ripMat);
     ripMesh.rotation.x = -Math.PI / 2;
     puddleGroup.add(ripMesh);
+    ripMesh.userData.dynamic = true;
     puddleGroup.userData.ripple = ripMesh;
 
     const puddleBadge = this.createBadgeSprite('🌊 WATERLOGGING 8.5cm | DRAIN TICKET #044', 'rgba(15, 23, 42, 0.92)', '#0ea5e9', '#7dd3fc');
@@ -691,10 +687,6 @@ export class ThreeScene {
     const bulb = new THREE.Mesh(new THREE.SphereGeometry(2.4, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfffbeb }));
     bulb.position.set(-11, 45, 0);
     poleGroup.add(bulb);
-
-    const streetLight = new THREE.PointLight(0xfffbeb, 1.5, 140, 1.2);
-    streetLight.position.set(-11, 44, 0);
-    poleGroup.add(streetLight);
 
     // 360° NeoPixel Addressable Strobe Ring around Elbow
     const strobeRingGeo = new THREE.TorusGeometry(2.6, 0.6, 8, 24);
@@ -1462,13 +1454,9 @@ export class ThreeScene {
         headsList.push(sHead);
       }
 
-      // 4. Downward Street Light Wash (Illuminates asphalt stop line & passing traffic)
-      const washLight = new THREE.PointLight(0xff2222, 1.8, 85, 2);
-      washLight.position.set(cfg.lightPos[0], cfg.lightPos[1], cfg.lightPos[2]);
-      gantryGroup.add(washLight);
-
+      // 4. Downward Street Light Wash (Optimized: asphalt stop line ground bars provide illumination with zero dynamic light overhead)
       this.scene.add(gantryGroup);
-      this.gantryLenses[cfg.id] = { heads: headsList, light: washLight };
+      this.gantryLenses[cfg.id] = { heads: headsList, light: null };
     }
   }
 
@@ -2889,10 +2877,7 @@ export class ThreeScene {
     highBeam.position.set(16.5, 17.4, 0);
     leadCar.add(highBeam);
 
-    // Forward Track Illumination Light
-    const trackLight = new THREE.PointLight(0xfff7ed, 1.2, 120);
-    trackLight.position.set(23, 9.6, 0);
-    leadCar.add(trackLight);
+    // Forward Track Illumination (Optimized: high-beam emissive lamp provides crisp visual beam)
 
     // Undercarriage Bogies, Equipment & Roof HVAC
     addBogie(leadCar, -8);
@@ -3078,10 +3063,7 @@ export class ThreeScene {
     highTail.position.set(-16.5, 17.4, 0);
     trailCar.add(highTail);
 
-    // Rear Red Track Marker Glow
-    const tailLightGlow = new THREE.PointLight(0xef4444, 1.2, 80);
-    tailLightGlow.position.set(-23, 9.6, 0);
-    trailCar.add(tailLightGlow);
+    // Rear Red Track Marker (Optimized: high-beam taillight mesh provides vivid red marker)
 
     // Undercarriage Bogies, Equipment & Roof HVAC
     addBogie(trailCar, -8);
@@ -3995,8 +3977,38 @@ export class ThreeScene {
       }
     }
 
+    // 6c. Throttled Vehicle Raycasting (Runs at most once per frame on actual mouse movement)
+    if (this.mouseNeedsRaycast && this.vehicleMeshes.size > 0) {
+      this.mouseNeedsRaycast = false;
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      const meshes = Array.from(this.vehicleMeshes.values());
+      const intersects = this.raycaster.intersectObjects(meshes, true);
+
+      if (intersects.length > 0) {
+        let root = intersects[0].object;
+        while (root.parent && !root.userData.vehicleId) {
+          root = root.parent;
+        }
+        this.hoveredVehicleId = root.userData.vehicleId;
+        this.renderer.domElement.style.cursor = 'pointer';
+      } else {
+        this.hoveredVehicleId = null;
+        this.renderer.domElement.style.cursor = 'default';
+      }
+    }
+
     // 7. Render 3D Scene
     this.renderer.render(this.scene, this.camera);
+  }
+
+  // Freeze all static meshes to lock world matrices and prevent per-frame matrix recalculation overhead
+  freezeStaticEnvironment() {
+    this.scene.updateMatrixWorld(true);
+    this.scene.traverse((obj) => {
+      if (obj.isMesh && !obj.userData.dynamic && (!this.metroTrain || !this.metroTrain.getObjectById(obj.id))) {
+        obj.matrixAutoUpdate = false;
+      }
+    });
   }
 
   // Camera Presets
@@ -4040,22 +4052,7 @@ export class ThreeScene {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    const meshes = Array.from(this.vehicleMeshes.values());
-    const intersects = this.raycaster.intersectObjects(meshes, true);
-
-    if (intersects.length > 0) {
-      let root = intersects[0].object;
-      while (root.parent && !root.userData.vehicleId) {
-        root = root.parent;
-      }
-      this.hoveredVehicleId = root.userData.vehicleId;
-      this.renderer.domElement.style.cursor = 'pointer';
-    } else {
-      this.hoveredVehicleId = null;
-      this.renderer.domElement.style.cursor = 'default';
-    }
+    this.mouseNeedsRaycast = true;
   }
 
   onClick(e) {

@@ -405,7 +405,7 @@ class AdaptiveAIController:
         if sel_detail.get("hasTransit"):
             reason = f"Transit Signal Priority (TSP): High-capacity bus prioritized on Road {selected_road} (Passenger Delay Equity)"
         elif self.algorithm_mode == "RL_DQN":
-            reason = f"Deep Q-Learning Agent: State-action Q(s,a) maximized for Road {selected_road} (Queue: {queue_to_clear} veh, Q-Score: {highest_score})"
+            reason = f"Deep Q-Learning Policy: State-action Q(s,a) maximized for Road {selected_road} (Queue: {queue_to_clear} veh, Q-Score: {highest_score})"
         elif self.algorithm_mode == "V2X_PRIORITY":
             reason = f"V2X Cooperative Green Wave: Coordinated Platoon & V2I Priority allocated to Road {selected_road}"
         elif sel_detail.get("starvationBonus", 0) > 25.0:

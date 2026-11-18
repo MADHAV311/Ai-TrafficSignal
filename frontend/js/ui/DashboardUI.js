@@ -1126,23 +1126,27 @@ export class DashboardUI {
       }
     }
 
-    // 6. Update Comparison Charts
+    // 6. Update Comparison Charts (Throttled to 1 Hz to prevent main-thread canvas reflow overhead)
     if (this.chartRenderer && sf && sa && sf.history && sa.history) {
-      if (this.chartWaitTime) {
-        this.chartRenderer.renderDualLineChart(
-          this.chartWaitTime,
-          sf.history.avgWaitTime,
-          sa.history.avgWaitTime,
-          { unit: 's', minMax: 25 }
-        );
-      }
-      if (this.chartQueue) {
-        this.chartRenderer.renderDualLineChart(
-          this.chartQueue,
-          sf.history.queueLength,
-          sa.history.queueLength,
-          { unit: ' cars', minMax: 15 }
-        );
+      const now = Date.now();
+      if (!this._lastChartRender || (now - this._lastChartRender) >= 1000) {
+        this._lastChartRender = now;
+        if (this.chartWaitTime) {
+          this.chartRenderer.renderDualLineChart(
+            this.chartWaitTime,
+            sf.history.avgWaitTime,
+            sa.history.avgWaitTime,
+            { unit: 's', minMax: 25 }
+          );
+        }
+        if (this.chartQueue) {
+          this.chartRenderer.renderDualLineChart(
+            this.chartQueue,
+            sf.history.queueLength,
+            sa.history.queueLength,
+            { unit: ' cars', minMax: 15 }
+          );
+        }
       }
     }
 

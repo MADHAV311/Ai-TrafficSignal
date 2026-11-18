@@ -160,7 +160,7 @@ class App {
           this.isFetchingState = false;
         }
       }
-      setTimeout(poll, 40); // 25 Hz
+      setTimeout(poll, 60); // 16.6 Hz responsive sync (Three.js extrapolates kinematics smoothly at 60 FPS)
     };
     poll();
   }
