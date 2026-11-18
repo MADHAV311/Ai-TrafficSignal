@@ -74,73 +74,73 @@ async def run():
             await call("Page.navigate", {"url": url})
             await asyncio.sleep(4)
 
-            # 1. Pothole Detail
-            print("[4] Capturing Pothole Detail...")
+            # 1. Pothole Detail (Looking down at Pothole #104 with PWD Cones)
+            print("[4] Capturing Pothole Detail with PWD Cones...")
             await call("Runtime.evaluate", {
                 "expression": """
                 (() => {
                     const ts = window.appInstance && window.appInstance.renderer && window.appInstance.renderer.threeScene;
                     if (ts) {
-                        ts.animateCameraTo(48, 55, -95, 17.5, 0, -140);
+                        ts.animateCameraTo(42, 38, -112, 17.5, 0, -140);
                     }
                 })()
                 """
             })
-            await asyncio.sleep(2)
+            await asyncio.sleep(2.5)
             shot1 = await call("Page.captureScreenshot", {"format": "png"})
             with open(os.path.join(ARTIFACT_DIR, "screenshot_3d_pothole_detail.png"), "wb") as f:
                 f.write(base64.b64decode(shot1["data"]))
             print("Saved screenshot_3d_pothole_detail.png")
 
-            # 2. Municipal Waste Receptacle
-            print("[5] Capturing Municipal Waste Bin...")
+            # 2. Smart Pole Hero Closeup (Looking West from the pedestrian plaza - zero occlusion)
+            print("[5] Capturing Smart Pole Hero...")
             await call("Runtime.evaluate", {
                 "expression": """
                 (() => {
                     const ts = window.appInstance && window.appInstance.renderer && window.appInstance.renderer.threeScene;
                     if (ts) {
-                        ts.animateCameraTo(-45, 30, -45, -78, 5, -78);
+                        ts.animateCameraTo(108, 24, -64, 75, 24, -64);
                     }
                 })()
                 """
             })
-            await asyncio.sleep(2)
+            await asyncio.sleep(2.5)
             shot2 = await call("Page.captureScreenshot", {"format": "png"})
-            with open(os.path.join(ARTIFACT_DIR, "screenshot_3d_garbage_bin.png"), "wb") as f:
-                f.write(base64.b64decode(shot2["data"]))
-            print("Saved screenshot_3d_garbage_bin.png")
-
-            # 3. Smart Pole Prototype
-            print("[6] Capturing Smart Pole Prototype...")
-            await call("Runtime.evaluate", {
-                "expression": """
-                (() => {
-                    const ts = window.appInstance && window.appInstance.renderer && window.appInstance.renderer.threeScene;
-                    if (ts) {
-                        ts.animateCameraTo(115, 45, -45, 76, 30, -76);
-                    }
-                })()
-                """
-            })
-            await asyncio.sleep(2)
-            shot3 = await call("Page.captureScreenshot", {"format": "png"})
             with open(os.path.join(ARTIFACT_DIR, "screenshot_3d_smart_pole.png"), "wb") as f:
-                f.write(base64.b64decode(shot3["data"]))
+                f.write(base64.b64decode(shot2["data"]))
             print("Saved screenshot_3d_smart_pole.png")
 
-            # 4. Civic Overview
-            print("[7] Capturing Civic Overview...")
+            # 3. Waterlogging Puddle Detail
+            print("[6] Capturing Waterlogging Puddle...")
             await call("Runtime.evaluate", {
                 "expression": """
                 (() => {
                     const ts = window.appInstance && window.appInstance.renderer && window.appInstance.renderer.threeScene;
                     if (ts) {
-                        ts.animateCameraTo(0, 360, 420, 0, 0, 0);
+                        ts.animateCameraTo(45, 24, 48, 65, 0, 70);
                     }
                 })()
                 """
             })
-            await asyncio.sleep(2)
+            await asyncio.sleep(2.5)
+            shot3 = await call("Page.captureScreenshot", {"format": "png"})
+            with open(os.path.join(ARTIFACT_DIR, "screenshot_3d_waterlogging.png"), "wb") as f:
+                f.write(base64.b64decode(shot3["data"]))
+            print("Saved screenshot_3d_waterlogging.png")
+
+            # 4. Cinematic 3D Isometric Overview
+            print("[7] Capturing Cinematic 3D Isometric Overview...")
+            await call("Runtime.evaluate", {
+                "expression": """
+                (() => {
+                    const ts = window.appInstance && window.appInstance.renderer && window.appInstance.renderer.threeScene;
+                    if (ts) {
+                        ts.animateCameraTo(0, 460, 500, 0, 0, 0);
+                    }
+                })()
+                """
+            })
+            await asyncio.sleep(2.5)
             shot4 = await call("Page.captureScreenshot", {"format": "png"})
             with open(os.path.join(ARTIFACT_DIR, "screenshot_3d_civic_overview.png"), "wb") as f:
                 f.write(base64.b64decode(shot4["data"]))
@@ -148,11 +148,7 @@ async def run():
 
     finally:
         print("[8] Terminating headless Chrome...")
-        proc.terminate()
-        try:
-            proc.wait(timeout=3)
-        except Exception:
-            proc.kill()
+        proc.kill()
 
 if __name__ == "__main__":
     asyncio.run(run())
