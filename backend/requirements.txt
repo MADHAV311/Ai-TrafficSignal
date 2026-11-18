@@ -1,10 +1,5 @@
-# TrafficFlow-AI: Smart City Adaptive Traffic Signal Digital Twin & Multi-Agent Swarm
-# TrafficFlow-AI Multi-Agent Swarm Dependencies
+# TrafficFlow-AI: Smart City Adaptive Traffic Signal Digital Twin & Edge IoT Infrastructure
 # Python >= 3.10
-
-# Fetch.ai Multi-Agent Swarm & Agent Chat Protocol (ACP)
-uagents>=0.25.0
-uagents-core>=0.4.0
 
 # Core Simulation Engine: Standard Library (Zero heavy C++ or SUMO runtime required)
 # - http.server (ThreadingHTTPServer)
