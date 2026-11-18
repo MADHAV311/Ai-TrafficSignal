@@ -169,6 +169,8 @@ class App {
     if (this.latestState) {
       const heroSim = (this.ui.heroMode === 'AI') ? this.latestState.simAdaptive : this.latestState.simFixed;
       if (heroSim) {
+        heroSim.civicState = this.latestState.civicState;
+        heroSim.situationMode = this.latestState.situationMode;
         this.renderer.render(heroSim);
       }
     }

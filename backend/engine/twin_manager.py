@@ -48,6 +48,78 @@ class TwinManager:
             "cleanAirRating": "A+"
         }
 
+        self.civic_state = {
+            "roadQualityIndex": 88.5,
+            "cleanlinessIndex": 94.2,
+            "activePotholes": [
+                {
+                    "id": "POT-001",
+                    "road": "A",
+                    "lane": 1,
+                    "dist": 140.0,
+                    "severity": "CRITICAL",
+                    "dimensions": "28cm x 12cm (depth 6.5cm)",
+                    "ticketId": "PWD-ROADS-2026-104",
+                    "status": "PWD_WORK_ORDER_DISPATCHED",
+                    "speedDampingFactor": 0.55
+                },
+                {
+                    "id": "POT-002",
+                    "road": "C",
+                    "lane": 2,
+                    "dist": 85.0,
+                    "severity": "MODERATE",
+                    "dimensions": "16cm x 9cm (depth 3.8cm)",
+                    "ticketId": "PWD-ROADS-2026-108",
+                    "status": "INSPECTION_PENDING",
+                    "speedDampingFactor": 0.75
+                }
+            ],
+            "garbageEvents": [
+                {
+                    "id": "GAR-001",
+                    "location": "North-West Sidewalk Plaza, Curb Corner",
+                    "type": "OVERFLOWING_MUNICIPAL_BIN",
+                    "dwellMinutes": 24.5,
+                    "slaThresholdMin": 30.0,
+                    "ticketId": "SWM-CITY-2026-089",
+                    "status": "DISPATCH_EN_ROUTE"
+                },
+                {
+                    "id": "GAR-002",
+                    "location": "East Approach Sidewalk Curb",
+                    "type": "ILLEGAL_LITTER_PILE",
+                    "dwellMinutes": 12.0,
+                    "slaThresholdMin": 30.0,
+                    "ticketId": "SWM-CITY-2026-092",
+                    "status": "DETECTED_MONITORING"
+                }
+            ],
+            "waterlogging": {
+                "active": False,
+                "depthCm": 8.5,
+                "location": "South-East Crosswalk Gutter",
+                "affectedLane": "Road C, Lane 2",
+                "drainStatus": "GRATE_INFLOW_CLOGGED",
+                "ticketId": "DRAIN-FLOOD-2026-044"
+            },
+            "footpathBlockage": {
+                "active": False,
+                "location": "West Sidewalk Promenade",
+                "obstacle": "UNAUTHORIZED_VENDOR_CART",
+                "pedestrianClearance": "RESTRICTED (0.8m remaining)",
+                "ticketId": "CIVIC-ENCROACH-2026-017"
+            },
+            "smartPoleTelemetry": {
+                "solarBatteryPct": 94,
+                "aqiScore": 68,
+                "aqiCategory": "MODERATE",
+                "coPpm": 1.4,
+                "noiseDb": 72.5,
+                "streetLightBrightness": "DYNAMIC (PIR AUTO 60%)"
+            }
+        }
+
     def reset(self):
         self.generator = TrafficGenerator(42)
         self.sim_fixed.reset()
@@ -66,6 +138,78 @@ class TwinManager:
             "annualRupeesSavedLakhs": 0.0,
             "dollarsSaved": 0.0,
             "cleanAirRating": "A+"
+        }
+
+        self.civic_state = {
+            "roadQualityIndex": 88.5,
+            "cleanlinessIndex": 94.2,
+            "activePotholes": [
+                {
+                    "id": "POT-001",
+                    "road": "A",
+                    "lane": 1,
+                    "dist": 140.0,
+                    "severity": "CRITICAL",
+                    "dimensions": "28cm x 12cm (depth 6.5cm)",
+                    "ticketId": "PWD-ROADS-2026-104",
+                    "status": "PWD_WORK_ORDER_DISPATCHED",
+                    "speedDampingFactor": 0.55
+                },
+                {
+                    "id": "POT-002",
+                    "road": "C",
+                    "lane": 2,
+                    "dist": 85.0,
+                    "severity": "MODERATE",
+                    "dimensions": "16cm x 9cm (depth 3.8cm)",
+                    "ticketId": "PWD-ROADS-2026-108",
+                    "status": "INSPECTION_PENDING",
+                    "speedDampingFactor": 0.75
+                }
+            ],
+            "garbageEvents": [
+                {
+                    "id": "GAR-001",
+                    "location": "North-West Sidewalk Plaza, Curb Corner",
+                    "type": "OVERFLOWING_MUNICIPAL_BIN",
+                    "dwellMinutes": 24.5,
+                    "slaThresholdMin": 30.0,
+                    "ticketId": "SWM-CITY-2026-089",
+                    "status": "DISPATCH_EN_ROUTE"
+                },
+                {
+                    "id": "GAR-002",
+                    "location": "East Approach Sidewalk Curb",
+                    "type": "ILLEGAL_LITTER_PILE",
+                    "dwellMinutes": 12.0,
+                    "slaThresholdMin": 30.0,
+                    "ticketId": "SWM-CITY-2026-092",
+                    "status": "DETECTED_MONITORING"
+                }
+            ],
+            "waterlogging": {
+                "active": False,
+                "depthCm": 8.5,
+                "location": "South-East Crosswalk Gutter",
+                "affectedLane": "Road C, Lane 2",
+                "drainStatus": "GRATE_INFLOW_CLOGGED",
+                "ticketId": "DRAIN-FLOOD-2026-044"
+            },
+            "footpathBlockage": {
+                "active": False,
+                "location": "West Sidewalk Promenade",
+                "obstacle": "UNAUTHORIZED_VENDOR_CART",
+                "pedestrianClearance": "RESTRICTED (0.8m remaining)",
+                "ticketId": "CIVIC-ENCROACH-2026-017"
+            },
+            "smartPoleTelemetry": {
+                "solarBatteryPct": 94,
+                "aqiScore": 68,
+                "aqiCategory": "MODERATE",
+                "coPpm": 1.4,
+                "noiseDb": 72.5,
+                "streetLightBrightness": "DYNAMIC (PIR AUTO 60%)"
+            }
         }
 
     def update(self, raw_dt):
@@ -324,6 +468,39 @@ class TwinManager:
             self.clear_school_zone()
             self.generator.apply_preset("HEAVY")
 
+        elif mode_key == "POTHOLE_ALERT":
+            self.accident_detector.clear_accident()
+            self.clear_crime()
+            self.clear_school_zone()
+            self.civic_state["roadQualityIndex"] = 72.0
+            self.civic_state["activePotholes"][0]["status"] = "EMERGENCY_CREW_DISPATCHED"
+
+        elif mode_key == "GARBAGE_OVERFLOW":
+            self.accident_detector.clear_accident()
+            self.clear_crime()
+            self.clear_school_zone()
+            self.civic_state["cleanlinessIndex"] = 78.5
+            self.civic_state["garbageEvents"][0]["dwellMinutes"] = 35.0
+            self.civic_state["garbageEvents"][0]["status"] = "SLA_BREACH_ALERT_ACTIVE"
+
+        elif mode_key == "WATERLOGGING":
+            self.accident_detector.clear_accident()
+            self.clear_crime()
+            self.clear_school_zone()
+            self.weather_mode = "RAIN"
+            self.sim_fixed.weather_mode = "RAIN"
+            self.sim_adaptive.weather_mode = "RAIN"
+            self.civic_state["waterlogging"]["active"] = True
+
+        elif mode_key == "CIVIC_FULL":
+            self.accident_detector.clear_accident()
+            self.clear_crime()
+            self.clear_school_zone()
+            self.civic_state["roadQualityIndex"] = 69.5
+            self.civic_state["cleanlinessIndex"] = 74.0
+            self.civic_state["waterlogging"]["active"] = True
+            self.civic_state["footpathBlockage"]["active"] = True
+
         return {"success": True, "situationMode": mode_key}
 
     def set_ai_algorithm(self, algo_key):
@@ -353,6 +530,7 @@ class TwinManager:
             "accidentState": self.accident_detector.to_dict(),
             "crimeState": self.crime_detector.to_dict(),
             "multiIntersection": self.multi_intersection.to_dict(),
+            "civicState": self.civic_state,
             "simFixed": self.sim_fixed.to_dict(),
             "simAdaptive": self.sim_adaptive.to_dict()
         }

@@ -162,6 +162,18 @@
         <button class="situation-btn ped-scramble" data-mode="PEDESTRIAN_SCRAMBLE" title="Pedestrian Crowd Surge: Barnes Dance All-Pedestrian Scramble Phase">
           <span class="sit-icon">🚶</span> Ped Scramble
         </button>
+        <button class="situation-btn civic-pothole" data-mode="POTHOLE_ALERT" title="Road Surface Vision: Critical Pothole Hazard & PWD Work Order" style="border-color: rgba(245, 158, 11, 0.45); color: #FBBF24;">
+          <span class="sit-icon">🕳️</span> Pothole Alert (PWD)
+        </button>
+        <button class="situation-btn civic-garbage" data-mode="GARBAGE_OVERFLOW" title="Municipal Sanitation: Overflowing Bin & Waste SLA Dispatch" style="border-color: rgba(16, 185, 129, 0.45); color: #34D399;">
+          <span class="sit-icon">🗑️</span> Garbage Overflow
+        </button>
+        <button class="situation-btn civic-water" data-mode="WATERLOGGING" title="Urban Drainage: Curb Waterlogging & Clogged Inflow" style="border-color: rgba(56, 189, 248, 0.45); color: #38BDF8;">
+          <span class="sit-icon">🌊</span> Waterlogging
+        </button>
+        <button class="situation-btn civic-all" data-mode="CIVIC_FULL" title="All 4 Core Civic & Sustainable Detections Active" style="border-color: rgba(168, 85, 247, 0.5); color: #C084FC;">
+          <span class="sit-icon">🌿</span> Civic Full Demo
+        </button>
       </div>
     </div>
 
@@ -596,6 +608,27 @@
             </div>
             <div class="esg-footnote">
               Grounded in MoRTH Indian Urban Standards: Fuel ₹102.50/L, Commuter Time ₹150.00/hr, Scaled across 14 peak city transit hours/day.
+            </div>
+          </div>
+
+          <!-- Civic Infrastructure & Road Health Card -->
+          <div class="panel-card civic-health-card" style="border: 1px solid rgba(245, 158, 11, 0.35); background: rgba(15, 23, 42, 0.85); margin-bottom: 12px; border-radius: 10px; padding: 12px 14px;">
+            <div class="panel-title" style="color: #FBBF24; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 10px;">
+              <span>🏙️ Civic Health &amp; Road Quality (Smart Pole)</span>
+              <span id="stat-rqi-badge" style="background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; font-size: 11px; padding: 2px 7px; border-radius: 4px;">RQI: 88.5%</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+              <div style="background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="color: var(--text-dim); font-size: 10px; text-transform: uppercase;">Potholes Active</div>
+                <div id="stat-potholes-count" style="color: #FBBF24; font-weight: 700; font-size: 14px;">2 Detected (1 PWD)</div>
+              </div>
+              <div style="background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="color: var(--text-dim); font-size: 10px; text-transform: uppercase;">Cleanliness Index</div>
+                <div id="stat-cleanliness-val" style="color: #34D399; font-weight: 700; font-size: 14px;">94.2% (Grade A+)</div>
+              </div>
+            </div>
+            <div id="civic-alert-ticker" style="margin-top: 8px; font-size: 11px; color: #7DD3FC; font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              • Pole Vision: Pothole #104 monitored on Road A Lane 1 (Speed Damped 55%)
             </div>
           </div>
 

@@ -1169,6 +1169,53 @@ export class DashboardUI {
       if (this.statEsgDelayCut) this.statEsgDelayCut.textContent = `${Number(waitRed).toFixed(1)}%`;
     }
 
+    // Sync Civic Infrastructure & Road Health Telemetry (Smart Pole)
+    if (state.civicState) {
+      const cs = state.civicState;
+      const rqiBadge = document.getElementById('stat-rqi-badge');
+      const potholesCount = document.getElementById('stat-potholes-count');
+      const cleanlinessVal = document.getElementById('stat-cleanliness-val');
+      const civicTicker = document.getElementById('civic-alert-ticker');
+
+      if (rqiBadge) {
+        rqiBadge.textContent = `RQI: ${Number(cs.roadQualityIndex).toFixed(1)}%`;
+        if (cs.roadQualityIndex < 75) {
+          rqiBadge.style.color = '#EF4444';
+          rqiBadge.style.borderColor = '#EF4444';
+          rqiBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+        } else {
+          rqiBadge.style.color = '#FBBF24';
+          rqiBadge.style.borderColor = '#F59E0B';
+          rqiBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+        }
+      }
+      if (potholesCount) {
+        const pCount = (cs.activePotholes || []).length;
+        potholesCount.textContent = `${pCount} Detected (PWD Active)`;
+      }
+      if (cleanlinessVal) {
+        cleanlinessVal.textContent = `${Number(cs.cleanlinessIndex).toFixed(1)}% (Grade A+)`;
+      }
+      if (civicTicker) {
+        if (state.situationMode === 'POTHOLE_ALERT') {
+          civicTicker.textContent = '⚠️ POLE SENSOR ALERT: Critical Pothole #104 on Road A Lane 1 — PWD Cold-Patch Work Order Dispatched!';
+          civicTicker.style.color = '#F59E0B';
+        } else if (state.situationMode === 'GARBAGE_OVERFLOW') {
+          civicTicker.textContent = '🗑️ POLE VISION ALERT: Overflowing Waste Bin (35m dwell) — SWM Auto Sanitation Truck En Route!';
+          civicTicker.style.color = '#34D399';
+        } else if (state.situationMode === 'WATERLOGGING') {
+          civicTicker.textContent = '🌊 URBAN DRAINAGE ALERT: Waterlogging on South Gutter (8.5cm) — Clogged Grate Ticket #044 Logged!';
+          civicTicker.style.color = '#38BDF8';
+        } else if (state.situationMode === 'CIVIC_FULL') {
+          civicTicker.textContent = '🌿 CIVIC FULL DEMO: 4 Core Sustainable Sensors Active (Pothole + Waste + AQI 68 + Drain Inflow)';
+          civicTicker.style.color = '#C084FC';
+        } else {
+          civicTicker.textContent = '• Pole Vision: Pothole #104 monitored on Road A Lane 1 (Speed Damped 55%)';
+          civicTicker.style.color = '#7DD3FC';
+        }
+      }
+    }
+
     // Sync AI Algorithm selector with backend state if changed remotely
     if (state.aiAlgorithm && this.selectAiAlgorithm && document.activeElement !== this.selectAiAlgorithm) {
       if (this.selectAiAlgorithm.value !== state.aiAlgorithm) {
