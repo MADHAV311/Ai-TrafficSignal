@@ -1585,10 +1585,10 @@ export class Renderer {
       { text: 'MAIN ARTERIAL RD · EASTBOUND', x: 230, y: 35,   rot: 0 },
       { text: 'MAIN ARTERIAL RD · WESTBOUND', x: -230, y: -35, rot: Math.PI }
     ] : [
-      { text: 'ROAD A · NORTH', x: 35,  y: -230, rot: -Math.PI / 2 },
-      { text: 'ROAD C · SOUTH', x: -35, y: 230,  rot: Math.PI / 2 },
-      { text: 'ROAD B · EAST',  x: 230, y: 35,   rot: 0 },
-      { text: 'ROAD D · WEST',  x: -230, y: -35, rot: Math.PI }
+      { text: 'ROAD A · NH 44 (TO BENGALURU CITY / HEBBAL)', x: 35,  y: -230, rot: -Math.PI / 2 },
+      { text: 'ROAD C · NH 44 (TO KIA AIRPORT / DEVANAHALLI ✈)', x: -35, y: 230,  rot: Math.PI / 2 },
+      { text: 'ROAD B · SH 104 (TO BAGALUR / AEROSPACE PARK & BOEING)',  x: 230, y: 35,   rot: 0 },
+      { text: 'ROAD D · FEEDER (TO YELAHANKA NEW TOWN / KOGILU)',  x: -230, y: -35, rot: Math.PI }
     ];
 
     ctx.save();

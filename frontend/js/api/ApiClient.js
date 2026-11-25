@@ -241,5 +241,32 @@ export class ApiClient {
       body: JSON.stringify({ scenario })
     });
   }
+
+  /**
+   * Retrieves Bagalur Cross live real-time traffic and weather telemetry
+   */
+  async getRealtimeStatus() {
+    return await this.request('/api/realtime/bagalur-cross');
+  }
+
+  /**
+   * Configures real-time sync mode, toggle state, or TomTom API key
+   */
+  async setRealtimeConfig(config = {}) {
+    return await this.request('/api/realtime/config', {
+      method: 'POST',
+      body: JSON.stringify(config)
+    });
+  }
+
+  /**
+   * Pushes edge camera / CV detection count to real-time ingestion gateway
+   */
+  async sendCameraCount(road = 'A', count = 1, fps = 30.0) {
+    return await this.request('/api/realtime/vehicle-count', {
+      method: 'POST',
+      body: JSON.stringify({ road, count, fps })
+    });
+  }
 }
 

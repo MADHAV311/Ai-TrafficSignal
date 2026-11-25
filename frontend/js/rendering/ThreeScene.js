@@ -1493,6 +1493,30 @@ export class ThreeScene {
     }
   }
 
+  // Creates an Overhead Indian Highway Destination Guide Sign (NH 44 / SH 104)
+  createHighwaySign(text, faceAngle = 0) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 384;
+    canvas.height = 96;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#065f46'; // Highway green
+    ctx.fillRect(0, 0, 384, 96);
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(6, 6, 372, 84);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 192, 48);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    const mat = new THREE.MeshBasicMaterial({ map: tex });
+    const sign = new THREE.Mesh(new THREE.BoxGeometry(32, 8, 0.8), mat);
+    sign.rotation.y = faceAngle;
+    return sign;
+  }
+
   // Creates a High-Visibility Dual-Faced 3D Traffic Signal Lantern Head with Target Backplate & Visors
   createSignalHead(facingAngle = 0) {
     const headGroup = new THREE.Group();
@@ -1586,10 +1610,10 @@ export class ThreeScene {
     const stopOffset = 82;
 
     const signalConfigs = [
-      { id: 'A', name: 'Road A (North)', x: -rw - 14, z: -stopOffset, stopX: -rw / 2, stopZ: -rw - 4, isHoriz: true,  faceAngle: Math.PI },
-      { id: 'B', name: 'Road B (East)',  x:  stopOffset, z: -rw - 14, stopX:  rw + 4, stopZ: -rw / 2, isHoriz: false, faceAngle: Math.PI / 2 },
-      { id: 'C', name: 'Road C (South)', x:  rw + 14, z:  stopOffset, stopX:  rw / 2, stopZ:  rw + 4, isHoriz: true,  faceAngle: 0 },
-      { id: 'D', name: 'Road D (West)',  x: -stopOffset, z:  rw + 14, stopX: -rw - 4, stopZ:  rw / 2, isHoriz: false, faceAngle: -Math.PI / 2 }
+      { id: 'A', name: 'Road A · NH 44 (To City / Hebbal)', x: -rw - 14, z: -stopOffset, stopX: -rw / 2, stopZ: -rw - 4, isHoriz: true,  faceAngle: Math.PI },
+      { id: 'B', name: 'Road B · SH 104 (To Aerospace SEZ & Bagalur)',  x:  stopOffset, z: -rw - 14, stopX:  rw + 4, stopZ: -rw / 2, isHoriz: false, faceAngle: Math.PI / 2 },
+      { id: 'C', name: 'Road C · NH 44 (To KIA Airport ✈)', x:  rw + 14, z:  stopOffset, stopX:  rw / 2, stopZ:  rw + 4, isHoriz: true,  faceAngle: 0 },
+      { id: 'D', name: 'Road D · Feeder (To Yelahanka New Town)',  x: -stopOffset, z:  rw + 14, stopX: -rw - 4, stopZ:  rw / 2, isHoriz: false, faceAngle: -Math.PI / 2 }
     ];
 
     for (const cfg of signalConfigs) {
@@ -1759,6 +1783,17 @@ export class ThreeScene {
         gantryGroup.add(sHead.group);
         headsList.push(sHead);
       }
+
+      // Overhead Indian Highway Destination Guide Sign (NH 44 / SH 104)
+      const signNames = {
+        'A': 'NH 44 · BENGALURU CITY',
+        'B': 'SH 104 · BAGALUR / SEZ',
+        'C': 'NH 44 · KIA AIRPORT ✈',
+        'D': 'FEEDER · YELAHANKA'
+      };
+      const sign = this.createHighwaySign(signNames[cfg.id] || 'NH 44', cfg.faceAngle);
+      sign.position.set(midX, 63, midZ);
+      gantryGroup.add(sign);
 
       // 4. Downward Street Light Wash (Optimized: asphalt stop line ground bars provide illumination with zero dynamic light overhead)
       this.scene.add(gantryGroup);

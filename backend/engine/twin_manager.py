@@ -11,6 +11,7 @@ from .controllers import FixedTimeController, AdaptiveAIController
 from .accident_detector import AccidentDetector
 from .crime_detector import CrimeDetector
 from .multi_intersection import MultiIntersectionCorridor
+from .realtime_traffic_adapter import RealtimeTrafficAdapter
 from .config import SIM_CONFIG
 
 class TwinManager:
@@ -27,6 +28,7 @@ class TwinManager:
         self.accident_detector = AccidentDetector()
         self.crime_detector = CrimeDetector()
         self.multi_intersection = MultiIntersectionCorridor()
+        self.realtime_adapter = RealtimeTrafficAdapter()
 
         self.is_playing = True
         self.speed_multiplier = 1.0
@@ -217,6 +219,9 @@ class TwinManager:
             return
 
         dt = min(0.1, raw_dt * self.speed_multiplier)
+
+        # 0. Update Real-Time Bagalur Cross Ingestion & Weather Sync
+        self.realtime_adapter.update(dt, self.generator, self)
 
         # 1. Generate shared vehicle arrivals
         new_specs = self.generator.update(dt, self.sim_adaptive.sim_time)
@@ -531,6 +536,7 @@ class TwinManager:
             "crimeState": self.crime_detector.to_dict(),
             "multiIntersection": self.multi_intersection.to_dict(),
             "civicState": self.civic_state,
+            "realtimeTraffic": self.realtime_adapter.to_dict(),
             "simFixed": self.sim_fixed.to_dict(),
             "simAdaptive": self.sim_adaptive.to_dict()
         }

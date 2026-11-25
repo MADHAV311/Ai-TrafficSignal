@@ -48,7 +48,10 @@ from backend.api.handlers import (
     handle_corridor_mode,
     handle_crime_trigger,
     handle_crime_clear,
-    handle_school_trigger
+    handle_school_trigger,
+    handle_realtime_config,
+    handle_realtime_vehicle_count,
+    handle_realtime_status
 )
 
 PORT = 8080
@@ -123,6 +126,12 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
                 })
                 return
 
+            elif path == "/api/realtime/bagalur-cross" or path == "/api/realtime/status":
+                with state_lock:
+                    res = handle_realtime_status(twin_manager)
+                self._send_response_dict(res)
+                return
+
             # Fallback to serving static files from root directory
             return super().do_GET()
         except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
@@ -183,6 +192,10 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
                     res = handle_crime_clear(twin_manager)
                 elif path == "/api/school/trigger":
                     res = handle_school_trigger(twin_manager, payload)
+                elif path == "/api/realtime/config":
+                    res = handle_realtime_config(twin_manager, payload)
+                elif path == "/api/realtime/vehicle-count":
+                    res = handle_realtime_vehicle_count(twin_manager, payload)
                 elif path == "/api/experiment/run":
                     res = handle_experiment_run(experiment_engine, payload)
                 else:

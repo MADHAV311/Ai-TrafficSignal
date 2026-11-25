@@ -21,6 +21,32 @@
       filter: brightness(1.2);
       transform: translateY(-1px);
     }
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+    .pulsing-red-dot {
+      animation: liveBlink 1.4s infinite ease-in-out;
+    }
+    .bagalur-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .bagalur-telemetry-card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      border-radius: 10px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .bagalur-telemetry-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
   </style>
 
 </head>
@@ -40,6 +66,10 @@
             <span style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
               <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span> 60 FPS REALISTIC 3D
             </span>
+            <div id="live-bengaluru-badge" class="live-bengaluru-badge" title="Click to open Bagalur Cross Live Telemetry" style="background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+              <span class="pulsing-red-dot" style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+              <span id="badge-live-traffic-text">🔴 LIVE BENGALURU: BAGALUR CROSS (NH 44)</span>
+            </div>
           </div>
           <div class="brand-subtitle" style="font-size: 10px; color: #94a3b8; line-height: 1.2;">Metropolitan Arterial Corridor • Edge IoT Smart Pole • 4 Civic Health Detectors • 108 Emergency Preemption</div>
         </div>
@@ -89,6 +119,7 @@
     <nav class="main-nav">
       <div class="nav-tabs">
         <button class="nav-tab-btn active" data-view="dashboard">🚦 Live Simulation</button>
+        <button class="nav-tab-btn" data-view="bagalur">📍 Bagalur Cross Live</button>
         <button class="nav-tab-btn" data-view="comparison">📊 Fixed vs Adaptive</button>
         <button class="nav-tab-btn" data-view="experiments">🧪 Experiments</button>
         <button class="nav-tab-btn" data-view="smartpole">🏙️ Smart Pole & Civic Health</button>
@@ -1010,6 +1041,326 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 4C: BAGALUR CROSS (NH 44) REAL-TIME TELEMETRY & EDGE INGESTION
+         ==================================================================== -->
+    <section id="view-bagalur" class="view-section">
+      <div class="page-container" style="max-width: 1200px;">
+        
+        <!-- Header Banner -->
+        <div class="page-header" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">
+                  📍 REAL-TIME PHYSICAL JUNCTION
+                </span>
+                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">
+                  13.1352° N, 77.6256° E (Elev: 915m)
+                </span>
+                <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">
+                  Bengaluru North Traffic Division
+                </span>
+              </div>
+              <h2 style="font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 6px 0;">
+                Bagalur Cross Junction (NH 44 & SH 104) Live Telemetry
+              </h2>
+              <p style="color: var(--text-muted); font-size: 12.5px; margin: 0;">
+                Live traffic flow synchronization connecting physical Bengaluru Airport Corridor speeds, Open-Meteo weather, and edge CCTV cameras to the digital twin.
+              </p>
+            </div>
+
+            <!-- Sync Status Pill & Timestamp -->
+            <div style="text-align: right;">
+              <div id="bagalur-sync-status" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                <span class="pulsing-red-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                <span>LIVE SYNC ACTIVE (BENGALURU DIURNAL)</span>
+              </div>
+              <div id="bagalur-server-time" style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono); margin-top: 5px;">
+                Loading IST server time...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingestion Control Bar -->
+        <div class="panel-card" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.25);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #f8fafc;">
+                <input type="checkbox" id="toggle-bagalur-live-sync" checked style="width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer;">
+                <span>Harmonize Digital Twin Arrival Rates with Live Bengaluru Data</span>
+              </label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span style="font-size: 12px; color: #94a3b8; font-weight: 600;">Active Ingestion Feed:</span>
+              <select id="select-bagalur-mode" style="background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                <option value="BENGALURU_REALTIME_MODEL" selected>Bengaluru Diurnal Rush-Hour Model (IST Time)</option>
+                <option value="TOMTOM_API">TomTom Traffic Flow REST API</option>
+                <option value="EDGE_CAMERA">Edge CCTV / OpenCV Tripwire Camera</option>
+              </select>
+
+              <button id="btn-sync-now" class="btn-primary" style="padding: 6px 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                🔄 Sync Now
+              </button>
+            </div>
+          </div>
+
+          <!-- TomTom API Key Drawer (Visible when TOMTOM_API selected or toggled) -->
+          <div id="drawer-tomtom-key" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-size: 12px; color: #94a3b8;">TomTom API Key:</span>
+            <input type="password" id="input-tomtom-key" placeholder="Enter TomTom Flow API Key (optional)" style="background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 5px 10px; border-radius: 6px; font-size: 12px; width: 280px; font-family: var(--font-mono);">
+            <button id="btn-save-tomtom-key" class="btn-secondary" style="padding: 5px 12px; font-size: 11px;">Save Key</button>
+            <span style="font-size: 11px; color: #64748b;">(When blank, the system automatically uses the high-precision Bengaluru diurnal IST curve)</span>
+          </div>
+        </div>
+
+        <!-- 4-Approach Live Speed & Congestion Grid -->
+        <h3 style="font-size: 15px; font-weight: 700; color: #f8fafc; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+          <span>🚗 Live Corridor Speed & Congestion Status (4 Approaches)</span>
+          <span style="font-size: 11px; font-weight: 500; color: #94a3b8;">Updated in real time</span>
+        </h3>
+
+        <div class="bagalur-grid">
+          
+          <!-- Road A: NH 44 Southbound -->
+          <div class="bagalur-telemetry-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 2px 6px; border-radius: 4px;">APPROACH A</span>
+                <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 4px 0 2px 0;">NH 44 Southbound</h4>
+                <div style="font-size: 11px; color: #94a3b8;">From KIA Airport ✈ → To Bengaluru City / Hebbal</div>
+              </div>
+              <span id="clevel-a-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                MODERATE
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 6px 0;">
+              <span id="spd-a-val" style="font-size: 26px; font-weight: 800; color: #f8fafc; font-family: var(--font-mono);">52.0</span>
+              <span style="font-size: 12px; color: #94a3b8;">km/h</span>
+              <span style="font-size: 11px; color: #64748b; margin-left: auto;">Free-flow: <strong id="spd-a-free" style="color: #94a3b8;">75</strong> km/h</span>
+            </div>
+
+            <!-- Congestion Bar -->
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+              <div id="cidx-a-bar" style="width: 31%; height: 100%; background: #facc15; transition: width 0.4s ease;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+              <span>Congestion Index: <strong id="cidx-a-val" style="color: #f8fafc;">31%</strong></span>
+              <span>Flow: <strong id="flow-a-val" style="color: #38bdf8;">22.0</strong> veh/min</span>
+              <span>Travel Delay: <strong id="delay-a-val" style="color: #f87171;">115s</strong></span>
+            </div>
+          </div>
+
+          <!-- Road C: NH 44 Northbound -->
+          <div class="bagalur-telemetry-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 2px 6px; border-radius: 4px;">APPROACH C</span>
+                <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 4px 0 2px 0;">NH 44 Northbound</h4>
+                <div style="font-size: 11px; color: #94a3b8;">From Hebbal / Kogilu → To KIA Kempegowda Airport ✈</div>
+              </div>
+              <span id="clevel-c-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                MODERATE
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 6px 0;">
+              <span id="spd-c-val" style="font-size: 26px; font-weight: 800; color: #f8fafc; font-family: var(--font-mono);">46.0</span>
+              <span style="font-size: 12px; color: #94a3b8;">km/h</span>
+              <span style="font-size: 11px; color: #64748b; margin-left: auto;">Free-flow: <strong id="spd-c-free" style="color: #94a3b8;">75</strong> km/h</span>
+            </div>
+
+            <!-- Congestion Bar -->
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+              <div id="cidx-c-bar" style="width: 39%; height: 100%; background: #facc15; transition: width 0.4s ease;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+              <span>Congestion Index: <strong id="cidx-c-val" style="color: #f8fafc;">39%</strong></span>
+              <span>Flow: <strong id="flow-c-val" style="color: #38bdf8;">25.0</strong> veh/min</span>
+              <span>Travel Delay: <strong id="delay-c-val" style="color: #f87171;">128s</strong></span>
+            </div>
+          </div>
+
+          <!-- Road B: SH 104 Eastbound -->
+          <div class="bagalur-telemetry-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: #a855f7; background: rgba(168, 85, 247, 0.15); padding: 2px 6px; border-radius: 4px;">APPROACH B</span>
+                <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 4px 0 2px 0;">SH 104 Eastbound</h4>
+                <div style="font-size: 11px; color: #94a3b8;">To Bagalur Town / Aerospace SEZ / Boeing Campus</div>
+              </div>
+              <span id="clevel-b-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                CONGESTED
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 6px 0;">
+              <span id="spd-b-val" style="font-size: 26px; font-weight: 800; color: #f8fafc; font-family: var(--font-mono);">32.0</span>
+              <span style="font-size: 12px; color: #94a3b8;">km/h</span>
+              <span style="font-size: 11px; color: #64748b; margin-left: auto;">Free-flow: <strong id="spd-b-free" style="color: #94a3b8;">55</strong> km/h</span>
+            </div>
+
+            <!-- Congestion Bar -->
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+              <div id="cidx-b-bar" style="width: 42%; height: 100%; background: #f87171; transition: width 0.4s ease;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+              <span>Congestion Index: <strong id="cidx-b-val" style="color: #f8fafc;">42%</strong></span>
+              <span>Flow: <strong id="flow-b-val" style="color: #38bdf8;">26.0</strong> veh/min</span>
+              <span>Travel Delay: <strong id="delay-b-val" style="color: #f87171;">140s</strong></span>
+            </div>
+          </div>
+
+          <!-- Road D: Feeder Westbound -->
+          <div class="bagalur-telemetry-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 4px;">APPROACH D</span>
+                <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 4px 0 2px 0;">Yelahanka Feeder Westbound</h4>
+                <div style="font-size: 11px; color: #94a3b8;">From Yelahanka New Town / University Campus Belt</div>
+              </div>
+              <span id="clevel-d-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                NORMAL
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 6px 0;">
+              <span id="spd-d-val" style="font-size: 26px; font-weight: 800; color: #f8fafc; font-family: var(--font-mono);">28.0</span>
+              <span style="font-size: 12px; color: #94a3b8;">km/h</span>
+              <span style="font-size: 11px; color: #64748b; margin-left: auto;">Free-flow: <strong id="spd-d-free" style="color: #94a3b8;">40</strong> km/h</span>
+            </div>
+
+            <!-- Congestion Bar -->
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+              <div id="cidx-d-bar" style="width: 30%; height: 100%; background: #34d399; transition: width 0.4s ease;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+              <span>Congestion Index: <strong id="cidx-d-val" style="color: #f8fafc;">30%</strong></span>
+              <span>Flow: <strong id="flow-d-val" style="color: #38bdf8;">18.0</strong> veh/min</span>
+              <span>Travel Delay: <strong id="delay-d-val" style="color: #f87171;">90s</strong></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Lower Grid: Weather + Camera Gateway + Corridor Profile -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px; margin-bottom: 20px;">
+          
+          <!-- Card 1: Live Weather (Open-Meteo Yelahanka) -->
+          <div class="panel-card" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <span>🌦️ Bengaluru Live Meteorological Telemetry</span>
+              </h4>
+              <span id="bengaluru-weather-time" style="font-size: 10px; color: #94a3b8; font-family: var(--font-mono);">Live Open-Meteo</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+              <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px;">
+                <div style="font-size: 11px; color: #94a3b8;">Ambient Temperature</div>
+                <div id="bengaluru-temp" style="font-size: 20px; font-weight: 800; color: #f8fafc; font-family: var(--font-mono);">26.4°C</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px;">
+                <div style="font-size: 11px; color: #94a3b8;">Relative Humidity</div>
+                <div id="bengaluru-humidity" style="font-size: 20px; font-weight: 800; color: #38bdf8; font-family: var(--font-mono);">68%</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px;">
+                <div style="font-size: 11px; color: #94a3b8;">Precipitation / Rain</div>
+                <div id="bengaluru-precip" style="font-size: 20px; font-weight: 800; color: #34d399; font-family: var(--font-mono);">0.0 mm</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px;">
+                <div style="font-size: 11px; color: #94a3b8;">Condition</div>
+                <div id="bengaluru-condition" style="font-size: 16px; font-weight: 700; color: #facc15;">PARTLY CLOUDY</div>
+              </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 10px; border-radius: 6px; font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+              <span>Road Surface State: <strong id="bengaluru-puddle-status" style="color: #34d399;">DRY ASPHALT (NORMAL)</strong></span>
+              <button id="btn-force-rain-sync" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">
+                🌧️ Test Rain Inundation
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Edge Camera / CV Gateway -->
+          <div class="panel-card" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <span>📹 Edge Computer Vision / CCTV Stream Gateway</span>
+              </h4>
+              <span id="camera-conn-badge" style="background: rgba(100, 116, 139, 0.2); color: #94a3b8; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                STANDBY (AWAITING FEED)
+              </span>
+            </div>
+
+            <p style="font-size: 12px; color: #94a3b8; margin: 0 0 10px 0;">
+              Ingests vehicle tripwire telemetry from external IP CCTV cameras or local webcams running YOLO/OpenCV tracking directly into the simulation:
+            </p>
+
+            <div style="background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; font-family: var(--font-mono); font-size: 11px; color: #38bdf8; margin-bottom: 12px; word-break: break-all;">
+              python scripts/edge_camera_counter.py --mock --road A
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 12px;">
+              <div style="background: rgba(0,0,0,0.25); padding: 8px 4px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #94a3b8;">Road A</div>
+                <div id="camera-road-a" style="font-size: 16px; font-weight: 700; color: #f8fafc; font-family: var(--font-mono);">0</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 8px 4px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #94a3b8;">Road B</div>
+                <div id="camera-road-b" style="font-size: 16px; font-weight: 700; color: #f8fafc; font-family: var(--font-mono);">0</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 8px 4px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #94a3b8;">Road C</div>
+                <div id="camera-road-c" style="font-size: 16px; font-weight: 700; color: #f8fafc; font-family: var(--font-mono);">0</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.25); padding: 8px 4px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #94a3b8;">Road D</div>
+                <div id="camera-road-d" style="font-size: 16px; font-weight: 700; color: #f8fafc; font-family: var(--font-mono);">0</div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; color: #94a3b8;">Total Ingested: <strong id="camera-total-detections" style="color: #38bdf8;">0</strong> vehicles</span>
+              <button id="btn-run-mock-camera" class="btn-primary" style="padding: 4px 10px; font-size: 11px;">
+                🚀 Trigger 1-Click Mock Camera Tripwire
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Bagalur Cross Corridor Analysis -->
+          <div class="panel-card" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.2);">
+            <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;">
+              <span>🌐 Corridor Engineering & Diurnal Pattern</span>
+            </h4>
+            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.55;">
+              <p style="margin: 0 0 8px 0;">
+                <strong>Airport & SEZ Nexus:</strong> Bagalur Cross handles high-speed national highway transit (NH 44 Airport Corridor) intersecting heavy industrial freight and tech park shifts (SH 104 Aerospace Park & KIADB SEZ).
+              </p>
+              <p style="margin: 0 0 8px 0;">
+                <strong>Key Diurnal Waves:</strong>
+                <br>• <strong>08:00 – 11:30:</strong> Morning peak with outward traffic to KIA Airport and inward shift rush to Aerospace Park.
+                <br>• <strong>17:30 – 21:30:</strong> Heavy evening return wave into Bengaluru City.
+                <br>• <strong>22:30 – 02:30:</strong> International flight red-eye surge on NH 44.
+              </p>
+              <p style="margin: 0; color: #34d399; font-weight: 600;">
+                ⚡ AI Webster/DQN cycle dynamically extends NH 44 green time during flight waves while ensuring pedestrians & feeder traffic on SH 104 never wait over 45s.
+              </p>
+            </div>
+          </div>
+
         </div>
 
       </div>

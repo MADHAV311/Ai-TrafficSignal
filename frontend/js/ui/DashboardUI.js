@@ -256,6 +256,75 @@ export class DashboardUI {
 
     // Vehicle Tooltip
     this.vehicleTooltip = document.getElementById('vehicle-inspector-tooltip');
+
+    // Bagalur Cross Real-Time Ingestion Elements
+    this.liveBengaluruBadge = document.getElementById('live-bengaluru-badge');
+    this.bagalurSyncStatus = document.getElementById('bagalur-sync-status');
+    this.bagalurServerTime = document.getElementById('bagalur-server-time');
+    this.toggleBagalurLiveSync = document.getElementById('toggle-bagalur-live-sync');
+    this.selectBagalurMode = document.getElementById('select-bagalur-mode');
+    this.inputTomTomKey = document.getElementById('input-tomtom-key');
+    this.btnSaveTomTomKey = document.getElementById('btn-save-tomtom-key');
+    this.btnSyncNow = document.getElementById('btn-sync-now');
+    this.btnForceRainSync = document.getElementById('btn-force-rain-sync');
+    this.btnRunMockCamera = document.getElementById('btn-run-mock-camera');
+
+    this.rtApproaches = {
+      A: {
+        spd: document.getElementById('spd-a-val'),
+        free: document.getElementById('spd-a-free'),
+        cbar: document.getElementById('cidx-a-bar'),
+        cval: document.getElementById('cidx-a-val'),
+        badge: document.getElementById('clevel-a-badge'),
+        flow: document.getElementById('flow-a-val'),
+        delay: document.getElementById('delay-a-val')
+      },
+      B: {
+        spd: document.getElementById('spd-b-val'),
+        free: document.getElementById('spd-b-free'),
+        cbar: document.getElementById('cidx-b-bar'),
+        cval: document.getElementById('cidx-b-val'),
+        badge: document.getElementById('clevel-b-badge'),
+        flow: document.getElementById('flow-b-val'),
+        delay: document.getElementById('delay-b-val')
+      },
+      C: {
+        spd: document.getElementById('spd-c-val'),
+        free: document.getElementById('spd-c-free'),
+        cbar: document.getElementById('cidx-c-bar'),
+        cval: document.getElementById('cidx-c-val'),
+        badge: document.getElementById('clevel-c-badge'),
+        flow: document.getElementById('flow-c-val'),
+        delay: document.getElementById('delay-c-val')
+      },
+      D: {
+        spd: document.getElementById('spd-d-val'),
+        free: document.getElementById('spd-d-free'),
+        cbar: document.getElementById('cidx-d-bar'),
+        cval: document.getElementById('cidx-d-val'),
+        badge: document.getElementById('clevel-d-badge'),
+        flow: document.getElementById('flow-d-val'),
+        delay: document.getElementById('delay-d-val')
+      }
+    };
+
+    this.rtWeather = {
+      temp: document.getElementById('bengaluru-temp'),
+      humidity: document.getElementById('bengaluru-humidity'),
+      precip: document.getElementById('bengaluru-precip'),
+      condition: document.getElementById('bengaluru-condition'),
+      puddleStatus: document.getElementById('bengaluru-puddle-status'),
+      time: document.getElementById('bengaluru-weather-time')
+    };
+
+    this.rtCamera = {
+      badge: document.getElementById('camera-conn-badge'),
+      total: document.getElementById('camera-total-detections'),
+      A: document.getElementById('camera-road-a'),
+      B: document.getElementById('camera-road-b'),
+      C: document.getElementById('camera-road-c'),
+      D: document.getElementById('camera-road-d')
+    };
   }
 
   bindEvents() {
@@ -709,6 +778,69 @@ export class DashboardUI {
         const val = parseInt(e.target.value, 10);
         this.settingValMaxGreen.textContent = `${val}s`;
         await this.api.setAdaptiveBounds(parseInt(this.settingSliderMinGreen.value, 10), val);
+      });
+    }
+
+    // Bagalur Cross Live Telemetry Event Bindings
+    if (this.liveBengaluruBadge) {
+      this.liveBengaluruBadge.addEventListener('click', () => {
+        const bagalurTab = document.querySelector('.nav-tab-btn[data-view="bagalur"]');
+        if (bagalurTab) bagalurTab.click();
+      });
+    }
+
+    if (this.toggleBagalurLiveSync) {
+      this.toggleBagalurLiveSync.addEventListener('change', async (e) => {
+        await this.api.setRealtimeConfig({ isLiveSyncEnabled: e.target.checked });
+        this.showToast(e.target.checked ? 'Synchronized with Live Bengaluru Traffic' : 'Digital Twin Ingestion in Manual Override Mode');
+      });
+    }
+
+    if (this.selectBagalurMode) {
+      this.selectBagalurMode.addEventListener('change', async (e) => {
+        const mode = e.target.value;
+        await this.api.setRealtimeConfig({ activeMode: mode });
+        const drawer = document.getElementById('drawer-tomtom-key');
+        if (drawer) drawer.style.display = (mode === 'TOMTOM_API') ? 'flex' : 'none';
+        this.showToast(`Switched Ingestion Source: ${mode}`);
+      });
+    }
+
+    if (this.btnSaveTomTomKey) {
+      this.btnSaveTomTomKey.addEventListener('click', async () => {
+        const key = this.inputTomTomKey ? this.inputTomTomKey.value.trim() : '';
+        await this.api.setRealtimeConfig({ tomtomApiKey: key, activeMode: key ? 'TOMTOM_API' : 'BENGALURU_REALTIME_MODEL' });
+        this.showToast(key ? 'TomTom Flow API Key Saved!' : 'Active Feed: Bengaluru Diurnal Peak-Hour Model');
+      });
+    }
+
+    if (this.btnSyncNow) {
+      this.btnSyncNow.addEventListener('click', async () => {
+        const res = await this.api.getRealtimeStatus();
+        if (res) {
+          this.updateRealtimeTelemetryUI(res);
+          this.showToast('Bagalur Cross live telemetry refreshed!');
+        }
+      });
+    }
+
+    if (this.btnForceRainSync) {
+      this.btnForceRainSync.addEventListener('click', async () => {
+        const newMode = (this.weather === 'RAIN') ? 'CLEAR' : 'RAIN';
+        this.weather = newMode;
+        if (this.renderer) this.renderer.setWeatherMode(newMode);
+        await this.api.setWeather(newMode);
+        this.showToast(newMode === 'RAIN' ? '🌧️ Rain Inundation & Wet Road Surface Activated!' : '☀️ Road Surface Dried to Normal');
+      });
+    }
+
+    if (this.btnRunMockCamera) {
+      this.btnRunMockCamera.addEventListener('click', async () => {
+        await this.api.sendCameraCount('A', 3, 30.0);
+        await this.api.sendCameraCount('C', 2, 30.0);
+        await this.api.sendCameraCount('B', 4, 30.0);
+        await this.api.sendCameraCount('D', 1, 30.0);
+        this.showToast('📹 Ingested 10 mock CCTV tripwire vehicle detections across approaches');
       });
     }
   }
@@ -1255,6 +1387,136 @@ export class DashboardUI {
         this.audioEffects.playSignalChange();
       }
       this.prevAiPhase = aiCtrl.phase;
+    }
+
+    // 10. Bagalur Cross Real-Time Ingestion & Live Bengaluru Telemetry
+    if (state.realtimeTraffic) {
+      this.updateRealtimeTelemetryUI(state.realtimeTraffic);
+    }
+  }
+
+  /**
+   * Updates Bagalur Cross Live Telemetry Dashboard & Approach Speedometers
+   */
+  updateRealtimeTelemetryUI(rt) {
+    if (!rt) return;
+    if (rt.realtimeTraffic) rt = rt.realtimeTraffic;
+
+    // Server time
+    if (this.bagalurServerTime && rt.serverTimeIST) {
+      this.bagalurServerTime.textContent = rt.serverTimeIST;
+    }
+
+    // Live Sync Toggle & Mode
+    if (this.toggleBagalurLiveSync && document.activeElement !== this.toggleBagalurLiveSync) {
+      this.toggleBagalurLiveSync.checked = !!rt.isLiveSyncEnabled;
+    }
+    if (this.selectBagalurMode && document.activeElement !== this.selectBagalurMode) {
+      this.selectBagalurMode.value = rt.activeMode || 'BENGALURU_REALTIME_MODEL';
+      const drawer = document.getElementById('drawer-tomtom-key');
+      if (drawer) drawer.style.display = (rt.activeMode === 'TOMTOM_API') ? 'flex' : 'none';
+    }
+
+    // Status pill
+    if (this.bagalurSyncStatus) {
+      if (rt.isLiveSyncEnabled) {
+        const modeLabel = (rt.activeMode === 'EDGE_CAMERA') ? 'EDGE CCTV CAMERA' :
+                         ((rt.activeMode === 'TOMTOM_API') ? 'TOMTOM REST API' : 'BENGALURU DIURNAL');
+        this.bagalurSyncStatus.innerHTML = `
+          <span class="pulsing-red-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+          <span>LIVE SYNC ACTIVE (${modeLabel})</span>
+        `;
+        this.bagalurSyncStatus.style.background = 'rgba(16, 185, 129, 0.18)';
+        this.bagalurSyncStatus.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        this.bagalurSyncStatus.style.color = '#34d399';
+      } else {
+        this.bagalurSyncStatus.innerHTML = `
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #94a3b8;"></span>
+          <span>MANUAL OVERRIDE (SYNC PAUSED)</span>
+        `;
+        this.bagalurSyncStatus.style.background = 'rgba(148, 163, 184, 0.18)';
+        this.bagalurSyncStatus.style.borderColor = 'rgba(148, 163, 184, 0.4)';
+        this.bagalurSyncStatus.style.color = '#94a3b8';
+      }
+    }
+
+    // Approaches Telemetry
+    if (rt.telemetry && this.rtApproaches) {
+      for (const [rId, t] of Object.entries(rt.telemetry)) {
+        const app = this.rtApproaches[rId];
+        if (!app) continue;
+
+        if (app.spd) app.spd.textContent = t.currentSpeedKmh !== undefined ? t.currentSpeedKmh.toFixed(1) : '--';
+        if (app.free) app.free.textContent = t.freeFlowSpeedKmh !== undefined ? t.freeFlowSpeedKmh.toFixed(0) : '--';
+
+        const cPct = Math.round((t.congestionIndex || 0) * 100);
+        if (app.cval) app.cval.textContent = `${cPct}%`;
+        if (app.cbar) {
+          app.cbar.style.width = `${Math.min(100, Math.max(5, cPct))}%`;
+          app.cbar.style.background = (cPct > 60) ? '#ef4444' : ((cPct > 35) ? '#facc15' : '#34d399');
+        }
+
+        if (app.badge) {
+          app.badge.textContent = t.congestionLevel || 'NORMAL';
+          if (t.congestionLevel === 'JAMMED') {
+            app.badge.style.background = 'rgba(239, 68, 68, 0.25)';
+            app.badge.style.color = '#f87171';
+          } else if (t.congestionLevel === 'CONGESTED') {
+            app.badge.style.background = 'rgba(249, 115, 22, 0.25)';
+            app.badge.style.color = '#fb923c';
+          } else if (t.congestionLevel === 'MODERATE') {
+            app.badge.style.background = 'rgba(234, 179, 8, 0.25)';
+            app.badge.style.color = '#facc15';
+          } else {
+            app.badge.style.background = 'rgba(16, 185, 129, 0.2)';
+            app.badge.style.color = '#34d399';
+          }
+        }
+
+        if (app.flow) app.flow.textContent = t.flowVehPerMin !== undefined ? t.flowVehPerMin.toFixed(1) : '--';
+        if (app.delay) app.delay.textContent = `${t.travelTimeSec || 0}s`;
+      }
+    }
+
+    // Weather
+    if (rt.weather && this.rtWeather) {
+      if (this.rtWeather.temp) this.rtWeather.temp.textContent = `${rt.weather.temperatureC}°C`;
+      if (this.rtWeather.humidity) this.rtWeather.humidity.textContent = `${rt.weather.relativeHumidity}%`;
+      if (this.rtWeather.precip) this.rtWeather.precip.textContent = `${rt.weather.precipitationMm} mm`;
+      if (this.rtWeather.condition) this.rtWeather.condition.textContent = rt.weather.condition;
+      if (this.rtWeather.time) this.rtWeather.time.textContent = rt.weather.lastWeatherUpdate || 'Live IST';
+      if (this.rtWeather.puddleStatus) {
+        if (rt.weather.isRaining) {
+          this.rtWeather.puddleStatus.textContent = 'WET / PUDDLE INUNDATION ACTIVE';
+          this.rtWeather.puddleStatus.style.color = '#38bdf8';
+        } else {
+          this.rtWeather.puddleStatus.textContent = 'DRY ASPHALT (NORMAL)';
+          this.rtWeather.puddleStatus.style.color = '#34d399';
+        }
+      }
+    }
+
+    // Edge Camera Gateway
+    if (rt.cameraGateway && this.rtCamera) {
+      const cg = rt.cameraGateway;
+      if (this.rtCamera.badge) {
+        if (cg.connected) {
+          this.rtCamera.badge.textContent = `CONNECTED (${cg.fps} FPS)`;
+          this.rtCamera.badge.style.background = 'rgba(16, 185, 129, 0.25)';
+          this.rtCamera.badge.style.color = '#34d399';
+        } else {
+          this.rtCamera.badge.textContent = 'STANDBY (AWAITING FEED)';
+          this.rtCamera.badge.style.background = 'rgba(100, 116, 139, 0.2)';
+          this.rtCamera.badge.style.color = '#94a3b8';
+        }
+      }
+      if (this.rtCamera.total) this.rtCamera.total.textContent = cg.totalDetections || 0;
+      if (cg.countsByRoad) {
+        if (this.rtCamera.A) this.rtCamera.A.textContent = cg.countsByRoad.A || 0;
+        if (this.rtCamera.B) this.rtCamera.B.textContent = cg.countsByRoad.B || 0;
+        if (this.rtCamera.C) this.rtCamera.C.textContent = cg.countsByRoad.C || 0;
+        if (this.rtCamera.D) this.rtCamera.D.textContent = cg.countsByRoad.D || 0;
+      }
     }
   }
 

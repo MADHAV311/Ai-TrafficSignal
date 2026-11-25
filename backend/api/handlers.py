@@ -170,3 +170,26 @@ def handle_school_trigger(twin_manager, payload):
     result = twin_manager.trigger_school_zone(scenario)
     return api_response({"success": True, "schoolZone": result})
 
+def handle_realtime_config(twin_manager, payload):
+    adapter = twin_manager.realtime_adapter
+    if "enabled" in payload:
+        adapter.is_live_sync_enabled = bool(payload["enabled"])
+    if "mode" in payload and payload["mode"] in ("BENGALURU_REALTIME_MODEL", "TOMTOM_API", "EDGE_CAMERA"):
+        adapter.active_mode = payload["mode"]
+    if "tomtomApiKey" in payload:
+        adapter.tomtom_api_key = str(payload["tomtomApiKey"]).strip()
+        if adapter.tomtom_api_key:
+            adapter.active_mode = "TOMTOM_API"
+    return api_response({"success": True, "realtimeTraffic": adapter.to_dict()})
+
+def handle_realtime_vehicle_count(twin_manager, payload):
+    road_id = payload.get("road", "A").upper()
+    count = int(payload.get("count", 1))
+    fps = float(payload.get("fps", 30.0))
+    ok = twin_manager.realtime_adapter.record_camera_detection(road_id, count=count, fps=fps)
+    return api_response({"success": ok, "road": road_id, "count": count, "gateway": twin_manager.realtime_adapter.camera_gateway})
+
+def handle_realtime_status(twin_manager):
+    return api_response({"success": True, "realtimeTraffic": twin_manager.realtime_adapter.to_dict()})
+
+
