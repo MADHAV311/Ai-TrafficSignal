@@ -125,7 +125,10 @@ export class ThreeScene {
     // 10b. 3D Civic Health & Sustainable Infrastructure (Potholes, Waste & Smart Pole)
     this.initCivicInfrastructure();
 
-    // 10c. Lock all static meshes for maximum 60 FPS zero-lag rendering
+    // 10c. 3D Bagalur Cross (NH 44 Airport Corridor & BTP Outpost) Real-World Landmarks
+    this.initBagalurLandmarks();
+
+    // 10d. Lock all static meshes for maximum 60 FPS zero-lag rendering
     this.freezeStaticEnvironment();
 
     // 11. Event Listeners
@@ -1021,6 +1024,265 @@ export class ThreeScene {
 
     this.civicGroup.add(poleGroup);
     this.smartPole = poleGroup;
+  }
+
+  // 3D Bagalur Cross (NH 44 Airport Corridor & BTP Outpost) Real-World Landmarks
+  initBagalurLandmarks() {
+    this.bagalurGroup = new THREE.Group();
+    this.scene.add(this.bagalurGroup);
+
+    // =========================================================================
+    // 1. BENGALURU TRAFFIC POLICE (BTP) YELAHANKA TRAFFIC POST & KIOSK
+    // Location: Northwest Sidewalk Corner (x: -96, z: -96), overlooking junction
+    // =========================================================================
+    const btpGroup = new THREE.Group();
+    btpGroup.position.set(-96, 0, -96);
+
+    // Concrete Plinth with yellow/black hazard curb
+    const plinthMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(22, 1.4, 20), plinthMat);
+    plinth.position.y = 0.7;
+    btpGroup.add(plinth);
+
+    // Hazard yellow/black striped border around plinth
+    const hazardMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+    const hazardRim = new THREE.Mesh(new THREE.BoxGeometry(22.8, 0.4, 20.8), hazardMat);
+    hazardRim.position.y = 0.2;
+    btpGroup.add(hazardRim);
+
+    // Kiosk Main Cabin (Navy blue lower base + khaki upper wall)
+    const cabinBaseMat = new THREE.MeshLambertMaterial({ color: 0x0f172a }); // Police navy
+    const cabinBase = new THREE.Mesh(new THREE.BoxGeometry(16, 8, 14), cabinBaseMat);
+    cabinBase.position.y = 1.4 + 4;
+    btpGroup.add(cabinBase);
+
+    const cabinUpperMat = new THREE.MeshLambertMaterial({ color: 0xe2d9c8 }); // Khaki cream
+    const cabinUpper = new THREE.Mesh(new THREE.BoxGeometry(15.8, 10, 13.8), cabinUpperMat);
+    cabinUpper.position.y = 1.4 + 13;
+    btpGroup.add(cabinUpper);
+
+    // 3-Sided Panoramic Observation Windows (Facing Road A and Road D)
+    const winGlassMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65 });
+    const winFront = new THREE.Mesh(new THREE.BoxGeometry(14.2, 5.5, 0.4), winGlassMat);
+    winFront.position.set(0, 15, 7.1);
+    btpGroup.add(winFront);
+
+    const winSide = new THREE.Mesh(new THREE.BoxGeometry(0.4, 5.5, 11), winGlassMat);
+    winSide.position.set(8.1, 15, 0);
+    btpGroup.add(winSide);
+
+    // Kiosk Roof Canopy (Deep Blue with Karnataka Police Red/Yellow Eaves)
+    const roofMat = new THREE.MeshLambertMaterial({ color: 0x1e3a8a });
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(19, 2.2, 17), roofMat);
+    roof.position.y = 20.5;
+    btpGroup.add(roof);
+
+    // BTP Signboard Over Entrance
+    const btpSignCanvas = document.createElement('canvas');
+    btpSignCanvas.width = 384;
+    btpSignCanvas.height = 96;
+    const bCtx = btpSignCanvas.getContext('2d');
+    bCtx.fillStyle = '#0f172a';
+    bCtx.fillRect(0, 0, 384, 96);
+    bCtx.strokeStyle = '#facc15';
+    bCtx.lineWidth = 4;
+    bCtx.strokeRect(4, 4, 376, 88);
+    bCtx.fillStyle = '#ef4444';
+    bCtx.fillRect(8, 8, 368, 22);
+    bCtx.fillStyle = '#ffffff';
+    bCtx.font = 'bold 16px sans-serif';
+    bCtx.textAlign = 'center';
+    bCtx.fillText('BENGALURU CITY POLICE · B-TRAC', 192, 24);
+    bCtx.fillStyle = '#facc15';
+    bCtx.font = 'bold 19px sans-serif';
+    bCtx.fillText('YELAHANKA TRAFFIC SUB-DIVISION', 192, 54);
+    bCtx.fillStyle = '#38bdf8';
+    bCtx.font = 'bold 15px monospace';
+    bCtx.fillText('BAGALUR CROSS OUTPOST POST #04', 192, 80);
+
+    const btpSignTex = new THREE.CanvasTexture(btpSignCanvas);
+    const btpSignMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(16, 4.2, 0.4),
+      new THREE.MeshBasicMaterial({ map: btpSignTex })
+    );
+    btpSignMesh.position.set(0, 19.5, 7.3);
+    btpGroup.add(btpSignMesh);
+
+    // Rooftop Flashing Dual Strobe Beacon (Police Blue & Red)
+    const strobeGroup = new THREE.Group();
+    strobeGroup.position.set(0, 22.5, 0);
+
+    const blueLens = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0x0284c7 }));
+    blueLens.position.set(-2.5, 0, 0);
+    strobeGroup.add(blueLens);
+
+    const redLens = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+    redLens.position.set(2.5, 0, 0);
+    strobeGroup.add(redLens);
+
+    btpGroup.add(strobeGroup);
+    this.btpStrobe = strobeGroup;
+
+    // Wireless Communications Mast & Edge CCTV PTZ Camera
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 24, 8), this.matPool.steel);
+    mast.position.set(-7, 32, -5);
+    btpGroup.add(mast);
+
+    const ptzDome = new THREE.Mesh(new THREE.SphereGeometry(1.4, 8, 8), new THREE.MeshBasicMaterial({ color: 0x1e293b }));
+    ptzDome.position.set(-7, 43, -5);
+    btpGroup.add(ptzDome);
+
+    const ptzLens = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.2, 8).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+    ptzLens.position.set(-7, 43, -4.2);
+    btpGroup.add(ptzLens);
+
+    // 3D Floating Badge over Police Kiosk
+    const btpBadge = this.createBadgeSprite('👮 BTP YELAHANKA TRAFFIC OUTPOST', 'rgba(15, 23, 42, 0.95)', '#facc15', '#fef08a');
+    btpBadge.position.set(0, 48, 0);
+    btpGroup.add(btpBadge);
+
+    this.bagalurGroup.add(btpGroup);
+
+    // =========================================================================
+    // 2. KEMPEGOWDA INTERNATIONAL AIRPORT (KIA) OVERHEAD HIGHWAY GANTRY PORTAL
+    // Location: Across Road C (Northbound to Airport, at z = 220)
+    // =========================================================================
+    const kiaPortal = new THREE.Group();
+    kiaPortal.position.set(0, 0, 220);
+
+    for (const px of [-48, 48]) {
+      const pylon = new THREE.Mesh(new THREE.BoxGeometry(4.0, 46, 4.0), this.matPool.steel);
+      pylon.position.set(px, 23, 0);
+      kiaPortal.add(pylon);
+      const pBase = new THREE.Mesh(new THREE.BoxGeometry(8, 3, 8), this.matPool.housing);
+      pBase.position.set(px, 1.5, 0);
+      kiaPortal.add(pBase);
+    }
+
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(100, 3.6, 3.6), this.matPool.steel);
+    beam.position.set(0, 44, 0);
+    kiaPortal.add(beam);
+
+    const kiaSignCanvas = document.createElement('canvas');
+    kiaSignCanvas.width = 512;
+    kiaSignCanvas.height = 128;
+    const kCtx = kiaSignCanvas.getContext('2d');
+    kCtx.fillStyle = '#065f46'; // Indian Highway Green
+    kCtx.fillRect(0, 0, 512, 128);
+    kCtx.strokeStyle = '#ffffff';
+    kCtx.lineWidth = 5;
+    kCtx.strokeRect(6, 6, 500, 116);
+    kCtx.fillStyle = '#facc15';
+    kCtx.font = 'bold 22px sans-serif';
+    kCtx.textAlign = 'center';
+    kCtx.fillText('✈️ KEMPEGOWDA INTERNATIONAL AIRPORT (KIA)', 256, 36);
+    kCtx.fillStyle = '#ffffff';
+    kCtx.font = 'bold 26px sans-serif';
+    kCtx.fillText('NH 44 · DEVANAHALLI TOLLWAY · 14 KM', 256, 74);
+    kCtx.fillStyle = '#93c5fd';
+    kCtx.font = '600 18px sans-serif';
+    kCtx.fillText('TERMINAL 1 & 2  |  AIRPORT EXPRESS CORRIDOR  ↑', 256, 108);
+
+    const kiaSignTex = new THREE.CanvasTexture(kiaSignCanvas);
+    const kiaSignMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(80, 18, 1.2),
+      new THREE.MeshBasicMaterial({ map: kiaSignTex })
+    );
+    kiaSignMesh.position.set(0, 44, -2.4);
+    kiaPortal.add(kiaSignMesh);
+
+    this.bagalurGroup.add(kiaPortal);
+
+    // =========================================================================
+    // 3. BENGALURU CITY / HEBBAL RETURN OVERHEAD HIGHWAY GANTRY PORTAL
+    // Location: Across Road A (Southbound to City, at z = -220)
+    // =========================================================================
+    const cityPortal = new THREE.Group();
+    cityPortal.position.set(0, 0, -220);
+
+    for (const px of [-48, 48]) {
+      const pylon = new THREE.Mesh(new THREE.BoxGeometry(4.0, 46, 4.0), this.matPool.steel);
+      pylon.position.set(px, 23, 0);
+      cityPortal.add(pylon);
+      const pBase = new THREE.Mesh(new THREE.BoxGeometry(8, 3, 8), this.matPool.housing);
+      pBase.position.set(px, 1.5, 0);
+      cityPortal.add(pBase);
+    }
+
+    const cityBeam = new THREE.Mesh(new THREE.BoxGeometry(100, 3.6, 3.6), this.matPool.steel);
+    cityBeam.position.set(0, 44, 0);
+    cityPortal.add(cityBeam);
+
+    const citySignCanvas = document.createElement('canvas');
+    citySignCanvas.width = 512;
+    citySignCanvas.height = 128;
+    const cCtx = citySignCanvas.getContext('2d');
+    cCtx.fillStyle = '#065f46';
+    cCtx.fillRect(0, 0, 512, 128);
+    cCtx.strokeStyle = '#ffffff';
+    cCtx.lineWidth = 5;
+    cCtx.strokeRect(6, 6, 500, 116);
+    cCtx.fillStyle = '#facc15';
+    cCtx.font = 'bold 22px sans-serif';
+    cCtx.textAlign = 'center';
+    cCtx.fillText('🏙️ TO BENGALURU CITY & HEBBAL FLYOVER', 256, 36);
+    cCtx.fillStyle = '#ffffff';
+    cCtx.font = 'bold 26px sans-serif';
+    cCtx.fillText('NH 44 SOUTH · MEKHRI CIRCLE · 12 KM', 256, 74);
+    cCtx.fillStyle = '#86efac';
+    cCtx.font = '600 18px sans-serif';
+    cCtx.fillText('BENGALURU TRAFFIC POLICE · B-TRAC SAFE CORRIDOR  ↓', 256, 108);
+
+    const citySignTex = new THREE.CanvasTexture(citySignCanvas);
+    const citySignMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(80, 18, 1.2),
+      new THREE.MeshBasicMaterial({ map: citySignTex })
+    );
+    citySignMesh.position.set(0, 44, 2.4);
+    cityPortal.add(citySignMesh);
+
+    this.bagalurGroup.add(cityPortal);
+
+    // =========================================================================
+    // 4. BOEING INDIA & KIADB AEROSPACE SEZ MONUMENT LANDMARK
+    // Location: On SH 104 Road B (East at x = 210, z = -88)
+    // =========================================================================
+    const sezGroup = new THREE.Group();
+    sezGroup.position.set(210, 0, -88);
+
+    const sezCanvas = document.createElement('canvas');
+    sezCanvas.width = 512;
+    sezCanvas.height = 128;
+    const sCtx = sezCanvas.getContext('2d');
+    sCtx.fillStyle = '#0f172a';
+    sCtx.fillRect(0, 0, 512, 128);
+    sCtx.strokeStyle = '#38bdf8';
+    sCtx.lineWidth = 4;
+    sCtx.strokeRect(6, 6, 500, 116);
+    sCtx.fillStyle = '#38bdf8';
+    sCtx.font = 'bold 22px sans-serif';
+    sCtx.textAlign = 'center';
+    sCtx.fillText('✈️ BOEING INDIA ENGINEERING & TECH CAMPUS (BIETC)', 256, 38);
+    sCtx.fillStyle = '#f8fafc';
+    sCtx.font = 'bold 24px sans-serif';
+    sCtx.fillText('KIADB AEROSPACE SEZ & HARDWARE PARK', 256, 74);
+    sCtx.fillStyle = '#a855f7';
+    sCtx.font = '600 17px monospace';
+    sCtx.fillText('SH 104 CORRIDOR · FOXCONN & AEROSPACE HUB', 256, 108);
+
+    const sezTex = new THREE.CanvasTexture(sezCanvas);
+    const sezMon = new THREE.Mesh(
+      new THREE.BoxGeometry(4.0, 22, 60),
+      new THREE.MeshBasicMaterial({ map: sezTex })
+    );
+    sezMon.position.set(0, 11, 0);
+    sezGroup.add(sezMon);
+
+    const sezBadge = this.createBadgeSprite('🏭 KIADB AEROSPACE SEZ & BOEING HUB', 'rgba(15, 23, 42, 0.95)', '#a855f7', '#c084fc');
+    sezBadge.position.set(0, 26, 0);
+    sezGroup.add(sezBadge);
+
+    this.bagalurGroup.add(sezGroup);
   }
 
   initGroundAndRoads() {
@@ -3454,6 +3716,17 @@ export class ThreeScene {
     chassis.castShadow = true;
     group.add(chassis);
 
+    // 1b. BMTC Vayu Vajra Airport Volvo Navy Skirt & White Waistline Decal
+    const skirtMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+    const skirt = new THREE.Mesh(new THREE.BoxGeometry(54.2, 2.4, 17.2), skirtMat);
+    skirt.position.y = 2.4;
+    group.add(skirt);
+
+    const bandMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc });
+    const band = new THREE.Mesh(new THREE.BoxGeometry(54.2, 1.0, 17.2), bandMat);
+    band.position.y = 10.5;
+    group.add(band);
+
     // 2. Tinted Passenger Window Greenhouse
     const windowGeo = new THREE.BoxGeometry(52, 9, 16.2);
     const windowMesh = new THREE.Mesh(windowGeo, this.matPool.glass);
@@ -4055,6 +4328,11 @@ export class ThreeScene {
       this.controls.update();
     }
 
+    // Rotate BTP Police Outpost rooftop strobe beacon
+    if (this.btpStrobe) {
+      this.btpStrobe.rotation.y += dt * 9.0;
+    }
+
     // 2. Metro Train Motion
     if (this.metroTrain) {
       if (!window.__freezeMetro) {
@@ -4331,6 +4609,15 @@ export class ThreeScene {
       this.animateCameraTo(-140, 28, 140, 0, 15, 0);
     } else if (mode === '2D_PLAN') {
       this.animateCameraTo(0, 750, 0.1, 0, 0, 0);
+    } else if (mode === 'BAGALUR_AIRPORT') {
+      // Highway corridor camera looking North towards Kempegowda Airport along NH 44
+      this.animateCameraTo(0, 160, 360, 0, 20, -120);
+    } else if (mode === 'BAGALUR_SEZ') {
+      // Looking East towards Boeing India & Aerospace SEZ down SH 104
+      this.animateCameraTo(-260, 120, -30, 120, 20, 0);
+    } else if (mode === 'BAGALUR_POLICE') {
+      // Driver / BTP Traffic Police Kiosk angle
+      this.animateCameraTo(-140, 32, -120, -60, 14, -60);
     }
   }
 

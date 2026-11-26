@@ -47,6 +47,138 @@
       border-color: rgba(56, 189, 248, 0.45);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
+    .bagalur-3d-live-hud {
+      position: absolute;
+      top: 56px;
+      left: 14px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.84);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 10px;
+      padding: 10px 14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      width: 380px;
+      font-family: var(--font-sans);
+      pointer-events: auto;
+      transition: all 0.25s ease;
+    }
+    .bagalur-3d-live-hud:hover {
+      border-color: rgba(56, 189, 248, 0.65);
+      background: rgba(15, 23, 42, 0.94);
+    }
+    .b3d-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .b3d-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #fca5a5;
+      letter-spacing: 0.3px;
+    }
+    .b3d-time {
+      font-size: 10px;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+    }
+    .b3d-sub {
+      font-size: 9px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .b3d-corridors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .b3d-corridor-item {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .b3d-corridor-name {
+      font-size: 9px;
+      color: #94a3b8;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .b3d-corridor-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .b3d-corridor-val small {
+      font-size: 9px;
+      color: #64748b;
+    }
+    .b3d-tag {
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    .b3d-tag.normal { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+    .b3d-tag.moderate { background: rgba(234, 179, 8, 0.25); color: #facc15; }
+    .b3d-tag.congested { background: rgba(249, 115, 22, 0.25); color: #fb923c; }
+    .b3d-tag.jammed { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+    .b3d-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #94a3b8;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 6px;
+      margin-bottom: 8px;
+    }
+    .b3d-cam-presets {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .b3d-cam-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      margin-right: 2px;
+    }
+    .b3d-cam-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 3px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .b3d-cam-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .b3d-cam-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
   </style>
 
 </head>
@@ -147,6 +279,10 @@
       <div class="situation-mode-buttons">
         <button class="situation-btn active" data-mode="NORMAL" title="Normal Balanced Flow">
           <span class="sit-icon">🚗</span> Normal
+        </button>
+        <button class="situation-btn bagalur-live" data-mode="BAGALUR_LIVE" title="Bagalur Cross (NH 44 Airport Corridor) Live Real-Time Ingestion Mode" style="border-color: rgba(239, 68, 68, 0.6); color: #f87171; background: rgba(239, 68, 68, 0.15);">
+          <span class="pulsing-red-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#ef4444; margin-right:4px;"></span>
+          <span class="sit-icon">📍</span> Bagalur Cross (Live NH 44)
         </button>
         <button class="situation-btn" data-mode="MULTI_INTERSECTION" title="Metropolitan Arterial Coordinated Wave">
           <span class="sit-icon">🚦</span> Arterial Wave
@@ -251,6 +387,54 @@
                 <span class="pole-name">Pole D (W)</span>
                 <span class="pole-status" id="pole-stat-d">Standby</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Bagalur Cross Real-Time 3D Telemetry HUD (Glassmorphism Overlay) -->
+          <div id="bagalur-3d-live-hud" class="bagalur-3d-live-hud">
+            <div class="b3d-header">
+              <div class="b3d-badge">
+                <span class="pulsing-red-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#ef4444;"></span>
+                <span>🔴 LIVE 3D TWIN: BAGALUR CROSS (NH 44)</span>
+              </div>
+              <div class="b3d-time" id="b3d-server-time">Live IST</div>
+            </div>
+            <div class="b3d-sub">13.1352° N, 77.6256° E (915m MSL) • Bengaluru North Traffic Division</div>
+
+            <!-- Live 4 Corridors Real-Time Strip -->
+            <div class="b3d-corridors">
+              <div class="b3d-corridor-item">
+                <div class="b3d-corridor-name">NH 44 Airport Inbound</div>
+                <div class="b3d-corridor-val"><span id="b3d-spd-a">52.0</span> <small>km/h</small> <span class="b3d-tag moderate" id="b3d-tag-a">MOD</span></div>
+              </div>
+              <div class="b3d-corridor-item">
+                <div class="b3d-corridor-name">NH 44 City Return</div>
+                <div class="b3d-corridor-val"><span id="b3d-spd-c">46.0</span> <small>km/h</small> <span class="b3d-tag moderate" id="b3d-tag-c">MOD</span></div>
+              </div>
+              <div class="b3d-corridor-item">
+                <div class="b3d-corridor-name">SH 104 Aerospace SEZ</div>
+                <div class="b3d-corridor-val"><span id="b3d-spd-b">32.0</span> <small>km/h</small> <span class="b3d-tag congested" id="b3d-tag-b">CONG</span></div>
+              </div>
+              <div class="b3d-corridor-item">
+                <div class="b3d-corridor-name">Yelahanka Feeder</div>
+                <div class="b3d-corridor-val"><span id="b3d-spd-d">28.0</span> <small>km/h</small> <span class="b3d-tag normal" id="b3d-tag-d">NORM</span></div>
+              </div>
+            </div>
+
+            <!-- Ambient & Edge CV strip -->
+            <div class="b3d-footer">
+              <div class="b3d-meteo">🌦️ <span id="b3d-temp">20.4°C</span> • <span id="b3d-weather">CLOUDY</span></div>
+              <div class="b3d-cv">📹 Edge CV: <strong id="b3d-cam-count">9</strong> vehs</div>
+            </div>
+
+            <!-- Quick 3D Camera Angles for Bagalur Cross -->
+            <div class="b3d-cam-presets">
+              <span class="b3d-cam-label">CAM:</span>
+              <button class="b3d-cam-btn active" data-cam="3D_PERSPECTIVE" title="Default 3D Perspective Overview">📐 Overview</button>
+              <button class="b3d-cam-btn" data-cam="BAGALUR_AIRPORT" title="NH 44 Airport Corridor Highway Angle">✈️ Airport NH 44</button>
+              <button class="b3d-cam-btn" data-cam="BAGALUR_SEZ" title="SH 104 Aerospace Park & Boeing Corridor">🏭 Aerospace SEZ</button>
+              <button class="b3d-cam-btn" data-cam="BAGALUR_POLICE" title="BTP Traffic Police Post Angle">👮 BTP Kiosk</button>
+              <button class="b3d-cam-btn" data-cam="3D_ORBIT" title="360° Smooth Cinematic Drone Orbit">🎥 Drone Orbit</button>
             </div>
           </div>
 

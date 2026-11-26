@@ -325,6 +325,22 @@ export class DashboardUI {
       C: document.getElementById('camera-road-c'),
       D: document.getElementById('camera-road-d')
     };
+
+    // 3D Viewport Bagalur Cross Live HUD
+    this.b3dLiveHud = document.getElementById('bagalur-3d-live-hud');
+    this.b3dServerTime = document.getElementById('b3d-server-time');
+    this.b3dSpdA = document.getElementById('b3d-spd-a');
+    this.b3dSpdB = document.getElementById('b3d-spd-b');
+    this.b3dSpdC = document.getElementById('b3d-spd-c');
+    this.b3dSpdD = document.getElementById('b3d-spd-d');
+    this.b3dTagA = document.getElementById('b3d-tag-a');
+    this.b3dTagB = document.getElementById('b3d-tag-b');
+    this.b3dTagC = document.getElementById('b3d-tag-c');
+    this.b3dTagD = document.getElementById('b3d-tag-d');
+    this.b3dTemp = document.getElementById('b3d-temp');
+    this.b3dWeather = document.getElementById('b3d-weather');
+    this.b3dCamCount = document.getElementById('b3d-cam-count');
+    this.b3dCamBtns = document.querySelectorAll('.b3d-cam-btn');
   }
 
   bindEvents() {
@@ -539,6 +555,12 @@ export class DashboardUI {
             if (this.btnVisionSchoolMap) this.btnVisionSchoolMap.classList.remove('active');
           }
 
+          if (mode === 'BAGALUR_LIVE') {
+            if (this.threeScene) {
+              this.threeScene.setCameraMode('BAGALUR_AIRPORT');
+            }
+          }
+
           if (mode === 'AMBULANCE' || mode === 'FIRE_ENGINE' || mode === 'SEVERE_ACCIDENT' || mode === 'CRIME_CRITICAL') {
             this.audioEffects.playEmergencySiren();
           } else {
@@ -550,6 +572,20 @@ export class DashboardUI {
             this.showToast(`🎯 Situation Mode Activated: ${btn.textContent.trim()}`);
           } catch (e) {
             console.error(e);
+          }
+        });
+      });
+    }
+
+    // 3D Viewport Bagalur Camera Angle Buttons
+    if (this.b3dCamBtns) {
+      this.b3dCamBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.b3dCamBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const cam = btn.dataset.cam;
+          if (this.threeScene) {
+            this.threeScene.setCameraMode(cam);
           }
         });
       });
@@ -1517,6 +1553,56 @@ export class DashboardUI {
         if (this.rtCamera.C) this.rtCamera.C.textContent = cg.countsByRoad.C || 0;
         if (this.rtCamera.D) this.rtCamera.D.textContent = cg.countsByRoad.D || 0;
       }
+    }
+
+    // 3D Viewport Bagalur Cross Floating HUD Updates
+    if (this.b3dServerTime && rt.serverTimeIST) {
+      const parts = rt.serverTimeIST.split(' ');
+      this.b3dServerTime.textContent = parts.length >= 3 ? `${parts[1]} ${parts[2]}` : rt.serverTimeIST;
+    }
+
+    if (rt.telemetry) {
+      if (this.b3dSpdA && rt.telemetry.A) {
+        this.b3dSpdA.textContent = rt.telemetry.A.currentSpeedKmh !== undefined ? rt.telemetry.A.currentSpeedKmh.toFixed(1) : '--';
+        if (this.b3dTagA) {
+          const lvl = rt.telemetry.A.congestionLevel || 'NORMAL';
+          this.b3dTagA.className = `b3d-tag ${lvl.toLowerCase()}`;
+          this.b3dTagA.textContent = lvl.substring(0, 4);
+        }
+      }
+      if (this.b3dSpdC && rt.telemetry.C) {
+        this.b3dSpdC.textContent = rt.telemetry.C.currentSpeedKmh !== undefined ? rt.telemetry.C.currentSpeedKmh.toFixed(1) : '--';
+        if (this.b3dTagC) {
+          const lvl = rt.telemetry.C.congestionLevel || 'NORMAL';
+          this.b3dTagC.className = `b3d-tag ${lvl.toLowerCase()}`;
+          this.b3dTagC.textContent = lvl.substring(0, 4);
+        }
+      }
+      if (this.b3dSpdB && rt.telemetry.B) {
+        this.b3dSpdB.textContent = rt.telemetry.B.currentSpeedKmh !== undefined ? rt.telemetry.B.currentSpeedKmh.toFixed(1) : '--';
+        if (this.b3dTagB) {
+          const lvl = rt.telemetry.B.congestionLevel || 'NORMAL';
+          this.b3dTagB.className = `b3d-tag ${lvl.toLowerCase()}`;
+          this.b3dTagB.textContent = lvl.substring(0, 4);
+        }
+      }
+      if (this.b3dSpdD && rt.telemetry.D) {
+        this.b3dSpdD.textContent = rt.telemetry.D.currentSpeedKmh !== undefined ? rt.telemetry.D.currentSpeedKmh.toFixed(1) : '--';
+        if (this.b3dTagD) {
+          const lvl = rt.telemetry.D.congestionLevel || 'NORMAL';
+          this.b3dTagD.className = `b3d-tag ${lvl.toLowerCase()}`;
+          this.b3dTagD.textContent = lvl.substring(0, 4);
+        }
+      }
+    }
+
+    if (rt.weather) {
+      if (this.b3dTemp) this.b3dTemp.textContent = `${rt.weather.temperatureC}°C`;
+      if (this.b3dWeather) this.b3dWeather.textContent = rt.weather.condition;
+    }
+
+    if (rt.cameraGateway && this.b3dCamCount) {
+      this.b3dCamCount.textContent = rt.cameraGateway.totalDetections || 0;
     }
   }
 

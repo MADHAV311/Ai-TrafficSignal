@@ -419,6 +419,13 @@ class TwinManager:
             self.clear_school_zone()
             self.generator.apply_preset("BALANCED")
 
+        elif mode_key == "BAGALUR_LIVE":
+            self.accident_detector.clear_accident()
+            self.clear_crime()
+            self.clear_school_zone()
+            self.realtime_adapter.is_live_sync_enabled = True
+            self.realtime_adapter.update(0.1, self.generator, self)
+
         elif mode_key == "AMBULANCE":
             self.accident_detector.clear_accident()
             self.clear_crime()
