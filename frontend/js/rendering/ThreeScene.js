@@ -29,6 +29,7 @@ export class ThreeScene {
     this.sirenPoles = {};           // 'A', 'B', 'C', 'D' -> { group, beacon, strobeLight, active }
     this.metroTrain = null;
     this.metroX = -450;
+    this.metroZ = -450;
 
     // Camera modes
     this.cameraMode = '3D_PERSPECTIVE'; // '3D_PERSPECTIVE', '3D_ORBIT', '3D_STREET', '2D_PLAN'
@@ -1283,6 +1284,226 @@ export class ThreeScene {
     sezGroup.add(sezBadge);
 
     this.bagalurGroup.add(sezGroup);
+
+    // =========================================================================
+    // 5. BMTC VAYU VAJRA AIRPORT BUS TERMINAL SHELTER (KIA-9 / KIA-8)
+    // Location: East Sidewalk at (x: 82, z: 55), passenger bus boarding bay
+    // =========================================================================
+    const bmtcGroup = new THREE.Group();
+    bmtcGroup.position.set(82, 0, 55);
+
+    // Concrete Boarding Platform with tactile yellow edge
+    const bPlat = new THREE.Mesh(new THREE.BoxGeometry(26, 1.2, 12), this.matPool.housing);
+    bPlat.position.y = 0.6;
+    bmtcGroup.add(bPlat);
+
+    // Modern Curved Glass & Steel Passenger Shelter
+    const bShelterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2 });
+    const bRoof = new THREE.Mesh(new THREE.BoxGeometry(24, 0.8, 10), bShelterMat);
+    bRoof.position.set(0, 9.5, -1);
+    bmtcGroup.add(bRoof);
+
+    // Shelter Glass Backing
+    const bGlass = new THREE.Mesh(new THREE.BoxGeometry(22, 7.5, 0.4), new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55 }));
+    bGlass.position.set(0, 5.0, -5.2);
+    bmtcGroup.add(bGlass);
+
+    // Passenger Bench
+    const bBench = new THREE.Mesh(new THREE.BoxGeometry(16, 1.0, 2.5), new THREE.MeshLambertMaterial({ color: 0x334155 }));
+    bBench.position.set(0, 2.5, -3.5);
+    bmtcGroup.add(bBench);
+
+    // BMTC Vayu Vajra Destination Signboard
+    const bmtcCanvas = document.createElement('canvas');
+    bmtcCanvas.width = 512;
+    bmtcCanvas.height = 96;
+    const bCtx2 = bmtcCanvas.getContext('2d');
+    bCtx2.fillStyle = '#0284c7';
+    bCtx2.fillRect(0, 0, 512, 96);
+    bCtx2.fillStyle = '#ffffff';
+    bCtx2.font = 'bold 20px sans-serif';
+    bCtx2.textAlign = 'center';
+    bCtx2.fillText('ಬೆಂ.ಮಾ.ಸಾ.ಸಂ · BMTC VAYU VAJRA AIRPORT CORRIDOR', 256, 32);
+    bCtx2.fillStyle = '#facc15';
+    bCtx2.font = 'bold 24px monospace';
+    bCtx2.fillText('ROUTE KIA-9 / KIA-8 · BAGALUR CROSS BAY', 256, 70);
+
+    const bmtcSign = new THREE.Mesh(
+      new THREE.BoxGeometry(20, 3.5, 0.5),
+      new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bmtcCanvas) })
+    );
+    bmtcSign.position.set(0, 9.8, 4.2);
+    bmtcGroup.add(bmtcSign);
+
+    const bmtcBadge = this.createBadgeSprite('🚌 BMTC VAYU VAJRA AIRPORT BUS STOP', 'rgba(2, 132, 199, 0.95)', '#facc15', '#ffffff');
+    bmtcBadge.position.set(0, 16, 0);
+    bmtcGroup.add(bmtcBadge);
+
+    this.bagalurGroup.add(bmtcGroup);
+
+    // =========================================================================
+    // 6. BENGALURU TRAFFIC POLICE (BTP) PRE-PAID AUTO-RICKSHAW STAND
+    // Location: West Sidewalk at (x: -84, z: 55)
+    // =========================================================================
+    const autoStandGroup = new THREE.Group();
+    autoStandGroup.position.set(-84, 0, 55);
+
+    // Kiosk Booth
+    const aBooth = new THREE.Mesh(new THREE.BoxGeometry(10, 8, 8), new THREE.MeshLambertMaterial({ color: 0x15803d }));
+    aBooth.position.y = 4;
+    autoStandGroup.add(aBooth);
+
+    const aRoof = new THREE.Mesh(new THREE.BoxGeometry(12, 1.2, 10), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
+    aRoof.position.y = 8.6;
+    autoStandGroup.add(aRoof);
+
+    // Signboard
+    const autoCanvas = document.createElement('canvas');
+    autoCanvas.width = 384;
+    autoCanvas.height = 96;
+    const aCtx = autoCanvas.getContext('2d');
+    aCtx.fillStyle = '#15803d';
+    aCtx.fillRect(0, 0, 384, 96);
+    aCtx.fillStyle = '#eab308';
+    aCtx.fillRect(0, 0, 384, 10);
+    aCtx.fillStyle = '#ffffff';
+    aCtx.font = 'bold 20px sans-serif';
+    aCtx.textAlign = 'center';
+    aCtx.fillText('🛺 BTP PRE-PAID AUTO STAND', 192, 42);
+    aCtx.fillStyle = '#facc15';
+    aCtx.font = 'bold 18px monospace';
+    aCtx.fillText('BAGALUR CROSS JUNCTION', 192, 75);
+
+    const autoSign = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 3.2, 0.4),
+      new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(autoCanvas) })
+    );
+    autoSign.position.set(0, 10.5, 5.2);
+    autoStandGroup.add(autoSign);
+
+    // 2 Parked Auto-Rickshaws in the bay
+    const autoBay1 = new THREE.Group();
+    autoBay1.position.set(-14, 0, 0);
+    this.buildAutoRickshaw(autoBay1, { id: 'PARKED_AUTO_1', type: 'AUTO_RICKSHAW' });
+    autoStandGroup.add(autoBay1);
+
+    const autoBay2 = new THREE.Group();
+    autoBay2.position.set(-28, 0, 0);
+    this.buildAutoRickshaw(autoBay2, { id: 'PARKED_AUTO_2', type: 'AUTO_RICKSHAW' });
+    autoStandGroup.add(autoBay2);
+
+    this.bagalurGroup.add(autoStandGroup);
+
+    // =========================================================================
+    // 7. REVA UNIVERSITY & AEROSPACE PARK GATEWAY
+    // Location: East Approach (Road B at x: 210, z: 88)
+    // =========================================================================
+    const revaGroup = new THREE.Group();
+    revaGroup.position.set(210, 0, 88);
+
+    const revaCanvas = document.createElement('canvas');
+    revaCanvas.width = 512;
+    revaCanvas.height = 128;
+    const rCtx = revaCanvas.getContext('2d');
+    rCtx.fillStyle = '#1e1b4b'; // Deep navy
+    rCtx.fillRect(0, 0, 512, 128);
+    rCtx.strokeStyle = '#f59e0b';
+    rCtx.lineWidth = 4;
+    rCtx.strokeRect(6, 6, 500, 116);
+    rCtx.fillStyle = '#f59e0b';
+    rCtx.font = 'bold 24px sans-serif';
+    rCtx.textAlign = 'center';
+    rCtx.fillText('🎓 REVA UNIVERSITY CAMPUS ENTRANCE', 256, 40);
+    rCtx.fillStyle = '#ffffff';
+    rCtx.font = 'bold 22px sans-serif';
+    rCtx.fillText('KATTIGENAHALLI & BAGALUR MAIN ROAD (SH 104)', 256, 76);
+    rCtx.fillStyle = '#38bdf8';
+    rCtx.font = '600 17px monospace';
+    rCtx.fillText('AEROSPACE PARK · KIADB SEZ · HARDWARE PARK', 256, 110);
+
+    const revaMon = new THREE.Mesh(
+      new THREE.BoxGeometry(4.0, 22, 60),
+      new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(revaCanvas) })
+    );
+    revaMon.position.set(0, 11, 0);
+    revaGroup.add(revaMon);
+
+    const revaBadge = this.createBadgeSprite('🎓 REVA UNIVERSITY & AEROSPACE ROAD', 'rgba(30, 27, 75, 0.95)', '#f59e0b', '#ffffff');
+    revaBadge.position.set(0, 26, 0);
+    revaGroup.add(revaBadge);
+
+    this.bagalurGroup.add(revaGroup);
+
+    // =========================================================================
+    // 8. NH 44 HIGHWAY BOUGAINVILLEA CENTRAL MEDIANS & HIGH-MAST LIGHTS
+    // Running North-South down the spine of NH 44 (z: -450 to -100, and +100 to +450)
+    // =========================================================================
+    const medianConcreteMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+    const shrubMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+    const flowerMat = new THREE.MeshLambertMaterial({ color: 0xd946ef }); // Magenta bougainvillea
+
+    for (const zRange of [[-450, -100], [100, 450]]) {
+      const zCenter = (zRange[0] + zRange[1]) / 2;
+      const zLen = zRange[1] - zRange[0];
+
+      // Raised Concrete Median Island
+      const mIsland = new THREE.Mesh(new THREE.BoxGeometry(10, 1.8, zLen), medianConcreteMat);
+      mIsland.position.set(0, 0.9, zCenter);
+      this.bagalurGroup.add(mIsland);
+
+      // Bougainvillea flowering shrubs along the median
+      for (let sz = zRange[0] + 15; sz <= zRange[1] - 15; sz += 22) {
+        const shrub = new THREE.Mesh(new THREE.SphereGeometry(3.5, 8, 8), shrubMat);
+        shrub.position.set(0, 3.2, sz);
+        this.bagalurGroup.add(shrub);
+
+        const flower = new THREE.Mesh(new THREE.SphereGeometry(1.8, 6, 6), flowerMat);
+        flower.position.set((Math.random() - 0.5) * 2, 4.6, sz + (Math.random() - 0.5) * 2);
+        this.bagalurGroup.add(flower);
+      }
+
+      // High-Mast Dual-Arm Highway Floodlights
+      for (let lz = zRange[0] + 45; lz <= zRange[1] - 45; lz += 90) {
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.9, 38, 8), this.matPool.steel);
+        mast.position.set(0, 19, lz);
+        this.bagalurGroup.add(mast);
+
+        const arms = new THREE.Mesh(new THREE.BoxGeometry(18, 0.6, 0.6), this.matPool.steel);
+        arms.position.set(0, 37.5, lz);
+        this.bagalurGroup.add(arms);
+
+        for (const lx of [-9, 9]) {
+          const luminaire = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.8, 1.8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+          luminaire.position.set(lx, 37.2, lz);
+          this.bagalurGroup.add(luminaire);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 9. NH 44 HIGHWAY SERVICE ROAD DIVIDERS
+    // Concrete dividers separating 6-lane express highway from local service roads
+    // =========================================================================
+    const dividerMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    for (const divX of [-56, 56]) {
+      for (const zRange of [[-450, -85], [85, 450]]) {
+        const zCenter = (zRange[0] + zRange[1]) / 2;
+        const zLen = zRange[1] - zRange[0];
+
+        const curb = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, zLen), dividerMat);
+        curb.position.set(divX, 0.7, zCenter);
+        this.bagalurGroup.add(curb);
+
+        // Yellow/Black Hazard Stripes on ends
+        const hazEnd1 = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 2.0), hazardMat);
+        hazEnd1.position.set(divX, 0.8, zRange[0] + 1.0);
+        this.bagalurGroup.add(hazEnd1);
+
+        const hazEnd2 = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 2.0), hazardMat);
+        hazEnd2.position.set(divX, 0.8, zRange[1] - 1.0);
+        this.bagalurGroup.add(hazEnd2);
+      }
+    }
   }
 
   initGroundAndRoads() {
@@ -3072,99 +3293,191 @@ export class ThreeScene {
   }
 
   initMetroViaduct() {
-    const viaductZ = -105;
-    const deckY = 46;
+    this.metroGroup = new THREE.Group();
+    this.scene.add(this.metroGroup);
+
+    const viaductX = 0; // Centered over NH 44 central median (Airport Highway)
+    const deckY = 52;
     const span = 600;
 
     const concreteMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
-    const pillars = [-360, -200, 200, 360];
-    for (const px of pillars) {
-      const p = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, deckY, 10), concreteMat);
-      p.position.set(px, deckY / 2, viaductZ);
-      this.scene.add(p);
+    const blueStationMat = new THREE.MeshLambertMaterial({ color: 0x005ba4 }); // Namma Metro Blue
+    const yellowAccentMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 }); // Namma Metro Yellow
+    const glassStationMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, roughness: 0.1 });
+
+    // 1. Concrete Portal Piers along the NH 44 Central Highway Median (North-South)
+    const pierZPositions = [-440, -320, -200, 200, 320, 440];
+    for (const pz of pierZPositions) {
+      const pierBase = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 10), this.matPool.housing);
+      pierBase.position.set(viaductX, 2, pz);
+      this.metroGroup.add(pierBase);
+
+      const pier = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 6.2, deckY - 4, 12), concreteMat);
+      pier.position.set(viaductX, (deckY - 4) / 2 + 4, pz);
+      this.metroGroup.add(pier);
+
+      // Hammerhead Cross-arm supporting twin tracks
+      const hammerhead = new THREE.Mesh(new THREE.BoxGeometry(26, 4.5, 9), concreteMat);
+      hammerhead.position.set(viaductX, deckY - 2.2, pz);
+      this.metroGroup.add(hammerhead);
     }
 
-    // Concrete Viaduct Deck
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 6, 22), concreteMat);
-    deck.position.set(0, deckY, viaductZ);
-    this.scene.add(deck);
+    // 2. Concrete Segmental Box Girder Deck (North & South of Station)
+    // North Viaduct Segment (towards Kempegowda Int'l Airport, z: -600 to -110)
+    const northDeck = new THREE.Mesh(new THREE.BoxGeometry(22, 5.5, span - 110), concreteMat);
+    northDeck.position.set(viaductX, deckY, (-span - 110) / 2);
+    this.metroGroup.add(northDeck);
 
-    // North & South Concrete Parapets / Crash Barrier Guardwalls
-    const parapetMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
-    const railHandMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-    for (const zOffset of [-10.3, 10.3]) {
-      const parapet = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 3.8, 1.4), parapetMat);
-      parapet.position.set(0, deckY + 4.9, viaductZ + zOffset);
-      this.scene.add(parapet);
+    // South Viaduct Segment (towards Hebbal / Bengaluru City, z: +110 to +600)
+    const southDeck = new THREE.Mesh(new THREE.BoxGeometry(22, 5.5, span - 110), concreteMat);
+    southDeck.position.set(viaductX, deckY, (span + 110) / 2);
+    this.metroGroup.add(southDeck);
 
-      const handrail = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.4, 0.8), railHandMat);
-      handrail.position.set(0, deckY + 7.0, viaductZ + zOffset);
-      this.scene.add(handrail);
-    }
-
-    // Track Plinth (Continuous Concrete Trackbed)
-    const plinth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.8, 14), new THREE.MeshLambertMaterial({ color: 0x334155 }));
-    plinth.position.set(0, deckY + 3.4, viaductZ);
-    this.scene.add(plinth);
-
-    // Twin Steel Running Rails
+    // Twin Steel Rails (running North-South along Z-axis)
     const steelRailMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.85, roughness: 0.25 });
-    const railNorth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.7, 0.6), steelRailMat);
-    railNorth.position.set(0, deckY + 4.15, viaductZ - 3.8);
-    this.scene.add(railNorth);
+    for (const xOff of [-3.8, 3.8]) {
+      const rN = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, span - 110), steelRailMat);
+      rN.position.set(xOff, deckY + 3.8, (-span - 110) / 2);
+      this.metroGroup.add(rN);
 
-    const railSouth = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.7, 0.6), steelRailMat);
-    railSouth.position.set(0, deckY + 4.15, viaductZ + 3.8);
-    this.scene.add(railSouth);
-
-    // Third Rail (750V DC Power Supply Rail with High-Vis Yellow Cover)
-    const thirdRail = new THREE.Mesh(new THREE.BoxGeometry(span * 2, 0.65, 0.5), new THREE.MeshLambertMaterial({ color: 0xf59e0b }));
-    thirdRail.position.set(0, deckY + 4.25, viaductZ + 5.5);
-    this.scene.add(thirdRail);
-
-    // Overhead Catenary System (Electrification Masts & Suspended Contact Wires)
-    const mastMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
-    const armMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
-    const insulatorMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
-    const wireMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-    const mastPositions = [-500, -375, -250, -125, 0, 125, 250, 375, 500];
-
-    for (const mx of mastPositions) {
-      // Vertical Mast on south deck edge
-      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.9, 23, 6), mastMat);
-      mast.position.set(mx, deckY + 3.0 + 11.5, viaductZ + 10.3);
-      this.scene.add(mast);
-
-      // Horizontal Cantilever Arm reaching over the tracks
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 11), armMat);
-      arm.position.set(mx, deckY + 25.5, viaductZ + 5.0);
-      this.scene.add(arm);
-
-      // Vertical Insulator Dropper
-      const insulator = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 2.4, 6), insulatorMat);
-      insulator.position.set(mx, deckY + 24.0, viaductZ);
-      this.scene.add(insulator);
+      const rS = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, span - 110), steelRailMat);
+      rS.position.set(xOff, deckY + 3.8, (span + 110) / 2);
+      this.metroGroup.add(rS);
     }
 
-    // Continuous Overhead Catenary Contact Wire (skims pantograph)
-    const contactWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.09, 0.09, span * 2, 4).rotateZ(Math.PI / 2),
-      wireMat
-    );
-    contactWire.position.set(0, deckY + 22.8, viaductZ);
-    this.scene.add(contactWire);
+    // =========================================================================
+    // 3. ELEVATED BAGALUR CROSS NAMMA METRO STATION (Phase-2B Airport Line)
+    // Spanning directly above the central junction from z = -110 to z = +110
+    // =========================================================================
+    const stationGroup = new THREE.Group();
+    stationGroup.position.set(viaductX, deckY, 0);
 
-    // Upper Messenger Suspension Cable
-    const messengerWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.07, 0.07, span * 2, 4).rotateZ(Math.PI / 2),
-      armMat
-    );
-    messengerWire.position.set(0, deckY + 25.5, viaductZ);
-    this.scene.add(messengerWire);
+    // Station Heavy Support Portals at junction corners (z = -95 and +95)
+    for (const sz of [-95, 95]) {
+      for (const sx of [-22, 22]) {
+        const sPylon = new THREE.Mesh(new THREE.BoxGeometry(6, deckY, 6), concreteMat);
+        sPylon.position.set(sx, -deckY / 2, sz);
+        stationGroup.add(sPylon);
+      }
+      const crossBeam = new THREE.Mesh(new THREE.BoxGeometry(50, 6, 7), concreteMat);
+      crossBeam.position.set(0, -3, sz);
+      stationGroup.add(crossBeam);
+    }
 
-    // High-Fidelity 3-Car Articulated Metro EMU Trainset
+    // Station Concourse & Platform Floor Slab
+    const stationFloor = new THREE.Mesh(new THREE.BoxGeometry(44, 4.5, 220), concreteMat);
+    stationFloor.position.set(0, 0, 0);
+    stationGroup.add(stationFloor);
+
+    // Platform Surface with Yellow Tactile Warning Border
+    const platform = new THREE.Mesh(new THREE.BoxGeometry(40, 0.6, 216), new THREE.MeshLambertMaterial({ color: 0x334155 }));
+    platform.position.set(0, 2.5, 0);
+    stationGroup.add(platform);
+
+    const tactileL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 216), yellowAccentMat);
+    tactileL.position.set(-6.5, 2.9, 0);
+    stationGroup.add(tactileL);
+
+    const tactileR = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 216), yellowAccentMat);
+    tactileR.position.set(6.5, 2.9, 0);
+    stationGroup.add(tactileR);
+
+    // Station Glass Curtain Wall Side Enclosures
+    for (const wx of [-20.5, 20.5]) {
+      const glassWall = new THREE.Mesh(new THREE.BoxGeometry(0.8, 16, 210), glassStationMat);
+      glassWall.position.set(wx, 10.5, 0);
+      stationGroup.add(glassWall);
+
+      const blueFasciaBand = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3.2, 214), blueStationMat);
+      blueFasciaBand.position.set(wx, 19, 0);
+      stationGroup.add(blueFasciaBand);
+    }
+
+    // Aerodynamic Curved Namma Metro Vault Canopy Roof
+    const roofCylinder = new THREE.CylinderGeometry(23, 23, 224, 24, 1, false, 0, Math.PI);
+    roofCylinder.rotateZ(Math.PI / 2);
+    roofCylinder.rotateY(Math.PI / 2);
+    const roofMesh = new THREE.Mesh(roofCylinder, blueStationMat);
+    roofMesh.position.set(0, 18.5, 0);
+    stationGroup.add(roofMesh);
+
+    // Center Translucent Skylight Ridge running down canopy
+    const ridgeMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 1.2, 220), glassStationMat);
+    ridgeMesh.position.set(0, 23.5, 0);
+    stationGroup.add(ridgeMesh);
+
+    // Station Name Signboard Canvas (Kannada & English)
+    const stnCanvas = document.createElement('canvas');
+    stnCanvas.width = 1024;
+    stnCanvas.height = 128;
+    const sCtx = stnCanvas.getContext('2d');
+    sCtx.fillStyle = '#005ba4'; // Namma Metro Blue
+    sCtx.fillRect(0, 0, 1024, 128);
+    sCtx.fillStyle = '#facc15'; // Yellow Accent
+    sCtx.fillRect(0, 0, 1024, 10);
+    sCtx.fillRect(0, 118, 1024, 10);
+    sCtx.fillStyle = '#ffffff';
+    sCtx.font = 'bold 34px sans-serif';
+    sCtx.textAlign = 'center';
+    sCtx.fillText('ಬಾಗಲೂರು ಕ್ರಾಸ್ ಮೆಟ್ರೋ ನಿಲ್ದಾಣ', 512, 52);
+    sCtx.fillStyle = '#facc15';
+    sCtx.font = 'bold 28px sans-serif';
+    sCtx.fillText('BAGALUR CROSS METRO STATION · NAMMA METRO AIRPORT BLUE LINE', 512, 96);
+
+    const stnTex = new THREE.CanvasTexture(stnCanvas);
+    const signMat = new THREE.MeshBasicMaterial({ map: stnTex });
+
+    // North-facing sign (facing airport traffic)
+    const signNorth = new THREE.Mesh(new THREE.BoxGeometry(40, 8.5, 1.0), signMat);
+    signNorth.position.set(0, 24, -112);
+    stationGroup.add(signNorth);
+
+    // South-facing sign (facing city traffic)
+    const signSouth = new THREE.Mesh(new THREE.BoxGeometry(40, 8.5, 1.0), signMat);
+    signSouth.position.set(0, 24, 112);
+    signSouth.rotation.y = Math.PI;
+    stationGroup.add(signSouth);
+
+    // 4. Pedestrian Skywalk Bridges extending East and West over highway to sidewalks
+    // East Skywalk (towards Aerospace SEZ / Reva University side)
+    const skyEast = new THREE.Mesh(new THREE.BoxGeometry(45, 7.5, 12), concreteMat);
+    skyEast.position.set(42.5, -2, 0);
+    stationGroup.add(skyEast);
+
+    const skyEastGlass = new THREE.Mesh(new THREE.BoxGeometry(43, 5.0, 12.2), glassStationMat);
+    skyEastGlass.position.set(42.5, 2.5, 0);
+    stationGroup.add(skyEastGlass);
+
+    // Staircase & Lift Tower on East Sidewalk (x = 68)
+    const towerEast = new THREE.Mesh(new THREE.BoxGeometry(14, deckY + 6, 16), concreteMat);
+    towerEast.position.set(68, -deckY / 2 + 3, 0);
+    stationGroup.add(towerEast);
+
+    // West Skywalk (towards Yelahanka New Town side)
+    const skyWest = new THREE.Mesh(new THREE.BoxGeometry(45, 7.5, 12), concreteMat);
+    skyWest.position.set(-42.5, -2, 0);
+    stationGroup.add(skyWest);
+
+    const skyWestGlass = new THREE.Mesh(new THREE.BoxGeometry(43, 5.0, 12.2), glassStationMat);
+    skyWestGlass.position.set(-42.5, 2.5, 0);
+    stationGroup.add(skyWestGlass);
+
+    // Staircase & Lift Tower on West Sidewalk (x = -68)
+    const towerWest = new THREE.Mesh(new THREE.BoxGeometry(14, deckY + 6, 16), concreteMat);
+    towerWest.position.set(-68, -deckY / 2 + 3, 0);
+    stationGroup.add(towerWest);
+
+    // 3D Floating Badge over Metro Station
+    const metroBadge = this.createBadgeSprite('🚇 NAMMA METRO · BAGALUR CROSS STATION', 'rgba(0, 91, 164, 0.95)', '#facc15', '#ffffff');
+    metroBadge.position.set(0, 36, 0);
+    stationGroup.add(metroBadge);
+
+    this.metroGroup.add(stationGroup);
+
+    // 5. High-Fidelity Metro Trainset running along North-South Z-Axis
     this.metroTrain = this.buildMetroTrainset();
-    this.metroTrain.position.set(this.metroX, deckY, viaductZ);
+    this.metroTrain.rotation.y = Math.PI / 2; // Orient along Z-axis (North-South Airport Corridor)
+    this.metroTrain.position.set(viaductX - 3.8, deckY, this.metroZ);
     this.scene.add(this.metroTrain);
   }
 
@@ -4401,13 +4714,13 @@ export class ThreeScene {
       this.btpStrobe.rotation.y += dt * 9.0;
     }
 
-    // 2. Metro Train Motion
+    // 2. Metro Train Motion (North-South along NH 44 Airport Corridor)
     if (this.metroTrain) {
       if (!window.__freezeMetro) {
-        this.metroX += 1.8;
-        if (this.metroX > 750) this.metroX = -750;
+        this.metroZ += 1.8;
+        if (this.metroZ > 750) this.metroZ = -750;
       }
-      this.metroTrain.position.x = this.metroX;
+      this.metroTrain.position.set(-3.8, 52, this.metroZ);
     }
 
     // 3. Vehicles Sync & Buttery-Smooth Dead-Reckoning Extrapolation
@@ -4688,6 +5001,9 @@ export class ThreeScene {
     } else if (mode === 'BAGALUR_AIRPORT') {
       // Highway corridor camera looking North towards Kempegowda Airport along NH 44
       this.animateCameraTo(0, 160, 360, 0, 20, -120);
+    } else if (mode === 'BAGALUR_METRO') {
+      // Elevated station & airport viaduct angle looking at Namma Metro Blue Line
+      this.animateCameraTo(-95, 75, 160, 0, 56, 0);
     } else if (mode === 'BAGALUR_SEZ') {
       // Looking East towards Boeing India & Aerospace SEZ down SH 104
       this.animateCameraTo(-260, 120, -30, 120, 20, 0);
