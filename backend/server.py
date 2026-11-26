@@ -132,6 +132,16 @@ class FullStackTrafficHandler(SimpleHTTPRequestHandler):
                 self._send_response_dict(res)
                 return
 
+            elif path == "/api/controller/live" or path == "/api/controller/hil":
+                with state_lock:
+                    hil_data = twin_manager.get_controller_hil_payload()
+                self._send_response_dict({
+                    "status": 200,
+                    "content_type": "application/json",
+                    "body": json.dumps(hil_data)
+                })
+                return
+
             # Fallback to serving static files from root directory
             return super().do_GET()
         except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):

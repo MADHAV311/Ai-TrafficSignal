@@ -4141,6 +4141,72 @@ export class ThreeScene {
     this.addTaillights(group, -10.2, 4.5, 4.5);
   }
 
+  // Builder 5B: Two-Wheeler / Motorcycle / Scooter (Commuter Bike with Commuter Rider & Helmet)
+  buildTwoWheeler(group, v, colorHex) {
+    const bikeColor = colorHex || 0xdc2626;
+    const bikeMat = new THREE.MeshLambertMaterial({ color: bikeColor });
+    const darkMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    const chromeMat = new THREE.MeshLambertMaterial({ color: 0xd1d5db });
+    const riderTorsoMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const helmetMat = new THREE.MeshLambertMaterial({ color: 0x0284c7 });
+
+    // 1. Sleek Chassis / Fuel Tank & Engine Block
+    const chassisGeo = new THREE.BoxGeometry(15, 4.2, 3.8);
+    const chassis = new THREE.Mesh(chassisGeo, bikeMat);
+    chassis.position.set(0, 4.8, 0);
+    chassis.castShadow = true;
+    group.add(chassis);
+
+    // 2. Front & Rear Spoke Wheels (Cylinders rotated 90 deg)
+    const wheelGeo = new THREE.CylinderGeometry(3.0, 3.0, 1.4, 12);
+    wheelGeo.rotateX(Math.PI / 2);
+
+    const fWheel = new THREE.Mesh(wheelGeo, darkMat);
+    fWheel.position.set(6.2, 3.0, 0);
+    group.add(fWheel);
+
+    const rWheel = new THREE.Mesh(wheelGeo, darkMat);
+    rWheel.position.set(-6.2, 3.0, 0);
+    group.add(rWheel);
+
+    // 3. Front Fork & Handlebars
+    const forkGeo = new THREE.BoxGeometry(1.2, 6.2, 1.2);
+    const fork = new THREE.Mesh(forkGeo, chromeMat);
+    fork.position.set(5.5, 6.2, 0);
+    fork.rotation.z = -0.22;
+    group.add(fork);
+
+    const handleGeo = new THREE.BoxGeometry(1.0, 0.8, 6.5);
+    const handle = new THREE.Mesh(handleGeo, darkMat);
+    handle.position.set(4.8, 9.2, 0);
+    group.add(handle);
+
+    // 4. Commuter Rider Figure (Torso + Helmet)
+    const torsoGeo = new THREE.BoxGeometry(4.8, 5.8, 4.2);
+    const torso = new THREE.Mesh(torsoGeo, riderTorsoMat);
+    torso.position.set(-1.0, 9.5, 0);
+    torso.rotation.z = 0.12; // Leaning forward slightly
+    group.add(torso);
+
+    const helmetGeo = new THREE.SphereGeometry(2.2, 10, 8);
+    const helmet = new THREE.Mesh(helmetGeo, helmetMat);
+    helmet.position.set(0.2, 14.0, 0);
+    group.add(helmet);
+
+    // 5. Headlight & Taillight
+    const hlGeo = new THREE.BoxGeometry(0.8, 1.2, 1.6);
+    const hlMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const hl = new THREE.Mesh(hlGeo, hlMat);
+    hl.position.set(7.2, 8.0, 0);
+    group.add(hl);
+
+    const tlGeo = new THREE.BoxGeometry(0.8, 0.8, 1.6);
+    const tlMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    const tl = new THREE.Mesh(tlGeo, tlMat);
+    tl.position.set(-7.5, 5.5, 0);
+    group.add(tl);
+  }
+
   // Builder 6: Passenger Sedan / Car (Aerodynamic 3-box profile, mirrors, alloy wheels)
   buildCar(group, v, colorHex) {
     const bodyColor = colorHex || 0x38bdf8;
@@ -4290,6 +4356,8 @@ export class ThreeScene {
       this.buildFireEngine(group, v);
     } else if (type === 'AUTO_RICKSHAW' || type === 'AUTO') {
       this.buildAutoRickshaw(group, v);
+    } else if (type === 'TWO_WHEELER' || type === 'MOTORCYCLE' || type === 'BIKE' || type === 'SCOOTER') {
+      this.buildTwoWheeler(group, v, colorHex);
     } else if (type === 'SUV') {
       this.buildSUV(group, v, colorHex);
     } else if (type === 'TRUCK') {
@@ -4395,7 +4463,8 @@ export class ThreeScene {
       }
     }
 
-    // Continuous 60 FPS forward kinematic integration for ALL vehicles (Feedforward + Gentle Proportional Drift)
+    // Continuous 60 FPS forward kinematic integration for ALL vehicles (Dynamic Timestamp Extrapolation + Anti-Lag)
+    const nowTime = performance.now();
     for (const [id, mesh] of this.vehicleMeshes.entries()) {
       if (!activeIds.has(id)) {
         this.scene.remove(mesh);
@@ -4407,35 +4476,42 @@ export class ThreeScene {
       const angle = mesh.userData.angle || 0;
       const sX = mesh.userData.serverX;
       const sZ = mesh.userData.serverZ;
+      const sTime = mesh.userData.serverTime || nowTime;
 
       if (sX === undefined || sZ === undefined) continue;
 
       if (speed > 4.0) {
-        // 1. Primary Feedforward Velocity: guarantees continuous non-zero motion every single frame
+        // Forward velocity components
         const vx = Math.cos(angle) * speed;
         const vz = Math.sin(angle) * speed;
 
+        // Dynamic time extrapolation: project where the vehicle is at this exact millisecond
+        const elapsedSec = Math.min(1.2, Math.max(0, (nowTime - sTime) / 1000.0));
+        const projectedSX = sX + vx * elapsedSec;
+        const projectedSZ = sZ + vz * elapsedSec;
+
+        // Kinematic feedforward: advance every single frame at speed
         mesh.position.x += vx * dt;
         mesh.position.z += vz * dt;
 
-        // 2. Gentle Proportional Correction toward latest server ground-truth
-        const errX = sX - mesh.position.x;
-        const errZ = sZ - mesh.position.z;
+        // Gentle non-oscillating correction toward projected ground-truth
+        const errX = projectedSX - mesh.position.x;
+        const errZ = projectedSZ - mesh.position.z;
         const errDistSq = errX * errX + errZ * errZ;
 
         if (errDistSq > 3600) {
-          // Respawn or teleport: snap immediately
-          mesh.position.x = sX;
-          mesh.position.z = sZ;
+          // Snap immediately on spawn or major divergence
+          mesh.position.x = projectedSX;
+          mesh.position.z = projectedSZ;
         } else {
-          // Damped drift: nudges the vehicle without ever stalling forward velocity
-          mesh.position.x += errX * Math.min(1.0, 2.5 * dt);
-          mesh.position.z += errZ * Math.min(1.0, 2.5 * dt);
+          // Smoothly track trajectory without stalling velocity or rubber-banding
+          mesh.position.x += errX * Math.min(1.0, 5.0 * dt);
+          mesh.position.z += errZ * Math.min(1.0, 5.0 * dt);
         }
       } else {
-        // Vehicle is stopping / stopped at red light: smoothly settle to exact stop line
-        mesh.position.x += (sX - mesh.position.x) * Math.min(1.0, 12.0 * dt);
-        mesh.position.z += (sZ - mesh.position.z) * Math.min(1.0, 12.0 * dt);
+        // Vehicle is stopping / queued at red light: smoothly settle to exact stop line without bouncing
+        mesh.position.x += (sX - mesh.position.x) * Math.min(1.0, 10.0 * dt);
+        mesh.position.z += (sZ - mesh.position.z) * Math.min(1.0, 10.0 * dt);
       }
 
       // Smooth heading rotation interpolation

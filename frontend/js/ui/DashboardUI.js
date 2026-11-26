@@ -1429,6 +1429,49 @@ export class DashboardUI {
     if (state.realtimeTraffic) {
       this.updateRealtimeTelemetryUI(state.realtimeTraffic);
     }
+
+    // 11. Hardware-in-the-Loop (HIL) Real-World Controller Physical Relays
+    if (state.controllerHIL) {
+      this.updateControllerHILUI(state.controllerHIL);
+    }
+  }
+
+  /**
+   * Updates Bagalur Cross Physical Controller Relays & Hardware Countdown Timers (IRC:SP:100 HIL)
+   */
+  updateControllerHILUI(hil) {
+    if (!hil) return;
+    const relayByteElem = document.getElementById('b3d-relay-byte');
+    if (relayByteElem && hil.gpioRelayByteHex) {
+      relayByteElem.textContent = `GPIO: ${hil.gpioRelayByteHex} (Phase ${hil.activePhase})`;
+    }
+
+    const heads = hil.signalHeads || {};
+    const headIds = ['a', 'c', 'b', 'd'];
+    const roadKeys = ['A', 'C', 'B', 'D'];
+
+    for (let i = 0; i < 4; i++) {
+      const hid = headIds[i];
+      const rKey = roadKeys[i];
+      const headData = heads[rKey];
+      if (!headData) continue;
+
+      const headElem = document.getElementById(`b3d-head-${hid}`);
+      const timerElem = document.getElementById(`b3d-timer-${hid}`);
+      const relayElem = document.getElementById(`b3d-relay-${hid}`);
+
+      if (headElem) {
+        const st = (headData.state || 'RED').toLowerCase();
+        headElem.className = `b3d-hil-head ${st === 'all_red' ? 'red' : st}`;
+      }
+      if (timerElem) {
+        timerElem.textContent = `${headData.countdownSec}s`;
+      }
+      if (relayElem && headData.relays) {
+        const r = headData.relays;
+        relayElem.textContent = `G:${r.GREEN} Y:${r.YELLOW} R:${r.RED}`;
+      }
+    }
   }
 
   /**

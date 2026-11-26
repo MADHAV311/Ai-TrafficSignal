@@ -35,12 +35,12 @@ SIM_CONFIG = {
         "PEDESTRIAN_SCRAMBLE": "PEDESTRIAN_SCRAMBLE"
     },
 
-    # Road Definitions
+    # Road Definitions (Bagalur Cross - NH 44 / SH 104 Corridor)
     "ROADS": {
-        "NORTH": {"id": "A", "name": "Road A (North / College & School)", "dir": "N", "angle": math.pi / 2},
-        "EAST":  {"id": "B", "name": "Road B (East / Arterial East)", "dir": "E", "angle": math.pi},
-        "SOUTH": {"id": "C", "name": "Road C (South / City Center)", "dir": "S", "angle": -math.pi / 2},
-        "WEST":  {"id": "D", "name": "Road D (West / Sector West)", "dir": "W", "angle": 0.0}
+        "NORTH": {"id": "A", "name": "Road A (NH 44 Southbound - Airport to City)", "dir": "N", "angle": math.pi / 2},
+        "EAST":  {"id": "B", "name": "Road B (SH 104 Eastbound - Aerospace Park)", "dir": "E", "angle": math.pi},
+        "SOUTH": {"id": "C", "name": "Road C (NH 44 Northbound - City to KIA Airport)", "dir": "S", "angle": -math.pi / 2},
+        "WEST":  {"id": "D", "name": "Road D (Bagalur Feeder - Kattigenahalli)", "dir": "W", "angle": 0.0}
     },
 
     "CYCLE_ORDER": ["A", "B", "C", "D"],
@@ -71,29 +71,29 @@ SIM_CONFIG = {
         "starvationThresholdSec": 35.0
     },
 
-    # Vehicle Specifications & Probabilities
+    # Vehicle Specifications & Probabilities (Bengaluru & Bagalur Cross Distribution)
     "VEHICLE_TYPES": {
+        "TWO_WHEELER": {
+            "type": "TWO_WHEELER",
+            "name": "Two-Wheeler (Motorcycle / Scooter)",
+            "length": 16,
+            "width": 8,
+            "maxSpeed": 95.0,
+            "accel": 110.0,
+            "decel": 125.0,
+            "weight": 0.35,  # 35% of Indian traffic
+            "colors": ["#dc2626", "#2563eb", "#1e293b", "#eab308", "#059669"]
+        },
         "SEDAN": {
             "type": "SEDAN",
-            "name": "Sedan",
+            "name": "Sedan / Airport Cab",
             "length": 28,
             "width": 14,
             "maxSpeed": 115.0,
             "accel": 90.0,
             "decel": 120.0,
-            "weight": 0.32,
-            "colors": ["#38bdf8", "#0ea5e9", "#e2e8f0", "#94a3b8", "#3b82f6", "#475569"]
-        },
-        "SUV": {
-            "type": "SUV",
-            "name": "SUV",
-            "length": 32,
-            "width": 16,
-            "maxSpeed": 105.0,
-            "accel": 80.0,
-            "decel": 110.0,
-            "weight": 0.18,
-            "colors": ["#059669", "#10b981", "#1e293b", "#64748b", "#0d9488"]
+            "weight": 0.25,
+            "colors": ["#ffffff", "#e2e8f0", "#38bdf8", "#0ea5e9", "#94a3b8", "#3b82f6"]
         },
         "AUTO_RICKSHAW": {
             "type": "AUTO_RICKSHAW",
@@ -103,29 +103,40 @@ SIM_CONFIG = {
             "maxSpeed": 75.0,
             "accel": 65.0,
             "decel": 90.0,
-            "weight": 0.18,
-            "colors": ["#eab308"]
+            "weight": 0.16,
+            "colors": ["#eab308", "#15803d"]
+        },
+        "SUV": {
+            "type": "SUV",
+            "name": "SUV",
+            "length": 32,
+            "width": 16,
+            "maxSpeed": 105.0,
+            "accel": 80.0,
+            "decel": 110.0,
+            "weight": 0.12,
+            "colors": ["#059669", "#10b981", "#1e293b", "#64748b", "#0d9488"]
         },
         "BUS": {
             "type": "BUS",
-            "name": "City Bus",
+            "name": "BMTC Vayu Vajra Volvo / City Bus",
             "length": 52,
             "width": 17,
             "maxSpeed": 85.0,
             "accel": 55.0,
             "decel": 90.0,
-            "weight": 0.10,
-            "colors": ["#0284c7", "#f59e0b", "#d97706"]
+            "weight": 0.05,
+            "colors": ["#0284c7", "#06b6d4", "#f59e0b"]
         },
         "TRUCK": {
             "type": "TRUCK",
-            "name": "Delivery Truck",
+            "name": "Cargo Freight Truck",
             "length": 44,
             "width": 17,
             "maxSpeed": 80.0,
             "accel": 50.0,
             "decel": 85.0,
-            "weight": 0.08,
+            "weight": 0.04,
             "colors": ["#e11d48", "#be123c", "#cbd5e1"]
         },
         "SPORTS": {
@@ -136,7 +147,7 @@ SIM_CONFIG = {
             "maxSpeed": 135.0,
             "accel": 120.0,
             "decel": 140.0,
-            "weight": 0.06,
+            "weight": 0.01,
             "colors": ["#ec4899", "#f43f5e", "#8b5cf6"]
         },
         "POLICE": {
@@ -147,7 +158,7 @@ SIM_CONFIG = {
             "maxSpeed": 135.0,
             "accel": 115.0,
             "decel": 135.0,
-            "weight": 0.03,
+            "weight": 0.007,
             "isEmergency": True,
             "emergencyType": "POLICE",
             "colors": ["#1e3a8a", "#ffffff"]
@@ -160,7 +171,7 @@ SIM_CONFIG = {
             "maxSpeed": 130.0,
             "accel": 110.0,
             "decel": 130.0,
-            "weight": 0.025,
+            "weight": 0.007,
             "isEmergency": True,
             "emergencyType": "AMBULANCE",
             "colors": ["#ffffff", "#ef4444"]
@@ -173,7 +184,7 @@ SIM_CONFIG = {
             "maxSpeed": 115.0,
             "accel": 95.0,
             "decel": 120.0,
-            "weight": 0.025,
+            "weight": 0.006,
             "isEmergency": True,
             "emergencyType": "FIRE_ENGINE",
             "colors": ["#dc2626", "#b91c1c"]

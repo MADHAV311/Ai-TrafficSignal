@@ -179,6 +179,44 @@
       border-color: #38bdf8;
       color: #fff;
     }
+    .b3d-hil-strip {
+      background: rgba(2, 6, 23, 0.65);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+      font-size: 9.5px;
+    }
+    .b3d-hil-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-weight: 700;
+      color: #6ee7b7;
+      letter-spacing: 0.2px;
+    }
+    .b3d-hil-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+    .b3d-hil-head {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 3px 2px;
+    }
+    .b3d-hil-head.green { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+    .b3d-hil-head.yellow { border-color: #eab308; background: rgba(234, 179, 8, 0.15); }
+    .b3d-hil-head.red { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+    .b3d-hil-lbl { font-size: 8px; color: #94a3b8; font-weight: 600; }
+    .b3d-hil-timer { font-size: 11px; font-weight: 800; font-family: var(--font-mono); }
+    .b3d-hil-head.green .b3d-hil-timer { color: #34d399; }
+    .b3d-hil-head.yellow .b3d-hil-timer { color: #fde047; }
+    .b3d-hil-head.red .b3d-hil-timer { color: #f87171; }
+    .b3d-hil-relay { font-size: 7.5px; font-family: var(--font-mono); color: #64748b; margin-top: 1px; }
   </style>
 
 </head>
@@ -418,6 +456,36 @@
               <div class="b3d-corridor-item">
                 <div class="b3d-corridor-name">Yelahanka Feeder</div>
                 <div class="b3d-corridor-val"><span id="b3d-spd-d">28.0</span> <small>km/h</small> <span class="b3d-tag normal" id="b3d-tag-d">NORM</span></div>
+              </div>
+            </div>
+
+            <!-- Real-World Controller Physical Relay State (Hardware-in-the-Loop) -->
+            <div class="b3d-hil-strip">
+              <div class="b3d-hil-header">
+                <span>🔌 CONTROLLER HIL (IRC:SP:100 / NEMA)</span>
+                <span id="b3d-relay-byte" style="font-family:var(--font-mono); font-size:8.5px; color:#38bdf8;">GPIO: 0x0021</span>
+              </div>
+              <div class="b3d-hil-grid">
+                <div class="b3d-hil-head green" id="b3d-head-a">
+                  <div class="b3d-hil-lbl">NH44-A</div>
+                  <div class="b3d-hil-timer" id="b3d-timer-a">18s</div>
+                  <div class="b3d-hil-relay" id="b3d-relay-a">G:1 Y:0 R:0</div>
+                </div>
+                <div class="b3d-hil-head red" id="b3d-head-c">
+                  <div class="b3d-hil-lbl">NH44-C</div>
+                  <div class="b3d-hil-timer" id="b3d-timer-c">45s</div>
+                  <div class="b3d-hil-relay" id="b3d-relay-c">G:0 Y:0 R:1</div>
+                </div>
+                <div class="b3d-hil-head red" id="b3d-head-b">
+                  <div class="b3d-hil-lbl">SH104-B</div>
+                  <div class="b3d-hil-timer" id="b3d-timer-b">72s</div>
+                  <div class="b3d-hil-relay" id="b3d-relay-b">G:0 Y:0 R:1</div>
+                </div>
+                <div class="b3d-hil-head red" id="b3d-head-d">
+                  <div class="b3d-hil-lbl">BAGL-D</div>
+                  <div class="b3d-hil-timer" id="b3d-timer-d">98s</div>
+                  <div class="b3d-hil-relay" id="b3d-relay-d">G:0 Y:0 R:1</div>
+                </div>
               </div>
             </div>
 
